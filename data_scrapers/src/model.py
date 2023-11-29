@@ -1,11 +1,10 @@
-from typing import Optional
 from datetime import datetime
-from sqlmodel import Field
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class UpdatedAtMixin:
-    updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(default_factory=datetime.utcnow, nullable=False)
 
 
 class CreatedAtMixin:
-    updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(default_factory=datetime.utcnow, nullable=False)
