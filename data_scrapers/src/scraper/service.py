@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from . import steam_api
-from .model import Game
+from .model import Game, GameScreenshot
 
 
 def _put_kor_name_in_game(game: Game) -> None:
@@ -27,3 +27,20 @@ def scrap_games(session: Session) -> None:
         _put_kor_name_in_game(game)
 
     session.add_all(games)
+
+
+def scrap_game_screenshot(session: Session, game: Game) -> None:
+    game_screenshots = []
+
+    response = steam_api.get_game_screenshots(game.steam_id)
+    json_screenshots: list[dict[str, any]] = response["hub"]
+
+    for json_screenshot in json_screenshots:
+        image_url: str = json_screenshot["full_image_url"]
+        game_screenshot = GameScreenshot(
+            url=image_url,
+            provider="steam",
+        )
+        game_screenshots.append(game_screenshot)
+
+    session.add_all(game_screenshots)
