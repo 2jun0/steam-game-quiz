@@ -1,5 +1,7 @@
-from .model import Game
+from sqlalchemy.orm import Session
+
 from . import steam_api
+from .model import Game
 
 
 def _put_kor_name_in_game(game: Game) -> None:
@@ -11,7 +13,7 @@ def _put_kor_name_in_game(game: Game) -> None:
     game.kr_name = kr_name
 
 
-def scrap_games() -> list[Game]:
+def scrap_games(session: Session) -> None:
     games = []
 
     # get top 100 games in 2 weeks
@@ -24,4 +26,4 @@ def scrap_games() -> list[Game]:
     for game in games:
         _put_kor_name_in_game(game)
 
-    return games
+    session.add_all(games)
