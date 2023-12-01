@@ -1,5 +1,6 @@
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
 from ..model import CreatedAtMixin, UpdatedAtMixin
 
 
@@ -23,7 +24,7 @@ class GameScreenshot(Base, CreatedAtMixin, UpdatedAtMixin):
     __tablename__ = "game_screenshot"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    url: Mapped[str] = mapped_column(String(2048))
+    url: Mapped[str] = mapped_column(String(2048), unique=True)
     provider: Mapped[str] = mapped_column(String(256))
 
     game_id: Mapped[int] = mapped_column(ForeignKey("game.id"))
