@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from . import steam_api
+from . import respository, steam_api
 from .model import Game, GameScreenshot
 
 
@@ -44,3 +44,10 @@ def scrap_game_screenshot(session: Session, game: Game) -> None:
         game_screenshots.append(game_screenshot)
 
     session.add_all(game_screenshots)
+
+
+def scrap_game_screenshot_for_all(session: Session) -> None:
+    games = respository.get_all_games(session)
+
+    for game in games:
+        scrap_game_screenshot(session, game)
