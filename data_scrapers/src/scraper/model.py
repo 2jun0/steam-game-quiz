@@ -1,14 +1,10 @@
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..model import CreatedAtMixin, UpdatedAtMixin
-
-
-class Base(DeclarativeBase):
-    pass
+from ..model import Base, CreatedAtMixin, UpdatedAtMixin
 
 
-class Game(Base, CreatedAtMixin, UpdatedAtMixin):
+class Game(CreatedAtMixin, UpdatedAtMixin, Base):
     __tablename__ = "game"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -20,7 +16,7 @@ class Game(Base, CreatedAtMixin, UpdatedAtMixin):
         return f"Game(id={self.id}, steam_id={self.steam_id}, name={self.name}, kr_name={self.kr_name})"
 
 
-class GameScreenshot(Base, CreatedAtMixin, UpdatedAtMixin):
+class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, Base):
     __tablename__ = "game_screenshot"
 
     id: Mapped[int] = mapped_column(primary_key=True)
