@@ -1,3 +1,5 @@
+from typing import Optional
+
 import requests
 
 
@@ -34,7 +36,7 @@ def get_top_100_games_in_2weeks() -> dict[str, any]:
     return response.json()
 
 
-def get_game_details(app_id: int, language: str | None) -> dict[str, any]:
+def get_game_details(app_id: int, language: Optional[str]) -> dict[str, any]:
     """
     return example:
     ```json
