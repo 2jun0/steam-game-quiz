@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Any, Optional
 
 import requests
 
 
-def get_top_100_games_in_2weeks() -> dict[str, any]:
+def get_top_100_games_in_2weeks() -> dict[str, Any]:
     """
     return example:
     ```json
@@ -36,7 +36,7 @@ def get_top_100_games_in_2weeks() -> dict[str, any]:
     return response.json()
 
 
-def get_game_details(app_id: int, language: Optional[str]) -> dict[str, any]:
+def get_game_details(app_id: int, language: Optional[str]) -> dict[str, Any]:
     """
     return example:
     ```json
@@ -68,7 +68,7 @@ def get_game_details(app_id: int, language: Optional[str]) -> dict[str, any]:
     return response.json()
 
 
-def get_game_screenshots(app_id: int, page: int = 1) -> dict[str, any]:
+def get_game_screenshots(app_id: int, page: int = 1) -> dict[str, Any]:
     """
     return example:
     ```json
