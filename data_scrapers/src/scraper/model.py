@@ -20,8 +20,8 @@ class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, Base):
     __tablename__ = "game_screenshot"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    url: Mapped[str] = mapped_column(String(2048), unique=True)
-    provider: Mapped[str] = mapped_column(String(256))
+    steam_file_id: Mapped[int] = mapped_column(unique=True)
+    url: Mapped[str] = mapped_column(String(2048))
 
     game_id: Mapped[int] = mapped_column(ForeignKey("game.id"))
     game: Mapped[Game] = relationship()

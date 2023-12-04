@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from . import respository, steam_api
+from . import repository, steam_api
 from .model import Game, GameScreenshot
 
 
@@ -36,8 +36,10 @@ def scrap_game_screenshot(session: Session, game: Game) -> None:
     json_screenshots: list[dict[str, any]] = response["hub"]
 
     for json_screenshot in json_screenshots:
+        steam_file_id: int = int(json_screenshot["published_file_id"])
         image_url: str = json_screenshot["full_image_url"]
         game_screenshot = GameScreenshot(
+            steam_file_id=steam_file_id,
             url=image_url,
             provider="steam",
         )
@@ -47,7 +49,7 @@ def scrap_game_screenshot(session: Session, game: Game) -> None:
 
 
 def scrap_game_screenshot_for_all(session: Session) -> None:
-    games = respository.get_all_games(session)
+    games = repository.get_all_games(session)
 
     for game in games:
         scrap_game_screenshot(session, game)
