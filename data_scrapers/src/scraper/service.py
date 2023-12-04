@@ -24,7 +24,7 @@ def _remove_existed_games(session: Session, games: set[Game]) -> Iterable[Game]:
 
 def _remove_existed_screenshot(session: Session, screenshots: set[GameScreenshot]) -> Iterable[GameScreenshot]:
     steam_file_ids = (screenshot.steam_file_id for screenshot in screenshots)
-    exists = set(repository.get_games_in_steam_ids(session, steam_file_ids))
+    exists = set(repository.get_game_screenshots_in_steam_file_ids(session, steam_file_ids))
 
     return screenshots - exists
 
