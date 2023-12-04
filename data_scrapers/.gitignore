@@ -1,5 +1,3 @@
-# vscode settings
-.vscode
 # python virtualenv
 .venv
 # cache
