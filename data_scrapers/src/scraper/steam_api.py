@@ -36,7 +36,7 @@ def get_top_100_games_in_2weeks() -> dict[str, Any]:
     return response.json()
 
 
-def get_game_details(app_id: int, language: Optional[str]) -> dict[str, Any]:
+def get_game_details(app_id: int, language: Optional[str] = None) -> dict[str, Any]:
     """
     return example:
     ```json
