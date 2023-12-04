@@ -1,3 +1,5 @@
+from typing import Any, Iterable
+
 from sqlalchemy.orm import Session
 
 from . import repository, steam_api
@@ -14,7 +16,7 @@ def _put_kor_name_in_game(game: Game) -> None:
 
 
 def scrap_games(session: Session) -> None:
-    games = []
+    games: list[Game] = []
 
     # get top 100 games in 2 weeks
     response = steam_api.get_top_100_games_in_2weeks()
@@ -30,10 +32,10 @@ def scrap_games(session: Session) -> None:
 
 
 def scrap_game_screenshot(session: Session, game: Game) -> None:
-    game_screenshots = []
+    game_screenshots: list[GameScreenshot] = []
 
     response = steam_api.get_game_screenshots(game.steam_id)
-    json_screenshots: list[dict[str, any]] = response["hub"]
+    json_screenshots: list[dict[str, Any]] = response["hub"]
 
     for json_screenshot in json_screenshots:
         steam_file_id: int = int(json_screenshot["published_file_id"])
