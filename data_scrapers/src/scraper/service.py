@@ -15,6 +15,20 @@ def _put_kor_name_in_game(game: Game) -> None:
     game.kr_name = kr_name
 
 
+def _remove_existed_games(session: Session, games: set[Game]) -> Iterable[Game]:
+    steam_ids = (game.steam_id for game in games)
+    exists = set(repository.get_games_in_steam_ids(session, steam_ids))
+
+    return games - exists
+
+
+def _remove_existed_screenshot(session: Session, screenshots: set[GameScreenshot]) -> Iterable[GameScreenshot]:
+    steam_file_ids = (screenshot.steam_file_id for screenshot in screenshots)
+    exists = set(repository.get_games_in_steam_ids(session, steam_file_ids))
+
+    return screenshots - exists
+
+
 def scrap_games(session: Session) -> None:
     games: list[Game] = []
 
@@ -24,16 +38,20 @@ def scrap_games(session: Session) -> None:
         game = Game(steam_id=int(str_steam_id), name=detail["name"])
         games.append(game)
 
+    # remove existed games
+    new_games = _remove_existed_games(session, set(games))
+
     # update korean game name
-    for game in games:
+    for game in new_games:
         _put_kor_name_in_game(game)
 
-    session.add_all(games)
+    session.add_all(new_games)
 
 
 def scrap_game_screenshot(session: Session, game: Game) -> None:
-    game_screenshots: list[GameScreenshot] = []
+    screenshots: list[GameScreenshot] = []
 
+    # get some screenshots
     response = steam_api.get_game_screenshots(game.steam_id)
     json_screenshots: list[dict[str, Any]] = response["hub"]
 
@@ -44,9 +62,12 @@ def scrap_game_screenshot(session: Session, game: Game) -> None:
             steam_file_id=steam_file_id,
             url=image_url,
         )
-        game_screenshots.append(game_screenshot)
+        screenshots.append(game_screenshot)
 
-    session.add_all(game_screenshots)
+    # remove existed screenshot
+    new_screenshots = _remove_existed_screenshot(session, set(screenshots))
+
+    session.add_all(new_screenshots)
 
 
 def scrap_game_screenshot_for_all(session: Session) -> None:
