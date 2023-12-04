@@ -27,4 +27,7 @@ class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, Base):
     game: Mapped[Game] = relationship()
 
     def __repr__(self) -> str:
-        return f"GameScreenshot(id={self.id}, url={self.url!r:100}, provider={self.provider!r:50})"
+        return (
+            f"GameScreenshot(id={self.id}, url={self.url!r:100}, steam_file_id={self.steam_file_id!r:50},"
+            f" game_id={self.game_id})"
+        )
