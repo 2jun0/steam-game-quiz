@@ -32,7 +32,7 @@ def get_top_100_games_in_2weeks() -> dict[str, Any]:
     ```
     """
 
-    response = requests.get("steamspy.com/api.php?request=top100in2weeks")
+    response = requests.get("https://steamspy.com/api.php?request=top100in2weeks")
     return response.json()
 
 
