@@ -41,7 +41,6 @@ def scrap_game_screenshot(session: Session, game: Game) -> None:
         game_screenshot = GameScreenshot(
             steam_file_id=steam_file_id,
             url=image_url,
-            provider="steam",
         )
         game_screenshots.append(game_screenshot)
 
