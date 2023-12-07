@@ -1,6 +1,6 @@
 import pytest
 
-from src.scraper.steam_api import SteamAPI
+from src.steam.steam_api import SteamAPI
 
 
 @pytest.fixture

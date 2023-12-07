@@ -2,11 +2,14 @@ from typing import Any, Optional
 
 import requests
 
+from .model import SteamGameDetailReponse, SteamGameScreenshotResponse, TopSteamGameResponse
+
 
 class SteamAPI:
-    def get_top_100_games_in_2weeks(self) -> dict[str, Any]:
+    def get_top_100_games_in_2weeks(self) -> list[TopSteamGameResponse]:
+        response = requests.get("https://steamspy.com/api.php?request=top100in2weeks")
         """
-        return example:
+        json example:
         ```json
         {
             "271590": {
@@ -33,10 +36,17 @@ class SteamAPI:
         ```
         """
 
-        response = requests.get("https://steamspy.com/api.php?request=top100in2weeks")
-        return response.json()
+        return [
+            TopSteamGameResponse(int(str_app_id), name=detail["name"])
+            for str_app_id, detail in response.json().items()
+        ]
 
-    def get_game_details(self, app_id: int, language: Optional[str] = None) -> dict[str, Any]:
+    def get_game_details(self, app_id: int, language: Optional[str] = None) -> SteamGameDetailReponse:
+        if language:
+            response = requests.get(f"https://store.steampowered.com/api/appdetails?appids={app_id}&l={language}")
+        else:
+            response = requests.get(f"https://store.steampowered.com/api/appdetails?appids={app_id}")
+
         """
         return example:
         ```json
@@ -60,14 +70,14 @@ class SteamAPI:
         ```
         """
 
-        if language:
-            response = requests.get(f"https://store.steampowered.com/api/appdetails?appids={app_id}&l={language}")
-        else:
-            response = requests.get(f"https://store.steampowered.com/api/appdetails?appids={app_id}")
+        game_detail: dict[str, Any] = response.json()[str(app_id)]["data"]
 
-        return response.json()
+        return SteamGameDetailReponse(game_detail["name"])
 
-    def get_game_screenshots(self, app_id: int, page: int = 1) -> dict[str, Any]:
+    def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:
+        response = requests.get(
+            f"https://steamcommunity.com/library/appcommunityfeed/{app_id}?p={page}&rgSections[]=2"
+        )
         """
         return example:
         ```json
@@ -108,7 +118,10 @@ class SteamAPI:
         }
         ```
         """
-        response = requests.get(
-            f"https://steamcommunity.com/library/appcommunityfeed/{app_id}?p={page}&rgSections[]=2"
-        )
-        return response.json()
+
+        screenshots: list[dict[str, Any]] = response.json()["hub"]
+
+        return [
+            SteamGameScreenshotResponse(int(screenshot["published_file_id"]), screenshot["full_image_url"])
+            for screenshot in screenshots
+        ]
