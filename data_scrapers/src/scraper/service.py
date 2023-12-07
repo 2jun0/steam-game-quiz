@@ -2,11 +2,12 @@ from typing import Any, Iterable
 
 from sqlalchemy.orm import Session
 
-from . import repository, steam_api
+from . import repository
 from .model import Game, GameScreenshot
+from .protocols import SteamAPI
 
 
-def _put_kor_name_in_game(game: Game) -> None:
+def _put_kor_name_in_game(steam_api: SteamAPI, game: Game) -> None:
     response = steam_api.get_game_details(game.steam_id, language="korean")
 
     game_details = response[str(game.steam_id)]["data"]
@@ -29,7 +30,7 @@ def _remove_existed_screenshot(session: Session, screenshots: set[GameScreenshot
     return screenshots - exists
 
 
-def scrap_games(session: Session) -> None:
+def scrap_games(steam_api: SteamAPI, session: Session) -> None:
     games: list[Game] = []
 
     # get top 100 games in 2 weeks
@@ -43,12 +44,12 @@ def scrap_games(session: Session) -> None:
 
     # update korean game name
     for game in new_games:
-        _put_kor_name_in_game(game)
+        _put_kor_name_in_game(steam_api, game)
 
     session.add_all(new_games)
 
 
-def scrap_game_screenshot(session: Session, game: Game) -> None:
+def scrap_game_screenshot(steam_api: SteamAPI, session: Session, game: Game) -> None:
     screenshots: list[GameScreenshot] = []
 
     # get some screenshots
@@ -70,8 +71,8 @@ def scrap_game_screenshot(session: Session, game: Game) -> None:
     session.add_all(new_screenshots)
 
 
-def scrap_game_screenshot_for_all(session: Session) -> None:
+def scrap_game_screenshot_for_all(steam_api: SteamAPI, session: Session) -> None:
     games = repository.get_all_games(session)
 
     for game in games:
-        scrap_game_screenshot(session, game)
+        scrap_game_screenshot(steam_api, session, game)
