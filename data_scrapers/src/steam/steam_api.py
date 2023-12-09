@@ -2,6 +2,8 @@ from typing import Any, Optional
 
 import requests
 
+from src.steam.exception import SteamAPINoContentsException
+
 from .model import SteamGameDetailResponse, SteamGameScreenshotResponse, TopSteamGameResponse
 
 
@@ -70,7 +72,12 @@ class SteamAPI:
         ```
         """
 
-        game_detail: dict[str, Any] = response.json()[str(app_id)]["data"]
+        game_response = response.json()[str(app_id)]
+
+        try:
+            game_detail: dict[str, Any] = game_response["data"]
+        except KeyError:
+            raise SteamAPINoContentsException(f"Can't find data key: {game_response}")
 
         return SteamGameDetailResponse(game_detail["name"])
 
