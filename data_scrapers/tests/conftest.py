@@ -12,7 +12,7 @@ from tests.factories import GameFactory
 
 @pytest.fixture(scope="session")
 def config() -> Config:
-    return Config(DATABASE_URL="sqlite://")  # mysql+mysqldb://root:1234@127.0.0.1/test")
+    return Config(DATABASE_URL="sqlite://")
 
 
 @pytest.fixture(scope="session")
