@@ -30,4 +30,5 @@ def scrap_screenshots_job():
         session.commit()
 
 
-scheduler.start()
+if __name__ == "__main__":
+    scheduler.start()
