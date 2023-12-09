@@ -1,4 +1,6 @@
-# vscode settings
-.vscode
 # python virtualenv
 .venv
+# cache
+__pycache__
+# env
+*.env
