@@ -2,14 +2,19 @@ from typing import Iterable
 
 from sqlalchemy.orm import Session
 
+from src.steam.exception import SteamAPINoContentsException
+
 from . import repository
 from .model import Game, GameScreenshot
 from .protocols import SteamAPI
 
 
 def _put_kor_name_in_game(steam_api: SteamAPI, game: Game) -> None:
-    game_detail = steam_api.get_game_details(game.steam_id, language="korean")
-    game.kr_name = game_detail.name
+    try:
+        game_detail = steam_api.get_game_details(game.steam_id, language="korean")
+        game.kr_name = game_detail.name
+    except SteamAPINoContentsException:
+        pass  # game.kr_name will none
 
 
 def _remove_existed_games(session: Session, games: Iterable[Game]) -> set[Game]:
