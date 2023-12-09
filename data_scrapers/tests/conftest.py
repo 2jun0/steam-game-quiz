@@ -7,12 +7,13 @@ from src.config import Config
 from src.database import init_database
 from src.scraper.model import Game
 from tests import database
+from tests.config import TestConfig
 from tests.factories import GameFactory
 
 
 @pytest.fixture(scope="session")
 def config() -> Config:
-    return Config(DATABASE_URL="sqlite://")
+    return TestConfig()  # type: ignore
 
 
 @pytest.fixture(scope="session")
