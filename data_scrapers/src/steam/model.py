@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class SteamGameDetailReponse:
+class SteamGameDetailResponse:
     name: str
 
 

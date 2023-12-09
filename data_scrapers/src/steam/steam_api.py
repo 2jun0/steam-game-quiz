@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 import requests
 
-from .model import SteamGameDetailReponse, SteamGameScreenshotResponse, TopSteamGameResponse
+from .model import SteamGameDetailResponse, SteamGameScreenshotResponse, TopSteamGameResponse
 
 
 class SteamAPI:
@@ -41,7 +41,7 @@ class SteamAPI:
             for str_app_id, detail in response.json().items()
         ]
 
-    def get_game_details(self, app_id: int, language: Optional[str] = None) -> SteamGameDetailReponse:
+    def get_game_details(self, app_id: int, language: Optional[str] = None) -> SteamGameDetailResponse:
         if language:
             response = requests.get(f"https://store.steampowered.com/api/appdetails?appids={app_id}&l={language}")
         else:
@@ -72,7 +72,7 @@ class SteamAPI:
 
         game_detail: dict[str, Any] = response.json()[str(app_id)]["data"]
 
-        return SteamGameDetailReponse(game_detail["name"])
+        return SteamGameDetailResponse(game_detail["name"])
 
     def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:
         response = requests.get(
