@@ -50,7 +50,7 @@ def scrap_game_screenshot(steam_api: SteamAPI, session: Session, game: Game) -> 
     screenshots: list[GameScreenshot] = []
 
     for s in steam_api.get_game_screenshots(game.steam_id):
-        screenshots.append(GameScreenshot(steam_file_id=s.file_id, url=s.full_image_url))
+        screenshots.append(GameScreenshot(steam_file_id=s.file_id, url=s.full_image_url, game=game))
 
     # remove existed screenshot
     new_screenshots = _remove_existed_screenshot(session, screenshots)
