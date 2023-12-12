@@ -10,13 +10,13 @@ def mock_config(mocker: MockerFixture):
 
 
 def test_scrap_games_job():
-    from src.main import scrap_games_job
+    from src.lambda_function import scrap_games_job
 
     scrap_games_job()
 
 
 def test_scrap_screenshots_job():
-    from src.main import scrap_games_job, scrap_screenshots_job
+    from src.lambda_function import scrap_games_job, scrap_screenshots_job
 
     scrap_games_job()
 

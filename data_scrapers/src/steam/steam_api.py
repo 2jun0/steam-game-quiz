@@ -2,8 +2,7 @@ from typing import Any, Optional
 
 import requests
 
-from src.steam.exception import SteamAPINoContentsException
-
+from .exception import SteamAPINoContentsException
 from .model import SteamGameDetailResponse, SteamGameScreenshotResponse, TopSteamGameResponse
 
 

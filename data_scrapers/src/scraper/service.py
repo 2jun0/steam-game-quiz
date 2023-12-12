@@ -2,8 +2,7 @@ from typing import Iterable
 
 from sqlalchemy.orm import Session
 
-from src.steam.exception import SteamAPINoContentsException
-
+from ..steam.exception import SteamAPINoContentsException
 from . import repository
 from .model import Game, GameScreenshot
 from .protocols import SteamAPI

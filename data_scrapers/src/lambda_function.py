@@ -3,10 +3,10 @@ from typing import Any
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from .config import Config
-from .database import init_database
-from .scraper.service import scrap_game_screenshot_for_all, scrap_games
-from .steam.steam_api import SteamAPI
+from src.config import Config
+from src.database import init_database
+from src.scraper.service import scrap_game_screenshot_for_all, scrap_games
+from src.steam.steam_api import SteamAPI
 
 config = Config()  # type: ignore
 engine = create_engine(config.DATABASE_URL)
