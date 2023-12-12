@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import BigInteger, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..model import Base, CreatedAtMixin, UpdatedAtMixin
@@ -10,7 +10,7 @@ class Game(CreatedAtMixin, UpdatedAtMixin, Base):
     __tablename__ = "game"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    steam_id: Mapped[int] = mapped_column(unique=True)
+    steam_id: Mapped[int] = mapped_column(BigInteger, unique=True)
     name: Mapped[str] = mapped_column(String(64))
     kr_name: Mapped[Optional[str]] = mapped_column(String(64))
 
