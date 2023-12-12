@@ -2,6 +2,7 @@ from typing import Iterable
 
 from sqlalchemy.orm import Session
 
+from ..logger import logger
 from ..steam.exception import SteamAPINoContentsException
 from . import repository
 from .model import Game, GameScreenshot
@@ -36,13 +37,16 @@ def scrap_games(steam_api: SteamAPI, session: Session) -> None:
     games: list[Game] = []
 
     # get top 100 games in 2 weeks
+    logger.info("getting top 100 games")
     for g in steam_api.get_top_100_games_in_2weeks():
         games.append(Game(steam_id=g.app_id, name=g.name))
 
     # remove existed games
+    logger.info("removing existed games")
     new_games = _remove_existed_games(session, games)
 
     # update korean game name
+    logger.info("updating korean game name")
     for game in new_games:
         _put_kor_name_in_game(steam_api, game)
 
@@ -51,12 +55,14 @@ def scrap_games(steam_api: SteamAPI, session: Session) -> None:
 
 def scrap_game_screenshot(steam_api: SteamAPI, session: Session, game: Game) -> None:
     # get some screenshots
+    logger.info("getting some screenshots")
     screenshots: list[GameScreenshot] = []
 
     for s in steam_api.get_game_screenshots(game.steam_id):
         screenshots.append(GameScreenshot(steam_file_id=s.file_id, url=s.full_image_url, game=game))
 
     # remove existed screenshot
+    logger.info("removing existed screenshots")
     new_screenshots = _remove_existed_screenshot(session, screenshots)
 
     session.add_all(new_screenshots)
