@@ -12,6 +12,7 @@ sqlalchemy = "^2.0.23"
 sqlalchemy-utils = "^0.41.1"
 pydantic-settings = "^2.1.0"
 pymysql = "^1.1.0"
+cryptography = "^41.0.7"
 
 
 [tool.poetry.group.dev.dependencies]
