@@ -10,7 +10,7 @@ class Game(CreatedAtMixin, UpdatedAtMixin, Base):
     __tablename__ = "game"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    steam_id: Mapped[int] = mapped_column(BigInteger, unique=True)
+    steam_id: Mapped[int] = mapped_column(unique=True)
     name: Mapped[str] = mapped_column(String(64))
     kr_name: Mapped[Optional[str]] = mapped_column(String(64))
 
@@ -22,7 +22,7 @@ class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, Base):
     __tablename__ = "game_screenshot"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    steam_file_id: Mapped[int] = mapped_column(unique=True)
+    steam_file_id: Mapped[int] = mapped_column(BigInteger, unique=True)
     url: Mapped[str] = mapped_column(String(2048))
 
     game_id: Mapped[int] = mapped_column(ForeignKey("game.id"))
