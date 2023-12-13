@@ -6,22 +6,22 @@ from sqlalchemy.orm import Session
 from src.scraper.model import Game, GameScreenshot
 from src.scraper.protocols import SteamAPI
 from src.scraper.service import scrap_game_screenshot, scrap_games
-from src.steam.model import SteamGameDetailResponse, SteamGameScreenshotResponse, TopSteamGameResponse
+from src.steam.model import SteamFeatureGameResponse, SteamGameDetailResponse, SteamGameScreenshotResponse
 from tests.factories import (
+    SteamFeatureGameResponseFactory,
     SteamGameDetailResponseFactory,
     SteamGameScreenshotResponseFactory,
-    TopSteamGameResponseFactory,
 )
 
 
 class MockSteamAPI(SteamAPI):
     def __init__(self) -> None:
-        TopSteamGameResponseFactory.reset_sequence()
+        SteamFeatureGameResponseFactory.reset_sequence()
         SteamGameDetailResponseFactory.reset_sequence()
         SteamGameScreenshotResponseFactory.reset_sequence()
 
-    def get_top_100_games_in_2weeks(self) -> list[TopSteamGameResponse]:
-        return TopSteamGameResponseFactory.build_batch(100)
+    def get_feature_games(self) -> list[SteamFeatureGameResponse]:
+        return SteamFeatureGameResponseFactory.build_batch(100)
 
     def get_game_details(self, app_id: int, language: Optional[str] = None) -> SteamGameDetailResponse:
         return SteamGameDetailResponseFactory.build()

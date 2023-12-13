@@ -7,7 +7,7 @@ from factory.fuzzy import FuzzyText
 from pytest_factoryboy import register
 
 from src.scraper.model import Game
-from src.steam.model import SteamGameDetailResponse, SteamGameScreenshotResponse, TopSteamGameResponse
+from src.steam.model import SteamFeatureGameResponse, SteamGameDetailResponse, SteamGameScreenshotResponse
 from tests.database import Session
 
 
@@ -30,9 +30,9 @@ class GameFactory(BaseFactory):
     updated_at = factory.LazyFunction(datetime.utcnow)
 
 
-class TopSteamGameResponseFactory(factory.Factory):
+class SteamFeatureGameResponseFactory(factory.Factory):
     class Meta:
-        model = TopSteamGameResponse
+        model = SteamFeatureGameResponse
 
     app_id = factory.Sequence(lambda n: n)
     name = factory.Sequence(lambda n: f"game{n}")

@@ -3,11 +3,11 @@ from typing import Any, Optional
 import requests
 
 from .exception import SteamAPINoContentsException
-from .model import SteamGameDetailResponse, SteamGameScreenshotResponse, TopSteamGameResponse
+from .model import SteamFeatureGameResponse, SteamGameDetailResponse, SteamGameScreenshotResponse
 
 
 class SteamAPI:
-    def get_top_100_games_in_2weeks(self) -> list[TopSteamGameResponse]:
+    def get_feature_games(self) -> list[SteamFeatureGameResponse]:
         response = requests.get("https://steamspy.com/api.php?request=top100in2weeks")
         """
         json example:
@@ -38,7 +38,7 @@ class SteamAPI:
         """
 
         return [
-            TopSteamGameResponse(int(str_app_id), name=detail["name"])
+            SteamFeatureGameResponse(int(str_app_id), name=detail["name"])
             for str_app_id, detail in response.json().items()
         ]
 
