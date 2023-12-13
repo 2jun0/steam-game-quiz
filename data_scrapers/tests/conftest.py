@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy_utils import drop_database  # type: ignore
 
@@ -17,19 +17,19 @@ def config() -> Config:
 
 
 @pytest.fixture(scope="session")
-def db(config: Config):
+def engine(config: Config):
     engine = create_engine(config.DATABASE_URL)
 
     init_database(config, engine)
 
     database.Session.configure(bind=engine)
-    yield
+    yield engine
     drop_database(config.DATABASE_URL)
     engine.dispose()
 
 
 @pytest.fixture()
-def session(db: None):
+def session(engine: Engine):
     with database.Session() as session:
         yield session
 
