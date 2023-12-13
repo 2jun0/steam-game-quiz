@@ -7,7 +7,7 @@ class SteamGameDetailResponse:
 
 
 @dataclass
-class TopSteamGameResponse:
+class SteamFeatureGameResponse:
     app_id: int
     name: str
 

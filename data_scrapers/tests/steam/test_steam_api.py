@@ -19,8 +19,8 @@ def steam_api() -> SteamAPI:
     return SteamAPI()
 
 
-def test_get_top_100_geams_in_2weeks(steam_api: SteamAPI):
-    assert steam_api.get_top_100_games_in_2weeks()
+def test_get_feature_games(steam_api: SteamAPI):
+    assert steam_api.get_feature_games()
 
 
 def test_get_game_screenshots(steam_api: SteamAPI, app_id: int):

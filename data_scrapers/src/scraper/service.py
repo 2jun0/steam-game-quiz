@@ -36,9 +36,9 @@ def _remove_existed_screenshot(session: Session, screenshots: Iterable[GameScree
 def scrap_games(steam_api: SteamAPI, session: Session) -> None:
     games: list[Game] = []
 
-    # get top 100 games in 2 weeks
-    logger.info("getting top 100 games")
-    for g in steam_api.get_top_100_games_in_2weeks():
+    # get feature games
+    logger.info("getting feature games")
+    for g in steam_api.get_feature_games():
         games.append(Game(steam_id=g.app_id, name=g.name))
 
     # remove existed games
