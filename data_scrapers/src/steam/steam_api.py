@@ -8,39 +8,45 @@ from .model import SteamFeatureGameResponse, SteamGameDetailResponse, SteamGameS
 
 class SteamAPI:
     def get_feature_games(self) -> list[SteamFeatureGameResponse]:
-        response = requests.get("https://steamspy.com/api.php?request=top100in2weeks")
+        response = requests.get("https://store.steampowered.com/api/featuredcategories")
         """
         json example:
         ```json
         {
-            "271590": {
-                "appid": 271590,
-                "name": "Grand Theft Auto V",
-                "developer": "Rockstar North",
-                "publisher": "Rockstar Games",
-                "score_rank": "",
-                "positive": 1443685,
-                "negative": 229904,
-                "userscore": 0,
-                "owners": "50,000,000 .. 100,000,000",
-                "average_forever": 0,
-                "average_2weeks": 0,
-                "median_forever": 0,
-                "median_2weeks": 0,
-                "price": "1480",
-                "initialprice": "1480",
-                "discount": "0",
-                "ccu": 97446
-            },
+            ...
+            "top_sellers": {
+                "id": "cat_topsellers",
+                "name": "Top Sellers",
+                "items": [
+                {
+                    "id": 1086940,
+                    "type": 0,
+                    "name": "Baldur's Gate 3",
+                    "discounted": false,
+                    "discount_percent": 0,
+                    "original_price": 6600000,
+                    "final_price": 6600000,
+                    "currency": "KRW",
+                    "large_capsule_image": "...",
+                    "small_capsule_image": "...",
+                    "windows_available": true,
+                    "mac_available": true,
+                    "linux_available": false,
+                    "streamingvideo_available": false,
+                    "header_image": "...",
+                    "controller_support": "full"
+                },
+                ...
+            }
             ...
         }
         ```
         """
 
-        return [
-            SteamFeatureGameResponse(int(str_app_id), name=detail["name"])
-            for str_app_id, detail in response.json().items()
-        ]
+        top_sellers: dict[str, Any] = response.json()["top_sellers"]
+        games = top_sellers["items"]
+
+        return [SteamFeatureGameResponse(game["id"], name=game["name"]) for game in games]
 
     def get_game_details(self, app_id: int, language: Optional[str] = None) -> SteamGameDetailResponse:
         if language:
