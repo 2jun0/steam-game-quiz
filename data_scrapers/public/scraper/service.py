@@ -1,10 +1,9 @@
 from typing import Collection
 
-from ..aws_lambda.lambda_api import LambdaAPI
 from ..logger import logger
 from ..model import Game, NewGame, NewGameScreenshot
+from ..protocols import LambdaAPI, SteamAPI
 from ..steam.exception import SteamAPINoContentsException
-from ..steam.steam_api import SteamAPI
 
 
 def _put_kor_name_in_new_game(steam_api: SteamAPI, game: NewGame) -> None:

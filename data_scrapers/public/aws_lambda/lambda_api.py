@@ -3,11 +3,12 @@ from typing import Any, Collection
 
 import boto3
 
+from .. import protocols
 from ..model import Game, GameScreenshot, NewGame, NewGameScreenshot
 from .event import Event
 
 
-class LambdaAPI:
+class LambdaAPI(protocols.LambdaAPI):
     def __init__(self, private_function_name: str) -> None:
         self.private_function_name = private_function_name
         self.client = boto3.client("lambda")

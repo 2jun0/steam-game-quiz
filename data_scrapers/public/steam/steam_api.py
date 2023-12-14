@@ -2,11 +2,12 @@ from typing import Any, Optional
 
 import requests
 
+from .. import protocols
 from ..model import SteamFeatureGameResponse, SteamGameDetailResponse, SteamGameScreenshotResponse
 from .exception import SteamAPINoContentsException
 
 
-class SteamAPI:
+class SteamAPI(protocols.SteamAPI):
     def get_feature_games(self) -> list[SteamFeatureGameResponse]:
         response = requests.get("https://store.steampowered.com/api/featuredcategories", verify=False)
         """
