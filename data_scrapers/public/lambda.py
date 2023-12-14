@@ -1,39 +1,29 @@
-from typing import Any, Callable
+from typing import Any
 
-from sqlalchemy import Engine, create_engine
-from sqlalchemy.orm import Session
-
-from logger import logger
-from private.config import Config
-from private.database import init_database
-from private.event import Event, EventName
-from private.game.service import get_games_in_steam_ids, get_some_games, save_games
-from private.screenshot.service import get_screenshots_in_steam_file_ids, save_screenshots
-
-config = Config()  # type: ignore
-
-funcs: dict[EventName, Callable[..., Any]] = {
-    "save_games": save_games,
-    "get_some_games": get_some_games,
-    "get_games_in_steam_ids": get_games_in_steam_ids,
-    "save_screenshots": save_screenshots,
-    "get_screenshots_in_steam_file_ids": get_screenshots_in_steam_file_ids,
-}
+from public.aws_lambda.lambda_api import LambdaAPI
+from public.logger import logger
+from public.scraper.service import scrap_game_screenshot_for_all, scrap_games
+from public.steam.steam_api import SteamAPI
 
 
-def handle_event(engine: Engine, event: Event) -> Any:
-    with Session(engine) as session:
-        func = funcs[event["name"]]
-        result = func(session, event["payload"])
+def scrap_games_job(lambda_api: LambdaAPI):
+    logger.info("-- scrap game job start -- ")
 
-        session.commit()
-        return result
+    scrap_games(SteamAPI(), lambda_api)
+
+    logger.info("-- scrap game job end -- ")
 
 
-def lambda_handler(event: Event, context: Any):
-    engine = create_engine(config.DATABASE_URL)
-    init_database(config, engine)
+def scrap_screenshots_job(lambda_api: LambdaAPI):
+    logger.info("-- scrap screenshot job start -- ")
 
-    logger.info("required event is %s", event)
+    scrap_game_screenshot_for_all(SteamAPI(), lambda_api)
 
-    return handle_event(engine, event)
+    logger.info("-- scrap screenshot job end -- ")
+
+
+def lambda_handler(event: Any, context: Any):
+    lambda_api = LambdaAPI("private")
+
+    scrap_games_job(lambda_api)
+    scrap_screenshots_job(lambda_api)
