@@ -1,4 +1,4 @@
-from typing import Iterable, Sequence
+from typing import Collection, Sequence
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -7,6 +7,6 @@ from .model import GameScreenshot
 
 
 def get_game_screenshots_in_steam_file_ids(
-    session: Session, steam_file_ids: Iterable[int]
+    session: Session, steam_file_ids: Collection[int]
 ) -> Sequence[GameScreenshot]:
     return session.scalars(select(GameScreenshot).where(GameScreenshot.steam_file_id.in_(steam_file_ids))).all()

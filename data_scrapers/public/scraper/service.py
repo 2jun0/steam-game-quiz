@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Collection
 
 from ..aws_lambda.lambda_api import LambdaAPI
 from ..logger import logger
@@ -15,7 +15,7 @@ def _put_kor_name_in_new_game(steam_api: SteamAPI, game: NewGame) -> None:
         pass  # game.kr_name will none
 
 
-def _remove_existed_new_games(lambda_api: LambdaAPI, games: Iterable[NewGame]) -> set[NewGame]:
+def _remove_existed_new_games(lambda_api: LambdaAPI, games: Collection[NewGame]) -> set[NewGame]:
     steam_id2game = {g.steam_id: g for g in games}
     exists = set(g.steam_id for g in lambda_api.get_games_in_steam_ids(steam_id2game.keys()))
 
@@ -23,7 +23,7 @@ def _remove_existed_new_games(lambda_api: LambdaAPI, games: Iterable[NewGame]) -
 
 
 def _remove_existed_new_screenshot(
-    lambda_api: LambdaAPI, screenshots: Iterable[NewGameScreenshot]
+    lambda_api: LambdaAPI, screenshots: Collection[NewGameScreenshot]
 ) -> set[NewGameScreenshot]:
     file_id2screenshot = {s.steam_file_id: s for s in screenshots}
     exists = set(s.steam_file_id for s in lambda_api.get_screenshots_in_steam_file_ids(file_id2screenshot.keys()))

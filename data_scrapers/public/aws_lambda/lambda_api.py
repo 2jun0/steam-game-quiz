@@ -1,5 +1,5 @@
 import json
-from typing import Any, Iterable
+from typing import Any, Collection
 
 import boto3
 
@@ -24,24 +24,24 @@ class LambdaAPI:
         games: list[dict[str, Any]] = self.invoke_lambda(event)
         return [Game(**g) for g in games]
 
-    def get_games_in_steam_ids(self, steam_ids: Iterable[int]) -> list[Game]:
+    def get_games_in_steam_ids(self, steam_ids: Collection[int]) -> list[Game]:
         event = Event(name="get_games_in_steam_ids", payload=steam_ids)
 
         games: list[dict[str, Any]] = self.invoke_lambda(event)
         return [Game(**g) for g in games]
 
-    def get_screenshots_in_steam_file_ids(self, steam_file_ids: Iterable[int]) -> list[GameScreenshot]:
+    def get_screenshots_in_steam_file_ids(self, steam_file_ids: Collection[int]) -> list[GameScreenshot]:
         event = Event(name="get_screenshots_in_steam_file_ids", payload=steam_file_ids)
 
         screenshots: list[dict[str, Any]] = self.invoke_lambda(event)
         return [GameScreenshot(**s) for s in screenshots]
 
-    def save_games(self, games: Iterable[NewGame]):
+    def save_games(self, games: Collection[NewGame]):
         event = Event(name="save_games", payload=games)
 
         self.invoke_lambda(event)
 
-    def save_screenshots(self, screenshots: Iterable[NewGameScreenshot]):
+    def save_screenshots(self, screenshots: Collection[NewGameScreenshot]):
         event = Event(name="save_screenshots", payload=screenshots)
 
         self.invoke_lambda(event)
