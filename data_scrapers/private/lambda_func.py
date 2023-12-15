@@ -3,11 +3,11 @@ from typing import Any, Callable
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session
 
-from logger import logger
 from private.config import Config
 from private.database import init_database
 from private.event import Event, EventName
 from private.game.service import get_games_in_steam_ids, get_some_games, save_games
+from private.logger import logger
 from private.screenshot.service import get_screenshots_in_steam_file_ids, save_screenshots
 
 config = Config()  # type: ignore
