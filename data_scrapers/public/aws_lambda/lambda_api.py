@@ -3,6 +3,8 @@ from typing import Any, Collection
 
 import boto3
 
+from public.aws_lambda.exception import AWSLambdaException
+
 from .. import protocols
 from ..model import Game, GameScreenshot, NewGame, NewGameScreenshot
 from .event import Event
@@ -15,6 +17,9 @@ class LambdaAPI(protocols.LambdaAPI):
 
     def invoke_lambda(self, event: Event) -> Any:
         response = self.client.invoke(FunctionName=self.private_function_name, Payload=json.dumps(event))
+
+        if "FunctionError" in response:
+            raise AWSLambdaException(response["FunctionError"])
 
         payload: Any = response["Payload"].read().decode("utf-8")
         return json.loads(payload)
@@ -38,11 +43,11 @@ class LambdaAPI(protocols.LambdaAPI):
         return [GameScreenshot(**s) for s in screenshots]
 
     def save_games(self, games: Collection[NewGame]):
-        event = Event(name="save_games", payload=games)
+        event = Event(name="save_games", payload=[g.model_dump() for g in games])
 
         self.invoke_lambda(event)
 
     def save_screenshots(self, screenshots: Collection[NewGameScreenshot]):
-        event = Event(name="save_screenshots", payload=screenshots)
+        event = Event(name="save_screenshots", payload=[s.model_dump() for s in screenshots])
 
         self.invoke_lambda(event)
