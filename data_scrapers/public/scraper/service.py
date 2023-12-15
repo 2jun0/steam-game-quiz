@@ -16,7 +16,7 @@ def _put_kor_name_in_new_game(steam_api: SteamAPI, game: NewGame) -> None:
 
 def _remove_existed_new_games(lambda_api: LambdaAPI, games: Collection[NewGame]) -> list[NewGame]:
     steam_id2game = {g.steam_id: g for g in games}
-    exists = set(g.steam_id for g in lambda_api.get_games_in_steam_ids(steam_id2game.keys()))
+    exists = set(g.steam_id for g in lambda_api.get_games_in_steam_ids(list(steam_id2game.keys())))
 
     return [steam_id2game[steam_id] for steam_id in steam_id2game.keys() - exists]
 
@@ -25,7 +25,9 @@ def _remove_existed_new_screenshot(
     lambda_api: LambdaAPI, screenshots: Collection[NewGameScreenshot]
 ) -> list[NewGameScreenshot]:
     file_id2screenshot = {s.steam_file_id: s for s in screenshots}
-    exists = set(s.steam_file_id for s in lambda_api.get_screenshots_in_steam_file_ids(file_id2screenshot.keys()))
+    exists = set(
+        s.steam_file_id for s in lambda_api.get_screenshots_in_steam_file_ids(list(file_id2screenshot.keys()))
+    )
 
     return [file_id2screenshot[file_id] for file_id in file_id2screenshot.keys() - exists]
 
