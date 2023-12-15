@@ -34,6 +34,10 @@ def lambda_handler(event: Event, context: Any):
     engine = create_engine(config.DATABASE_URL)
     init_database(config, engine)
 
-    logger.info("required event is %s", event)
+    logger.info("Handle event [required event is %s]", event)
 
-    return handle_event(engine, event)
+    result = handle_event(engine, event)
+
+    logger.info("Result: %s", result)
+
+    return result
