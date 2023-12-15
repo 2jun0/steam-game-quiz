@@ -24,7 +24,11 @@ funcs: dict[EventName, Callable[..., Any]] = {
 def handle_event(engine: Engine, event: Event) -> Any:
     with Session(engine) as session:
         func = funcs[event["name"]]
-        result = func(session, event["payload"])
+
+        try:
+            result = func(session, event["payload"])
+        except TypeError:
+            result = func(session)
 
         session.commit()
         return result
