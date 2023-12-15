@@ -5,7 +5,7 @@ __pycache__
 # env
 *.env
 # for packages
-build_lambda.zip
+build
 requirements.txt
 # MacOS
 .DS_Store
