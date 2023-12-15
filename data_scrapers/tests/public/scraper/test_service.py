@@ -1,7 +1,5 @@
 from typing import Any, Collection, Optional
 
-from sqlalchemy.orm import Session
-
 from public.model import (
     Game,
     GameScreenshot,
@@ -12,7 +10,6 @@ from public.model import (
 from public.protocols import LambdaAPI, SteamAPI
 from public.scraper.service import scrap_game_screenshot, scrap_games
 from tests.public.factories import (
-    GameFactory,
     SteamFeatureGameResponseFactory,
     SteamGameDetailResponseFactory,
     SteamGameScreenshotResponseFactory,
@@ -37,7 +34,6 @@ class MockSteamAPI(SteamAPI):
 
 class MockLambdaAPI(LambdaAPI):
     def __init__(self):
-        GameFactory.reset_sequence()
         self.saved: list[Any] = []
 
     def get_some_games(self) -> list[Game]:
@@ -82,7 +78,7 @@ def test_scrap_screenshots은_스크린샷을_저장한다(game: Game):
     assert len(lambda_api.saved) > 0
 
 
-def test_scrap_screenshot은_중복된_스크린샷은_다시_저장하지_않는다(session: Session, game: Game):
+def test_scrap_screenshot은_중복된_스크린샷은_다시_저장하지_않는다(game: Game):
     lambda_api = MockLambdaAPI()
     scrap_game_screenshot(MockSteamAPI(), lambda_api, game)
     before_scraped = len(lambda_api.saved)

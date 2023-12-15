@@ -4,7 +4,6 @@ from datetime import datetime
 
 import factory
 from factory.fuzzy import FuzzyText
-from pytest_factoryboy import register
 
 from public.model import (
     Game,
@@ -38,15 +37,14 @@ class SteamGameScreenshotResponseFactory(factory.Factory):
     full_image_url = FuzzyText("https://fake.com/url", 100)
 
 
-@register
 class GameFactory(factory.Factory):
     class Meta:
         model = Game
 
     id = factory.Sequence(lambda n: n)
     steam_id = factory.Sequence(lambda n: n)
-    name = FuzzyText(100)
-    kr_name = FuzzyText(100)
+    name = FuzzyText(length=100)
+    kr_name = FuzzyText(length=100)
     created_at = factory.LazyFunction(datetime.utcnow)
     updated_at = factory.LazyFunction(datetime.utcnow)
 
