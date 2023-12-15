@@ -5,11 +5,14 @@ from sqlalchemy_utils import drop_database  # type: ignore
 
 from private.config import Config
 from private.database import init_database
+from private.game.model import Game
+from private.screenshot.model import GameScreenshot
 from tests.private import database
 from tests.private.config import TestConfig
-from tests.private.factories import GameFactory
+from tests.private.factories import GameFactory, GameScreenshotFactory
 
 register(GameFactory)
+register(GameScreenshotFactory)
 
 
 @pytest.fixture(scope="session")
@@ -38,3 +41,13 @@ def session(engine: Engine):
 @pytest.fixture()
 def mock_session():
     return
+
+
+@pytest.fixture
+def saved_games() -> list[Game]:
+    return GameFactory.create_batch(100)
+
+
+@pytest.fixture
+def saved_screenshots() -> list[GameScreenshot]:
+    return GameScreenshotFactory.create_batch(100)

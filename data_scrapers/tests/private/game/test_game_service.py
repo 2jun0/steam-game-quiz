@@ -1,15 +1,8 @@
-import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from private.game.model import Game
 from private.game.service import get_games_in_steam_ids, get_some_games, save_games
-from tests.private.factories import GameFactory
-
-
-@pytest.fixture
-def saved_games(game_factory: GameFactory) -> list[Game]:
-    return game_factory.create_batch(100)
 
 
 def test_get_some_games은_게임을_가져와야한다(session: Session, saved_games: list[Game]):
@@ -30,4 +23,4 @@ def test_get_games_in_steam_ids은_입력한_스팀_id에_맞는_게임을_가�
     steam_ids = [saved_games[0].steam_id, saved_games[1].steam_id]
     games = get_games_in_steam_ids(session, steam_ids)
 
-    assert set(g["id"] for g in games) == set(g.id for g in saved_games)
+    assert set(g["id"] for g in games) == set((saved_games[0].id, saved_games[1].id))
