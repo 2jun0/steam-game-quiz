@@ -1,21 +1,11 @@
-from typing import Optional
+from datetime import datetime
 
+from pydantic import BaseModel
 from sqlalchemy import BigInteger, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from ..game.model import Game, GameDto
 from ..model import Base, CreatedAtMixin, UpdatedAtMixin
-
-
-class Game(CreatedAtMixin, UpdatedAtMixin, Base):
-    __tablename__ = "game"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    steam_id: Mapped[int] = mapped_column(unique=True)
-    name: Mapped[str] = mapped_column(String(64))
-    kr_name: Mapped[Optional[str]] = mapped_column(String(64))
-
-    def __repr__(self) -> str:
-        return f"Game(id={self.id}, steam_id={self.steam_id}, name={self.name}, kr_name={self.kr_name})"
 
 
 class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, Base):
@@ -33,3 +23,24 @@ class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, Base):
             f"GameScreenshot(id={self.id}, url={self.url!r:100}, steam_file_id={self.steam_file_id!r:50},"
             f" game_id={self.game_id})"
         )
+
+    def to_dto(self) -> "GameScreenshotDto":
+        return GameScreenshotDto(
+            id=self.id,
+            steam_file_id=self.steam_file_id,
+            url=self.url,
+            game_id=self.game.id,
+            game=self.game.to_dto(),
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
+
+
+class GameScreenshotDto(BaseModel):
+    id: int
+    steam_file_id: int
+    url: str
+    game_id: int
+    game: GameDto
+    created_at: datetime
+    updated_at: datetime

@@ -2,13 +2,14 @@ from typing import Any, Optional
 
 import requests
 
+from .. import protocols
+from ..model import SteamFeatureGameResponse, SteamGameDetailResponse, SteamGameScreenshotResponse
 from .exception import SteamAPINoContentsException
-from .model import SteamFeatureGameResponse, SteamGameDetailResponse, SteamGameScreenshotResponse
 
 
-class SteamAPI:
+class SteamAPI(protocols.SteamAPI):
     def get_feature_games(self) -> list[SteamFeatureGameResponse]:
-        response = requests.get("https://store.steampowered.com/api/featuredcategories")
+        response = requests.get("https://store.steampowered.com/api/featuredcategories", verify=False)
         """
         json example:
         ```json
@@ -46,7 +47,7 @@ class SteamAPI:
         top_sellers: dict[str, Any] = response.json()["top_sellers"]
         games = top_sellers["items"]
 
-        return [SteamFeatureGameResponse(game["id"], name=game["name"]) for game in games]
+        return [SteamFeatureGameResponse(app_id=game["id"], name=game["name"]) for game in games]
 
     def get_game_details(self, app_id: int, language: Optional[str] = None) -> SteamGameDetailResponse:
         if language:
@@ -84,7 +85,7 @@ class SteamAPI:
         except KeyError:
             raise SteamAPINoContentsException(f"Can't find data key: {game_response}")
 
-        return SteamGameDetailResponse(game_detail["name"])
+        return SteamGameDetailResponse(name=game_detail["name"])
 
     def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:
         response = requests.get(
@@ -134,6 +135,8 @@ class SteamAPI:
         screenshots: list[dict[str, Any]] = response.json()["hub"]
 
         return [
-            SteamGameScreenshotResponse(int(screenshot["published_file_id"]), screenshot["full_image_url"])
+            SteamGameScreenshotResponse(
+                file_id=int(screenshot["published_file_id"]), full_image_url=screenshot["full_image_url"]
+            )
             for screenshot in screenshots
         ]

@@ -1,6 +1,6 @@
 from pydantic_settings import SettingsConfigDict
 
-from src.config import Config
+from private.config import Config
 
 
 class TestConfig(Config):

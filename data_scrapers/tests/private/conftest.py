@@ -1,14 +1,18 @@
 import pytest
+from pytest_factoryboy import register
 from sqlalchemy import Engine, create_engine
-from sqlalchemy.orm import Session
 from sqlalchemy_utils import drop_database  # type: ignore
 
-from src.config import Config
-from src.database import init_database
-from src.scraper.model import Game
-from tests import database
-from tests.config import TestConfig
-from tests.factories import GameFactory
+from private.config import Config
+from private.database import init_database
+from private.game.model import Game
+from private.screenshot.model import GameScreenshot
+from tests.private import database
+from tests.private.config import TestConfig
+from tests.private.factories import GameFactory, GameScreenshotFactory
+
+register(GameFactory)
+register(GameScreenshotFactory)
 
 
 @pytest.fixture(scope="session")
@@ -40,10 +44,10 @@ def mock_session():
 
 
 @pytest.fixture
-def game(session: Session) -> Game:
-    return GameFactory()  # type: ignore
+def saved_games() -> list[Game]:
+    return GameFactory.create_batch(100)
 
 
 @pytest.fixture
-def games(session: Session) -> list[Game]:
-    return [GameFactory(), GameFactory()]  # type: ignore
+def saved_screenshots() -> list[GameScreenshot]:
+    return GameScreenshotFactory.create_batch(100)
