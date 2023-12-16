@@ -39,34 +39,41 @@ def scrap_games(steam_api: SteamAPI, lambda_api: LambdaAPI) -> None:
     logger.info("getting feature games")
     for g in steam_api.get_feature_games():
         games.append(NewGame(steam_id=g.app_id, name=g.name))
+    logger.info("feature games: %s", games)
 
     # remove existed games
     logger.info("removing existed games")
     new_games = _remove_existed_new_games(lambda_api, games)
+    logger.info("remain games: %s", new_games)
 
     # update korean game name
     logger.info("updating korean game name")
     for game in new_games:
         _put_kor_name_in_new_game(steam_api, game)
+    logger.info("updated games: %s", new_games)
 
     # save new games
     lambda_api.save_games(new_games)
+    logger.info("saved games: %s", new_games)
 
 
 def scrap_game_screenshot(steam_api: SteamAPI, lambda_api: LambdaAPI, game: Game) -> None:
     # get some screenshots
-    logger.info("getting some screenshots")
+    logger.info("getting some screenshots of game: %s", game)
     screenshots: list[NewGameScreenshot] = []
 
     for s in steam_api.get_game_screenshots(game.steam_id):
         screenshots.append(NewGameScreenshot(steam_file_id=s.file_id, url=s.full_image_url, game_id=game.id))
+    logger.info("some screenshots: %s", screenshots)
 
     # remove existed screenshot
     logger.info("removing existed screenshots")
     new_screenshots = _remove_existed_new_screenshot(lambda_api, screenshots)
+    logger.info("remain screenshots: %s", new_screenshots)
 
     # save new screenshots
     lambda_api.save_screenshots(new_screenshots)
+    logger.info("saved screenshots: %s", new_screenshots)
 
 
 def scrap_game_screenshot_for_all(steam_api: SteamAPI, lambda_api: LambdaAPI) -> None:
