@@ -2,11 +2,11 @@ from typing import Any
 from pydantic_settings import BaseSettings
 from pydantic import MySQLDsn
 
-from constants import Envrionment
+from .constants import Envrionment
 
 
 class Config(BaseSettings):
-    DATABASE_URL: MySQLDsn
+    DATABASE_URL: MySQLDsn | str
 
     ENVIRONMENT: Envrionment = Envrionment.PRODUCTION
 
