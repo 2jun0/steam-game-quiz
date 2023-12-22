@@ -13,6 +13,8 @@ sqlalchemy = "^2.0.23"
 redis = "^5.0.1"
 pytest-asyncio = "^0.23.2"
 async-asgi-testclient = "^1.4.11"
+sqlmodel = "^0.0.14"
+fastapi-restful = "^0.5.0"
 
 
 [tool.poetry.group.dev.dependencies]
