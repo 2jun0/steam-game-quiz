@@ -9,6 +9,7 @@ from src.quiz.router import router as quiz_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_all_table()
+    yield
 
 
 app = FastAPI(**app_configs, lifespan=lifespan)
