@@ -5,8 +5,8 @@ from sqlmodel import Field
 
 
 class UpdatedAtMixin(BaseModel):
-    updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class CreatedAtMixin(BaseModel):
-    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
