@@ -12,4 +12,4 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(**app_configs, lifespan=lifespan)
-app.add_api_route(quiz_router)
+app.include_router(quiz_router)
