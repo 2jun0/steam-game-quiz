@@ -11,6 +11,6 @@ router = APIRouter()
 class QuizCBV:
     service: QuizService = Depends(get_quiz_service)
 
-    @router.get("/quiz/daliy_quizes")
-    def get_daliy_quizes(self):
+    @router.get("/quiz/daily_quizes")
+    def get_daily_quizes(self):
         return self.service.get_today_quizes()
