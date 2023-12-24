@@ -1,7 +1,7 @@
 from sqlalchemy import BigInteger, Column
 from sqlmodel import Field, Relationship, SQLModel
 
-from model import CreatedAtMixin, UpdatedAtMixin
+from ..model import CreatedAtMixin, UpdatedAtMixin
 
 
 class Game(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
