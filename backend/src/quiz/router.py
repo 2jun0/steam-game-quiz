@@ -1,11 +1,10 @@
-from fastapi import Depends
+from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
-from fastapi_restful.inferring_router import InferringRouter
 
 from .dependency import get_quiz_service
 from .service import QuizService
 
-router = InferringRouter()
+router = APIRouter()
 
 
 @cbv(router)
