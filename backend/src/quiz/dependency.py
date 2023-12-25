@@ -1,9 +1,13 @@
-from fastapi import Depends
-from sqlmodel import Session
+from typing import Annotated
 
-from ..dependency import get_session
+from fastapi import Depends
+
+from ..dependency import SessionDep
 from .service import QuizService
 
 
-def get_quiz_service(session: Session = Depends(get_session)) -> QuizService:
+def get_quiz_service(session: SessionDep) -> QuizService:
     return QuizService(session)
+
+
+QuizServiceDep = Annotated[QuizService, Depends(get_quiz_service)]
