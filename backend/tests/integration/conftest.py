@@ -1,6 +1,8 @@
 from typing import AsyncGenerator
-from async_asgi_testclient import TestClient
+
 import pytest_asyncio
+from async_asgi_testclient import TestClient
+
 from src.main import app
 
 
