@@ -2,13 +2,12 @@ import pytest
 from async_asgi_testclient import TestClient
 from fastapi import status
 
-from src.quiz.model import Quiz
 from tests.utils.quiz import create_random_quiz
 
 
 @pytest.mark.asyncio
 async def test_get_daily_quizes(client: TestClient):
-    quiz: Quiz = await create_random_quiz()
+    quiz = await create_random_quiz()
 
     res = await client.get("/quiz/daily_quizes")
     assert res.status_code == status.HTTP_200_OK

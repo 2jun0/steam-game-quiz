@@ -10,7 +10,7 @@ from .screenshot import create_random_game_screenshot
 QUIZ_SCREENSHOT_COUNT = 5
 
 
-async def create_random_quiz(screenshots: list[GameScreenshot] | None) -> Quiz:
+async def create_random_quiz(screenshots: list[GameScreenshot] | None = None) -> Quiz:
     if screenshots:
         assert len(screenshots) == QUIZ_SCREENSHOT_COUNT
         # 하나의 게임에만 속해 있어야 한다.

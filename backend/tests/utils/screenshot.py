@@ -12,7 +12,7 @@ steam_file_id_counter = 0
 steam_file_id_lock = Lock()
 
 
-async def create_random_game_screenshot(game_id: int | None) -> GameScreenshot:
+async def create_random_game_screenshot(game_id: int | None = None) -> GameScreenshot:
     global steam_file_id_counter
 
     if game_id is None:
