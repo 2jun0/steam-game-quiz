@@ -1,6 +1,6 @@
 from faker import Faker
 
-faker = Faker()
+faker = Faker(["ko-KR", "ja-JP", "en-US"])
 
 
 def random_name() -> str:
