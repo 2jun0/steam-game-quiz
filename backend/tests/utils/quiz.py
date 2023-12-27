@@ -1,3 +1,5 @@
+import asyncio
+
 from sqlmodel import Session
 
 from src.database import engine
@@ -17,7 +19,7 @@ async def create_random_quiz(screenshots: list[GameScreenshot] | None = None) ->
         assert len(set(s.game_id for s in screenshots)) == 1
     else:
         game = await create_random_game()
-        screenshots = [create_random_game_screenshot(game.id) for _ in range(5)]
+        screenshots = await asyncio.gather(*[create_random_game_screenshot(game.id) for _ in range(5)])
 
     with Session(engine) as session:
         quiz = Quiz(screenshots=screenshots)
