@@ -26,6 +26,6 @@ async def create_random_quiz(screenshots: list[GameScreenshot] | None = None) ->
 
         session.add(quiz)
         session.commit()
-        session.refresh(quiz)
+        session.refresh(quiz, ["screenshots"])
 
     return quiz
