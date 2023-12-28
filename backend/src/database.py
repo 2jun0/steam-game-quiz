@@ -1,14 +1,9 @@
-from datetime import datetime
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlmodel import SQLModel, create_engine
+
+from .config import settings
+
+engine = create_engine(settings.DATABASE_URL, echo=True)
 
 
-class Base(DeclarativeBase):
-    ...
-
-
-class UpdatedAtMixin:
-    updated_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, nullable=False)
-
-
-class CreatedAtMixin:
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, nullable=False)
+def create_all_table():
+    SQLModel.metadata.create_all(engine)
