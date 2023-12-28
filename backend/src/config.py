@@ -1,6 +1,7 @@
 from typing import Any
-from pydantic_settings import BaseSettings
+
 from pydantic import MySQLDsn
+from pydantic_settings import BaseSettings
 
 from .constants import Envrionment
 
@@ -11,5 +12,5 @@ class Config(BaseSettings):
     ENVIRONMENT: Envrionment = Envrionment.PRODUCTION
 
 
-settings = Config()
+settings = Config()  # type: ignore
 app_configs: dict[str, Any] = {"title": "API"}

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
+from pydantic_core import Url
 
 from .dependency import get_quiz_service
 from .schema import DailyQuizesResponse
@@ -18,6 +19,6 @@ class QuizCBV:
 
         return DailyQuizesResponse(
             daily_quizes=[
-                DailyQuizesResponse.DailyQuiz(screenshots=[s.url for s in quiz.screenshots]) for quiz in quizes
+                DailyQuizesResponse.DailyQuiz(screenshots=[Url(s.url) for s in quiz.screenshots]) for quiz in quizes
             ]
         )

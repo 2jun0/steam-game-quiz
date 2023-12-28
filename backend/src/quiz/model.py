@@ -5,7 +5,7 @@ from ..model import CreatedAtMixin, UpdatedAtMixin
 
 
 class QuizScreenshotLink(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
-    __tablename__ = "quiz_screenshot_link"
+    __tablename__: str = "quiz_screenshot_link"
 
     id: int | None = Field(default=None, primary_key=True)
 
@@ -14,7 +14,7 @@ class QuizScreenshotLink(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
 
 
 class Quiz(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
-    __tablename__ = "quiz"
+    __tablename__: str = "quiz"
 
     id: int | None = Field(default=None, primary_key=True)
 
