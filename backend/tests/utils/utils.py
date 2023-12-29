@@ -8,7 +8,7 @@ def random_name() -> str:
 
 
 def random_kr_string() -> str:
-    return faker["ko-KR"].name()
+    return faker["ko-KR"].name()  # type: ignore
 
 
 def random_image_url() -> str:

@@ -17,6 +17,7 @@ async def create_random_game_screenshot(game_id: int | None = None) -> GameScree
 
     if game_id is None:
         game = await create_random_game()
+        assert game.id is not None
         game_id = game.id
 
     with Session(engine) as session:
