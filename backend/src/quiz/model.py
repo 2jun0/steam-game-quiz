@@ -1,6 +1,6 @@
 from sqlmodel import Field, Relationship, SQLModel
 
-from ..game.model import GameScreenshot
+from ..game.model import Game, GameScreenshot
 from ..model import CreatedAtMixin, UpdatedAtMixin
 
 
@@ -19,3 +19,7 @@ class Quiz(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
     screenshots: list[GameScreenshot] = Relationship(link_model=QuizScreenshotLink)
+
+    @property
+    def game(self) -> Game:
+        return self.screenshots[0].game
