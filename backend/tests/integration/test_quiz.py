@@ -20,3 +20,10 @@ async def test_get_daily_quizes(client: TestClient, session: Session):
     for daily_quiz_json, saved_quiz in zip(res_json["daily_quizes"], saved_quizes):
         assert len(daily_quiz_json["screenshots"]) == 5
         assert daily_quiz_json["screenshots"] == [s.url for s in saved_quiz.screenshots]
+
+
+@pytest.mark.asyncio
+async def test_post_submit_answer(client: TestClient, session: Session):
+    saved_quiz = await create_random_quiz(session)
+
+    res = await client.post("/quiz/submit_answer", json={"quiz_id": saved_quiz.id, "game_name": saved_quiz.game.name})
