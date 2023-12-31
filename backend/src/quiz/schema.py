@@ -11,3 +11,7 @@ class DailyQuizesResponse(BaseModel):
 class QuizSubmitRequest(BaseModel):
     quiz_id: int
     answer: str
+
+
+class QuizSubmitResponse(BaseModel):
+    correct: bool
