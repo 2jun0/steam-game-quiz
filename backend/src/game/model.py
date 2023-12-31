@@ -5,7 +5,7 @@ from ..model import CreatedAtMixin, UpdatedAtMixin
 
 
 class Game(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
-    __tablename__ = "game"
+    __tablename__: str = "game"
 
     id: int | None = Field(default=None, primary_key=True)
     steam_id: int = Field(unique=True)
@@ -14,7 +14,7 @@ class Game(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
 
 
 class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
-    __tablename__ = "game_screenshot"
+    __tablename__: str = "game_screenshot"
 
     id: int | None = Field(default=None, primary_key=True)
     steam_file_id: int = Field(sa_column=Column(BigInteger(), unique=True))

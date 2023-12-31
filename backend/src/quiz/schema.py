@@ -6,3 +6,12 @@ class DailyQuizesResponse(BaseModel):
         screenshots: list[HttpUrl]
 
     daily_quizes: list[DailyQuiz]
+
+
+class QuizSubmitRequest(BaseModel):
+    quiz_id: int
+    answer: str
+
+
+class QuizSubmitResponse(BaseModel):
+    correct: bool

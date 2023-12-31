@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, create_engine
 
 from .config import settings
 
-engine = create_engine(settings.DATABASE_URL, echo=True)
+engine = create_engine(settings.DATABASE_URL, echo=True)  # type: ignore
 
 
 def create_all_table():
