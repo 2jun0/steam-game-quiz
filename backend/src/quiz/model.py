@@ -23,3 +23,14 @@ class Quiz(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     @property
     def game(self) -> Game:
         return self.screenshots[0].game
+
+
+class QuizSubmit(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+    __tablename__: str = "quiz_submit"
+
+    id: int | None = Field(default=None, primary_key=True)
+
+    answer: str = Field(max_length=64)
+
+    quiz_id: int = Field(foreign_key="quiz.id")
+    quiz: Quiz = Relationship()
