@@ -29,8 +29,6 @@ async def test_post_submit_false_answer(client: TestClient, session: Session):
 
 
 @pytest.mark.asyncio
-async def test_post_submit_answer_with_invalid_quiz_id(client: TestClient, session: Session):
-    saved_quiz = await create_random_quiz(session)
-
-    res = await client.post("/quiz/submit_answer", json={"quiz_id": -1, "answer": saved_quiz.game.name})
+async def test_post_submit_answer_with_invalid_quiz_id(client: TestClient):
+    res = await client.post("/quiz/submit_answer", json={"quiz_id": -1, "answer": "아무거나 빙빙바리바리구"})
     assert res.status_code == status.HTTP_404_NOT_FOUND
