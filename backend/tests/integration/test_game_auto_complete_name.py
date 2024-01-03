@@ -69,7 +69,7 @@ def test_auto_complete_game_name(client: TestClient, normal_game: Game):
         assert res.status_code == status.HTTP_200_OK
 
         res_json = res.json()
-        assert res_json["games"] == [normal_game.name]
+        assert res_json["games"] == [{"name": normal_game.name, "locale_name": normal_game.kr_name}]
 
 
 def test_auto_complete_short_game_name(client: TestClient, short_name_game: Game):
@@ -79,7 +79,7 @@ def test_auto_complete_short_game_name(client: TestClient, short_name_game: Game
     assert res.status_code == status.HTTP_200_OK
 
     res_json = res.json()
-    assert res_json["games"] == [short_name_game.name]
+    assert res_json["games"] == [{"name": normal_game.name, "locale_name": normal_game.kr_name}]
 
 
 def test_auto_complete_with_kr_game_name(client: TestClient, normal_game: Game):
@@ -88,4 +88,4 @@ def test_auto_complete_with_kr_game_name(client: TestClient, normal_game: Game):
     assert res.status_code == status.HTTP_200_OK
 
     res_json = res.json()
-    assert res_json["games"] == [normal_game.kr_name]
+    assert res_json["games"] == [{"name": normal_game.name, "locale_name": normal_game.kr_name}]
