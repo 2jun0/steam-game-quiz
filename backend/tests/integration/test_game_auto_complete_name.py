@@ -36,7 +36,9 @@ async def test_auto_complete_game_name_with_too_long_query(client: TestClient, n
     for query in [left, right, lr]:
         res = await client.get("/game/auto_complete_name", query_string={"query": query})
         assert res.status_code == status.HTTP_200_OK
-        # TODO: 아무것도 응답하지 않는지 확인
+
+        res_json = res.json()
+        assert len(res_json["games"]) == 0
 
 
 @pytest.mark.asyncio
@@ -46,7 +48,9 @@ async def test_auto_complete_game_name_for_short_query(client: TestClient, norma
 
     res = await client.get("/game/auto_complete_name", query_string={"query": short_query})
     assert res.status_code == status.HTTP_200_OK
-    # TODO: 아무것도 응답하지 않는지 확인
+
+    res_json = res.json()
+    assert len(res_json["games"]) == 0
 
 
 @pytest.mark.asyncio
@@ -67,7 +71,10 @@ async def test_auto_complete_game_name(client: TestClient, normal_game: Game):
     for query in [total_name, r_partial_name, l_partial_name, m_partial_name]:
         res = await client.get("/game/auto_complete_name", query_string={"query": query})
         assert res.status_code == status.HTTP_200_OK
-        # TODO: 자동완성된 게임 확인
+
+        res_json = res.json()
+        assert len(res_json["games"]) == 1
+        assert res_json["games"] == [normal_game.name]
 
 
 @pytest.mark.asyncio
@@ -76,7 +83,10 @@ async def test_auto_complete_short_game_name(client: TestClient, short_name_game
     total_name = short_name_game.name
     res = await client.get("/game/auto_complete_name", query_string={"query": total_name})
     assert res.status_code == status.HTTP_200_OK
-    # TODO: 자동완성된 게임 확인
+
+    res_json = res.json()
+    assert len(res_json["games"]) == 1
+    assert res_json["games"] == [short_name_game.name]
 
 
 # TODO: 한국어 자동완성 테스트 셋 추가
