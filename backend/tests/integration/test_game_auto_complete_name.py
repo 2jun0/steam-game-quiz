@@ -79,7 +79,7 @@ def test_auto_complete_short_game_name(client: TestClient, short_name_game: Game
     assert res.status_code == status.HTTP_200_OK
 
     res_json = res.json()
-    assert res_json["games"] == [{"name": normal_game.name, "locale_name": normal_game.kr_name}]
+    assert res_json["games"] == [{"name": short_name_game.name, "locale_name": short_name_game.kr_name}]
 
 
 def test_auto_complete_with_kr_game_name(client: TestClient, normal_game: Game):
