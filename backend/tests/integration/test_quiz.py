@@ -1,18 +1,14 @@
-import asyncio
-
-import pytest
-from async_asgi_testclient import TestClient
 from fastapi import status
+from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 from tests.utils.quiz import create_random_quiz
 
 
-@pytest.mark.asyncio
-async def test_get_daily_quizes(client: TestClient, session: Session):
-    saved_quizes = await asyncio.gather(*[create_random_quiz(session) for _ in range(5)])
+def test_get_daily_quizes(client: TestClient, session: Session):
+    saved_quizes = [create_random_quiz(session) for _ in range(5)]
 
-    res = await client.get("/quiz/daily_quizes")
+    res = client.get("/quiz/daily_quizes")
     assert res.status_code == status.HTTP_200_OK
 
     res_json = res.json()
