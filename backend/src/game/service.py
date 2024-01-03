@@ -1,20 +1,22 @@
-from typing import Sequence
-
-from sqlmodel import Session, col, select
+from sqlmodel import Session, col, or_, select
 
 from .model import Game
+from .schema import AutoCompleteName
 
 
 class GameService:
     def __init__(self, session: Session) -> None:
         self._session = session
 
-    def auto_complete_name(self, query: str) -> Sequence[str]:
+    def auto_complete_name(self, query: str) -> list[AutoCompleteName]:
         MIN_PARTIAL_QUERY_LEN = 3
 
         if len(query) < MIN_PARTIAL_QUERY_LEN:
-            stmt = select(Game.name).where(Game.name == query)
+            stmt = select(Game.name, Game.kr_name).where(or_(Game.name == query, Game.kr_name == query))
         else:
-            stmt = select(Game.name).where(col(Game.name).contains(query))
+            stmt = select(Game.name, Game.kr_name).where(
+                or_(col(Game.name).contains(query), col(Game.kr_name).contains(query))
+            )
 
-        return self._session.exec(stmt).all()
+        rs = self._session.exec(stmt).all()
+        return [AutoCompleteName(name=name, locale_name=kr_name) for name, kr_name in rs]
