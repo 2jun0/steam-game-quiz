@@ -6,7 +6,7 @@ from ..dependency import SessionDep
 from .service import GameService
 
 
-def get_game_service(session: SessionDep) -> GameService:
+async def get_game_service(session: SessionDep) -> GameService:
     return GameService(session)
 
 

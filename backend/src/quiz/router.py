@@ -14,8 +14,8 @@ class QuizCBV:
     service: QuizService = Depends(get_quiz_service)
 
     @router.get("/quiz/daily_quizes")
-    def get_daily_quizes(self) -> DailyQuizesResponse:
-        quizes = self.service.get_today_quizes()
+    async def get_daily_quizes(self) -> DailyQuizesResponse:
+        quizes = await self.service.get_today_quizes()
 
         return DailyQuizesResponse(
             daily_quizes=[
@@ -24,6 +24,6 @@ class QuizCBV:
         )
 
     @router.post("/quiz/submit_answer")
-    def submit_answer(self, quiz_submit_req: QuizSubmitRequest) -> QuizSubmitResponse:
-        correct = self.service.submit_answer(quiz_id=quiz_submit_req.quiz_id, answer=quiz_submit_req.answer)
+    async def submit_answer(self, quiz_submit_req: QuizSubmitRequest) -> QuizSubmitResponse:
+        correct = await self.service.submit_answer(quiz_id=quiz_submit_req.quiz_id, answer=quiz_submit_req.answer)
         return QuizSubmitResponse(correct=correct)

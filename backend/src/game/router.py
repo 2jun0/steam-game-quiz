@@ -13,6 +13,6 @@ class GameCBV:
     service: GameService = Depends(get_game_service)
 
     @router.get("/game/auto_complete_name")
-    def auto_complete_name(self, query: str) -> AutoCompleteNameResponse:
-        names = self.service.auto_complete_name(query)
+    async def auto_complete_name(self, query: str) -> AutoCompleteNameResponse:
+        names = await self.service.auto_complete_name(query)
         return AutoCompleteNameResponse(games=names)
