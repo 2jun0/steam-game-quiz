@@ -26,6 +26,8 @@ class QuizService:
         """
         퀴즈에 대한 정답 여부를 반환하는 함수
         """
+
+        # TODO: 제출 기록을 저장해야 함
         quiz = await self._get_quiz_by_id(quiz_id)
 
         if quiz is None:
