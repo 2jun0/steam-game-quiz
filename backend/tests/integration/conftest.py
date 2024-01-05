@@ -2,11 +2,12 @@ from typing import Any, Generator
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import Engine
 from sqlmodel import Session
 
-from src.database import engine
 from src.main import app
-from tests.utils.database import drop_tables
+from tests.database import engine
+from tests.utils.database import create_all_table, drop_tables
 
 
 @pytest.fixture
@@ -16,12 +17,13 @@ def client() -> Generator[TestClient, Any, None]:
 
 
 @pytest.fixture(autouse=True)
-def clear_database():
+def database():
+    create_all_table()
     yield
     drop_tables()
 
 
 @pytest.fixture()
-def session() -> Generator[Session, Any, None]:
+def session(database: Engine) -> Generator[Session, Any, None]:
     with Session(engine) as session:
         yield session
