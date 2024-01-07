@@ -18,6 +18,7 @@ def client() -> Generator[TestClient, Any, None]:
 
 @pytest.fixture(autouse=True)
 def database():
+    drop_tables()
     create_all_table()
     yield
     drop_tables()
