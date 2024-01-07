@@ -1,9 +1,11 @@
 from datetime import datetime, time
 from typing import Optional, Sequence
 
+from sqlalchemy.orm import selectinload
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from ..game.model import GameScreenshot
 from .exception import QuizNotFoundError
 from .model import Quiz
 
@@ -18,7 +20,11 @@ class QuizService:
         start_datetime = datetime.combine(today, time.min)
         end_datetime = datetime.combine(today, time.max)
 
-        stmts = select(Quiz).where(Quiz.created_at >= start_datetime, Quiz.created_at <= end_datetime)
+        stmts = (
+            select(Quiz)
+            .where(Quiz.created_at >= start_datetime, Quiz.created_at <= end_datetime)
+            .options(selectinload(Quiz.screenshots))  # type: ignore
+        )
         rs = await self._session.exec(stmts)
         return rs.all()
 
@@ -28,14 +34,16 @@ class QuizService:
         """
 
         # TODO: 제출 기록을 저장해야 함
-        quiz = await self._get_quiz_by_id(quiz_id)
+        quiz = await self._get_quiz_by_id_with_game(quiz_id)
 
         if quiz is None:
             raise QuizNotFoundError
 
         return quiz.game.name == answer
 
-    async def _get_quiz_by_id(self, id: int) -> Optional[Quiz]:
-        stmt = select(Quiz).where(Quiz.id == id)
+    async def _get_quiz_by_id_with_game(self, id: int) -> Optional[Quiz]:
+        stmt = (
+            select(Quiz).where(Quiz.id == id).options(selectinload(Quiz.screenshots).selectinload(GameScreenshot.game))  # type: ignore
+        )
         rs = await self._session.exec(stmt)
         return rs.first()
