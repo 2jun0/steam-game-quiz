@@ -1,9 +1,5 @@
-from sqlmodel import SQLModel, create_engine
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from .config import settings
 
-engine = create_engine(settings.DATABASE_URL, echo=True)  # type: ignore
-
-
-def create_all_table():
-    SQLModel.metadata.create_all(engine)
+engine = create_async_engine(settings.DATABASE_URL, echo=True)  # type: ignore

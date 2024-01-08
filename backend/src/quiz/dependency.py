@@ -6,7 +6,7 @@ from ..dependency import SessionDep
 from .service import QuizService
 
 
-def get_quiz_service(session: SessionDep) -> QuizService:
+async def get_quiz_service(session: SessionDep) -> QuizService:
     return QuizService(session)
 
 

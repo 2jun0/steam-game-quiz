@@ -1,11 +1,13 @@
+from typing import Sequence
+
 from pydantic import BaseModel, HttpUrl
 
 
 class DailyQuizesResponse(BaseModel):
     class DailyQuiz(BaseModel):
-        screenshots: list[HttpUrl]
+        screenshots: Sequence[HttpUrl]
 
-    daily_quizes: list[DailyQuiz]
+    daily_quizes: Sequence[DailyQuiz]
 
 
 class QuizSubmitRequest(BaseModel):
