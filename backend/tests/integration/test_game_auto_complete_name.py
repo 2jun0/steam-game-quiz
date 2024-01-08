@@ -89,3 +89,17 @@ def test_auto_complete_with_kr_game_name(client: TestClient, normal_game: Game):
 
     res_json = res.json()
     assert res_json["games"] == [{"name": normal_game.name, "locale_name": normal_game.kr_name}]
+
+
+def test_auto_complete_for_multiple_games(client: TestClient, session: Session):
+    create_random_game(session, name="game1", kr_name="ㅇㅇ")
+    create_random_game(session, name="game2", kr_name="ㅇㅇ2")
+    create_random_game(session, name="gggg", kr_name="game3")
+    create_random_game(session, name="gggg", kr_name="game4")
+    query = "game"
+
+    res = client.get(f"/game/auto_complete_name?query={query}")
+    assert res.status_code == status.HTTP_200_OK
+
+    res_json = res.json()
+    assert len(res_json["games"]) == 4
