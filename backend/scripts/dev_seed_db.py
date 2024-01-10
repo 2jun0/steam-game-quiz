@@ -86,6 +86,8 @@ async def seed_db():
         screenshots = await seed_screenshots(session, game_id=game.id)
         await seed_quiz(session, screenshots=screenshots)
 
+    await engine.dispose()
+
 
 if __name__ == "__main__":
     asyncio.run(seed_db())
