@@ -1,5 +1,3 @@
-import 'dotenv/config'
-
 const BACKEND_HOST = process.env.NEXT_PUBLIC_BACKEND_HOST
 
 export async function getDailyQuizes() {
