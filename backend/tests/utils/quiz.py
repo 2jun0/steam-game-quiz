@@ -1,7 +1,9 @@
-from sqlmodel import Session
+from typing import Optional
+
+from sqlmodel import Session, select
 
 from src.game.model import GameScreenshot
-from src.quiz.model import Quiz
+from src.quiz.model import Quiz, QuizSubmit
 
 from .game import create_random_game
 from .screenshot import create_random_game_screenshot
@@ -25,3 +27,15 @@ def create_random_quiz(session: Session, *, screenshots: list[GameScreenshot] | 
     session.refresh(quiz)
 
     return quiz
+
+
+def get_quiz_submit(
+    session: Session, *, quiz_id: int | None = None, answer: int | None = None
+) -> Optional[QuizSubmit]:
+    stmt = select(QuizSubmit)
+    if quiz_id:
+        stmt = stmt.where(QuizSubmit.quiz_id == quiz_id)
+    if answer:
+        stmt = stmt.where(QuizSubmit.answer == answer)
+
+    return session.exec(stmt).first()

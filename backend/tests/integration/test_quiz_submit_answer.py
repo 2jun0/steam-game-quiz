@@ -2,7 +2,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-from tests.utils.quiz import create_random_quiz
+from tests.utils.quiz import create_random_quiz, get_quiz_submit
 
 
 def test_post_submit_true_answer(client: TestClient, session: Session):
@@ -14,6 +14,11 @@ def test_post_submit_true_answer(client: TestClient, session: Session):
     res_json = res.json()
     assert res_json["correct"] is True
 
+    # check db
+    submit = get_quiz_submit(session, quiz_id=saved_quiz.id)
+    assert submit is not None
+    assert submit.correct is True
+
 
 def test_post_submit_false_answer(client: TestClient, session: Session):
     saved_quiz = create_random_quiz(session)
@@ -23,6 +28,11 @@ def test_post_submit_false_answer(client: TestClient, session: Session):
 
     res_json = res.json()
     assert res_json["correct"] is False
+
+    # check db
+    submit = get_quiz_submit(session, quiz_id=saved_quiz.id)
+    assert submit is not None
+    assert submit.correct is False
 
 
 def test_post_submit_answer_with_invalid_quiz_id(client: TestClient):
