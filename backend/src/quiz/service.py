@@ -1,49 +1,34 @@
 from datetime import datetime, time
-from typing import Optional, Sequence
+from typing import Sequence
 
-from sqlalchemy.orm import selectinload
-from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
-
-from ..game.model import GameScreenshot
 from .exception import QuizNotFoundError
-from .model import Quiz
+from .model import Quiz, QuizSubmit
+from .repository import QuizRepository, QuizSubmitRepository
 
 
 class QuizService:
-    def __init__(self, session: AsyncSession) -> None:
-        self._session = session
+    def __init__(self, *, quiz_repository: QuizRepository, quiz_submit_repository: QuizSubmitRepository) -> None:
+        self._quiz_repo = quiz_repository
+        self._quiz_submit_repo = quiz_submit_repository
 
     async def get_today_quizes(self) -> Sequence[Quiz]:
         now = datetime.utcnow()
         today = now.date()
-        start_datetime = datetime.combine(today, time.min)
-        end_datetime = datetime.combine(today, time.max)
+        start_at = datetime.combine(today, time.min)
+        end_at = datetime.combine(today, time.max)
 
-        stmts = (
-            select(Quiz)
-            .where(Quiz.created_at >= start_datetime, Quiz.created_at <= end_datetime)
-            .options(selectinload(Quiz.screenshots))  # type: ignore
-        )
-        rs = await self._session.exec(stmts)
-        return rs.all()
+        return await self._quiz_repo.get_by_created_at_interval_with_screenshots(start_at=start_at, end_at=end_at)
 
     async def submit_answer(self, *, quiz_id: int, answer: str) -> bool:
-        """
-        퀴즈에 대한 정답 여부를 반환하는 함수
-        """
-
-        # TODO: 제출 기록을 저장해야 함
-        quiz = await self._get_quiz_by_id_with_game(quiz_id)
+        """퀴즈에 대한 정답 여부를 반환하는 함수"""
+        quiz = await self._quiz_repo.get_with_game(id=quiz_id)
 
         if quiz is None:
             raise QuizNotFoundError
 
-        return quiz.game.name == answer
+        correct = quiz.game.name == answer
+        quiz_submit = QuizSubmit(answer=answer, correct=correct, quiz_id=quiz_id)
 
-    async def _get_quiz_by_id_with_game(self, id: int) -> Optional[Quiz]:
-        stmt = (
-            select(Quiz).where(Quiz.id == id).options(selectinload(Quiz.screenshots).selectinload(GameScreenshot.game))  # type: ignore
-        )
-        rs = await self._session.exec(stmt)
-        return rs.first()
+        await self._quiz_submit_repo.create(model=quiz_submit)
+
+        return correct

@@ -31,6 +31,7 @@ class QuizSubmit(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
     answer: str = Field(max_length=64)
+    correct: bool = Field()
 
     quiz_id: int = Field(foreign_key="quiz.id")
     quiz: Quiz = Relationship()
