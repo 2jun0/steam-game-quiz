@@ -30,3 +30,4 @@ jobs:
 
       - name: test app
         run: poetry run python -m pytest tests -c pytest.ini
+        working-directory: ./backend
