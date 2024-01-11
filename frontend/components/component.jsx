@@ -6,11 +6,23 @@
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
-import { useState, useEffect } from 'react'
+import { useState, useCallback } from 'react'
+import { autoCompleteGameName } from "@/lib/backend-api";
  
 
 export function Component({quizes}) {
   const [screenshotIdx, setScreenshotIdx] = useState(0);
+  const [autoCompleteNames, setAutoCompleteNames] = useState([]);
+  const [guessName, setGuessName] = useState('')
+
+  const queryAutoComplete = useCallback(query => {
+    async function inner() {
+      const names = await autoCompleteGameName(query)
+      setAutoCompleteNames(names)
+    }
+
+    inner()
+  }, [setAutoCompleteNames])
 
   return (
     (<main
@@ -38,7 +50,7 @@ export function Component({quizes}) {
               className="aspect-[3/2] object-cover w-full"
               height="400"
               src={
-                quizes[0]['screenshots'][screenshotIdx]
+                quizes[0] ? quizes[0]['screenshots'][screenshotIdx] : "https://generated.vusercontent.net/placeholder.svg"
               }
               width="600" />
             <button
@@ -59,7 +71,24 @@ export function Component({quizes}) {
           </div>
         </div>
         <form className="flex flex-col gap-4">
-          <Input className="rounded-lg" placeholder="Enter your guess here" type="text" />
+          <div className="relative">
+            <Input className="rounded-lg" placeholder="Enter your guess here" type="text" value={guessName} onChange={(e) => {
+                const name = e.target.value
+                setGuessName(name)
+                queryAutoComplete(name)
+              }} />
+            <div className="absolute left-0 mt-1 w-full rounded-lg bg-white shadow-lg">
+            <ul className="divide-y divide-gray-200">
+                {autoCompleteNames.map(name => {
+                    return (<li key={name['name']} className="p-2">
+                        {name['name']}
+                        <p className="text-sm text-gray-500">{name['locale_name']}</p>
+                      </li>)
+                  })    
+                }
+              </ul>
+            </div>
+          </div>
           <Button className="w-full" type="submit">
             Submit Guess
           </Button>
