@@ -12,7 +12,7 @@ def test_new_guest(client: TestClient, session: Session):
 
 
 def test_login(client: TestClient, session: Session):
-    res = client.post("/auth/login")
+    res = client.post("/auth/login", json={"email": "vkdlTjs10@gmail.com", "password": "python:10"})
     assert res.status_code == status.HTTP_200_OK
 
 
