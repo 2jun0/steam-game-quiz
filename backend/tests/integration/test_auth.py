@@ -17,5 +17,5 @@ def test_login(client: TestClient, session: Session):
 
 
 def test_register(client: TestClient, session: Session):
-    res = client.post("/auth/register", json={"account_id": "vkdlTjs10", "password": "python:10"})
+    res = client.post("/auth/register", json={"email": "vkdlTjs10@gmail.com", "password": "python:10"})
     assert res.status_code == status.HTTP_201_CREATED
