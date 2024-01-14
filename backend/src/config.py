@@ -9,6 +9,10 @@ from .constants import Envrionment
 class Config(BaseSettings):
     DATABASE_URL: MySQLDsn | str
     # ELASTIC_SEARCH_URL: str
+
+    # secret
+    JWT_SECRET: str
+
     ENVIRONMENT: Envrionment = Envrionment.PRODUCTION
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")

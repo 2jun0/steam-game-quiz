@@ -19,6 +19,8 @@ greenlet = "^3.0.3"
 aiomysql = "^0.2.0"
 cryptography = "^41.0.7"
 uvicorn = "^0.25.0"
+fastapi-users = {extras = ["sqlalchemy"], version = "^12.1.2"}
+fastapi-users-db-sqlmodel = "^0.3.0"
 
 
 [tool.poetry.group.dev.dependencies]
