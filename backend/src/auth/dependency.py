@@ -6,17 +6,17 @@ from fastapi_users.db.base import BaseUserDatabase
 from fastapi_users_db_sqlmodel import SQLModelUserDatabaseAsync
 
 from ..dependency import SessionDep
-from .account import AccountManager
-from .model import Account, OAuthAccount
+from .model import OAuthAccount, User
+from .user import UserManager
 
 
-async def get_account_db(session: SessionDep) -> AsyncGenerator[SQLModelUserDatabaseAsync[Account, int], Any]:
-    yield SQLModelUserDatabaseAsync(session, Account, OAuthAccount)
+async def get_user_db(session: SessionDep) -> AsyncGenerator[SQLModelUserDatabaseAsync[User, int], Any]:
+    yield SQLModelUserDatabaseAsync(session, User, OAuthAccount)
 
 
-async def get_account_manager(account_db: "AccountDBDep") -> AsyncGenerator[AccountManager, Any]:
-    yield AccountManager(account_db)
+async def get_user_manager(account_db: "UserDBDep") -> AsyncGenerator[UserManager, Any]:
+    yield UserManager(account_db)
 
 
-AccountDBDep = Annotated[BaseUserDatabase, Depends(get_account_db)]
-AccountManagerDep = Annotated[BaseUserManager, Depends(get_account_manager)]
+UserDBDep = Annotated[BaseUserDatabase, Depends(get_user_db)]
+UserManagerDep = Annotated[BaseUserManager, Depends(get_user_manager)]
