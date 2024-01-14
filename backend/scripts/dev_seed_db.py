@@ -12,9 +12,10 @@ from sqlmodel import SQLModel
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
-from src.database import engine
-from src.game.model import Game, GameScreenshot
-from src.quiz.model import Quiz
+import src.auth.model  # noqa: F401, E402
+from src.database import engine  # noqa: E402
+from src.game.model import Game, GameScreenshot  # noqa: E402
+from src.quiz.model import Quiz  # noqa: E402
 
 
 async def seed_game(session: AsyncSession) -> Game:
