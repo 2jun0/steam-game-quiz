@@ -7,11 +7,11 @@ from fastapi_users_db_sqlmodel import SQLModelUserDatabaseAsync
 
 from ..dependency import SessionDep
 from .account import AccountManager
-from .model import Account
+from .model import Account, OAuthAccount
 
 
 async def get_account_db(session: SessionDep) -> AsyncGenerator[SQLModelUserDatabaseAsync[Account, int], Any]:
-    yield SQLModelUserDatabaseAsync(session, Account)
+    yield SQLModelUserDatabaseAsync(session, Account, OAuthAccount)
 
 
 async def get_account_manager(account_db: "AccountDBDep") -> AsyncGenerator[AccountManager, Any]:

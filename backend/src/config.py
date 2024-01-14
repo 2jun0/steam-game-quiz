@@ -10,8 +10,10 @@ class Config(BaseSettings):
     DATABASE_URL: MySQLDsn | str
     # ELASTIC_SEARCH_URL: str
 
-    # secret
+    # auth
     JWT_SECRET: str
+    GOOGLE_OAUTH2_CLIENT_ID: str
+    GOOGLE_OAUTH2_CLIENT_SECRET: str
 
     ENVIRONMENT: Envrionment = Envrionment.PRODUCTION
 

@@ -1,10 +1,16 @@
-from fastapi_users_db_sqlmodel import SQLModelBaseUserDB
+from fastapi_users_db_sqlmodel import SQLModelBaseOAuthAccount, SQLModelBaseUserDB
 from sqlmodel import Field, SQLModel
 
 from ..model import CreatedAtMixin, UpdatedAtMixin
 
 
-class Account(SQLModelBaseUserDB, CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+class OAuthAccount(CreatedAtMixin, UpdatedAtMixin, SQLModelBaseOAuthAccount, table=True):
+    __tablename__: str = "oauth_account"
+
+    id: int | None = Field(default=None, primary_key=True)
+
+
+class Account(CreatedAtMixin, UpdatedAtMixin, SQLModelBaseUserDB, table=True):
     __tablename__: str = "account"
 
     id: int | None = Field(default=None, primary_key=True)
