@@ -1,14 +1,24 @@
+from typing import Any, AsyncGenerator
+
 from fastapi_users import BaseUserManager, FastAPIUsers, IntegerIDMixin
-from fastapi_users.authentication import AuthenticationBackend, BearerTransport
+from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
 
 from ..config import settings
-from .dependency import get_jwt_strategy, get_user_manager
+from .database import UserDBDep
 from .model import User
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     reset_password_token_secret = settings.JWT_SECRET
     verification_token_secret = settings.JWT_SECRET
+
+
+async def get_user_manager(account_db: UserDBDep) -> AsyncGenerator[UserManager, Any]:
+    yield UserManager(account_db)
+
+
+def get_jwt_strategy() -> JWTStrategy:
+    return JWTStrategy(secret=settings.JWT_SECRET, lifetime_seconds=3600)
 
 
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
