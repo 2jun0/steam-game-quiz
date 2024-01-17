@@ -1,7 +1,7 @@
 from typing import Any, AsyncGenerator
 
 from fastapi_users import BaseUserManager, FastAPIUsers, IntegerIDMixin
-from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
+from fastapi_users.authentication import AuthenticationBackend, CookieTransport, JWTStrategy
 
 from ..config import settings
 from .database import UserDBDep
@@ -21,6 +21,6 @@ def get_jwt_strategy() -> JWTStrategy:
     return JWTStrategy(secret=settings.JWT_SECRET, lifetime_seconds=3600)
 
 
-bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
-auth_backend = AuthenticationBackend(name="jwt", transport=bearer_transport, get_strategy=get_jwt_strategy)
+cookie_transport = CookieTransport()
+auth_backend = AuthenticationBackend(name="jwt", transport=cookie_transport, get_strategy=get_jwt_strategy)
 fastapi_users = FastAPIUsers[User, int](get_user_manager, [auth_backend])
