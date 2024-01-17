@@ -1,7 +1,8 @@
-from fastapi_users import BaseUserManager, IntegerIDMixin
-from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
+from fastapi_users import BaseUserManager, FastAPIUsers, IntegerIDMixin
+from fastapi_users.authentication import AuthenticationBackend, BearerTransport
 
 from ..config import settings
+from .dependency import get_jwt_strategy, get_user_manager
 from .model import User
 
 
@@ -10,9 +11,6 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     verification_token_secret = settings.JWT_SECRET
 
 
-def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=settings.JWT_SECRET, lifetime_seconds=3600)
-
-
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 auth_backend = AuthenticationBackend(name="jwt", transport=bearer_transport, get_strategy=get_jwt_strategy)
+fastapi_users = FastAPIUsers[User, int](get_user_manager, [auth_backend])
