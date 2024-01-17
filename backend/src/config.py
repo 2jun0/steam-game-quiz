@@ -12,6 +12,7 @@ class Config(BaseSettings):
 
     # auth
     JWT_SECRET: str
+    OAUTH2_SECRET: str
     GOOGLE_OAUTH2_CLIENT_ID: str
     GOOGLE_OAUTH2_CLIENT_SECRET: str
 
