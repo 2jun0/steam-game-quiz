@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Sequence
 
 from pydantic import BaseModel, HttpUrl
@@ -17,3 +18,9 @@ class SubmitAnswerRequest(BaseModel):
 
 class SubmitAnswerResponse(BaseModel):
     correct: bool
+
+
+class QuizAnswerResponse(BaseModel):
+    answer: str
+    correct: bool
+    created_at: datetime
