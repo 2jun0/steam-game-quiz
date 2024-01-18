@@ -4,7 +4,7 @@ from pydantic_core import Url
 
 from ..auth.dependency import CURRENT_USER_DEP
 from .dependency import get_quiz_service
-from .schema import DailyQuizesResponse, QuizSubmitRequest, QuizSubmitResponse
+from .schema import DailyQuizesResponse, SubmitAnswerRequest, SubmitAnswerResponse
 from .service import QuizService
 
 router = APIRouter()
@@ -26,9 +26,9 @@ class QuizCBV:
 
     @router.post("/quiz/submit_answer")
     async def submit_answer(
-        self, quiz_submit_req: QuizSubmitRequest, current_user: CURRENT_USER_DEP
-    ) -> QuizSubmitResponse:
+        self, quiz_submit_req: SubmitAnswerRequest, current_user: CURRENT_USER_DEP
+    ) -> SubmitAnswerResponse:
         correct = await self.service.submit_answer(
             quiz_id=quiz_submit_req.quiz_id, user_id=current_user.id, answer=quiz_submit_req.answer
         )
-        return QuizSubmitResponse(correct=correct)
+        return SubmitAnswerResponse(correct=correct)

@@ -25,8 +25,8 @@ class Quiz(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
         return self.screenshots[0].game
 
 
-class QuizSubmit(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
-    __tablename__: str = "quiz_submit"
+class QuizAnswer(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+    __tablename__: str = "quiz_answer"
 
     id: int | None = Field(default=None, primary_key=True)
 

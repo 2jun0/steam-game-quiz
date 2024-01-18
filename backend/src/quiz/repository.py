@@ -7,7 +7,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from ..game.model import GameScreenshot
 from ..repository import CRUDMixin, IRepository
-from .model import Quiz, QuizSubmit
+from .model import Quiz, QuizAnswer
 
 
 class QuizRepository(IRepository[Quiz], CRUDMixin):
@@ -35,8 +35,8 @@ class QuizRepository(IRepository[Quiz], CRUDMixin):
         return rs.all()
 
 
-class QuizSubmitRepository(IRepository[QuizSubmit], CRUDMixin):
-    model = QuizSubmit
+class QuizSubmitRepository(IRepository[QuizAnswer], CRUDMixin):
+    model = QuizAnswer
 
     def __init__(self, session: AsyncSession) -> None:
         self._session = session

@@ -10,10 +10,10 @@ class DailyQuizesResponse(BaseModel):
     daily_quizes: Sequence[DailyQuiz]
 
 
-class QuizSubmitRequest(BaseModel):
+class SubmitAnswerRequest(BaseModel):
     quiz_id: int
     answer: str
 
 
-class QuizSubmitResponse(BaseModel):
+class SubmitAnswerResponse(BaseModel):
     correct: bool

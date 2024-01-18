@@ -2,7 +2,7 @@ from datetime import datetime, time
 from typing import Sequence
 
 from .exception import QuizNotFoundError
-from .model import Quiz, QuizSubmit
+from .model import Quiz, QuizAnswer
 from .repository import QuizRepository, QuizSubmitRepository
 
 
@@ -27,7 +27,7 @@ class QuizService:
             raise QuizNotFoundError
 
         correct = quiz.game.name == answer
-        quiz_submit = QuizSubmit(answer=answer, correct=correct, quiz_id=quiz_id, user_id=user_id)
+        quiz_submit = QuizAnswer(answer=answer, correct=correct, quiz_id=quiz_id, user_id=user_id)
 
         await self._quiz_submit_repo.create(model=quiz_submit)
 
