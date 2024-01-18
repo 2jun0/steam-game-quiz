@@ -6,6 +6,7 @@ from sqlalchemy import Engine
 from sqlmodel import Session
 
 from src.auth.dependency import current_active_user
+from src.auth.model import User
 from src.main import app
 from tests.database import engine
 from tests.utils.auth import create_random_user
@@ -32,12 +33,13 @@ def session(database: Engine) -> Generator[Session, Any, None]:
         yield session
 
 
-"""override dependencies"""
+@pytest.fixture()
+def current_user(session: Session) -> Generator[User, Any, None]:
+    user = create_random_user(session, email="email@example.com")
 
-
-@pytest.fixture(autouse=True)
-def override_dependencies(session: Session):
-    def override_current_active_user():
-        return create_random_user(session, email="email@example.com")
+    def override_current_active_user() -> User:
+        return user
 
     app.dependency_overrides[current_active_user] = override_current_active_user
+    yield user
+    del app.dependency_overrides[current_active_user]
