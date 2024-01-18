@@ -41,3 +41,8 @@ def test_post_submit_false_answer(client: TestClient, session: Session, current_
 def test_post_submit_answer_with_invalid_quiz_id(client: TestClient, current_user: User):
     res = client.post("/quiz/submit_answer", json={"quiz_id": -1, "answer": "아무거나 빙빙바리바리구"})
     assert res.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_post_submit_answer_with_unauthorized_request(client: TestClient):
+    res = client.post("/quiz/submit_answer", json={"quiz_id": -1, "answer": "아무거나 빙빙바리바리구"})
+    assert res.status_code == status.HTTP_401_UNAUTHORIZED
