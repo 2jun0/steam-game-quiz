@@ -28,5 +28,7 @@ class QuizCBV:
     async def submit_answer(
         self, quiz_submit_req: QuizSubmitRequest, current_user: CURRENT_USER_DEP
     ) -> QuizSubmitResponse:
-        correct = await self.service.submit_answer(quiz_id=quiz_submit_req.quiz_id, answer=quiz_submit_req.answer)
+        correct = await self.service.submit_answer(
+            quiz_id=quiz_submit_req.quiz_id, user_id=current_user.id, answer=quiz_submit_req.answer
+        )
         return QuizSubmitResponse(correct=correct)
