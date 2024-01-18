@@ -38,7 +38,7 @@ def test_post_submit_false_answer(client: TestClient, session: Session, current_
     assert submit.user_id == current_user.id
 
 
-def test_post_submit_answer_with_invalid_quiz_id(client: TestClient, current_user: User):
+def test_post_submit_answer_with_not_existed_quiz_id(client: TestClient, current_user: User):
     res = client.post("/quiz/submit_answer", json={"quiz_id": -1, "answer": "아무거나 빙빙바리바리구"})
     assert res.status_code == status.HTTP_404_NOT_FOUND
 
@@ -46,3 +46,17 @@ def test_post_submit_answer_with_invalid_quiz_id(client: TestClient, current_use
 def test_post_submit_answer_with_unauthorized_request(client: TestClient):
     res = client.post("/quiz/submit_answer", json={"quiz_id": -1, "answer": "아무거나 빙빙바리바리구"})
     assert res.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_get_answer(session: Session, client: TestClient, current_user: User):
+    quiz = create_random_quiz(session)
+
+    res = client.get(f"/quiz/answer?quiz_id={quiz.id}")
+    assert res.status_code == status.HTTP_200_OK
+
+
+def test_get_answer_with_not_existed_quiz_id(client: TestClient, current_user: User):
+    quiz_id = 1
+
+    res = client.get(f"/quiz/answer?quiz_id={quiz_id}")
+    assert res.status_code == status.HTTP_404_NOT_FOUND
