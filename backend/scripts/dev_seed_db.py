@@ -7,12 +7,14 @@ import pathlib
 import sys
 from typing import Sequence
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlmodel import SQLModel
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 import src.auth.model  # noqa: F401, E402
+from src.config import settings  # noqa: E402
 from src.database import engine  # noqa: E402
 from src.game.model import Game, GameScreenshot  # noqa: E402
 from src.quiz.model import Quiz  # noqa: E402
@@ -77,8 +79,11 @@ async def seed_quiz(session: AsyncSession, *, screenshots: Sequence[GameScreensh
 
 
 async def seed_db():
+    async with create_async_engine(settings.DATABASE_URL, echo=True).begin() as conn:  # type: ignore
+        await conn.execute(text("DROP DATABASE gdet"))
+        await conn.execute(text("CREATE DATABASE gdet"))
+
     async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.drop_all)
         await conn.run_sync(SQLModel.metadata.create_all)
 
     async with AsyncSession(engine) as session:
