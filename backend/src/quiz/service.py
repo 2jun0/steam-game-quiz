@@ -2,14 +2,14 @@ from datetime import datetime, time
 from typing import Sequence
 
 from .exception import QuizNotFoundError
-from .model import Quiz, QuizSubmit
-from .repository import QuizRepository, QuizSubmitRepository
+from .model import Quiz, QuizAnswer
+from .repository import QuizAnswerRepository, QuizRepository
 
 
 class QuizService:
-    def __init__(self, *, quiz_repository: QuizRepository, quiz_submit_repository: QuizSubmitRepository) -> None:
+    def __init__(self, *, quiz_repository: QuizRepository, quiz_answer_repository: QuizAnswerRepository) -> None:
         self._quiz_repo = quiz_repository
-        self._quiz_submit_repo = quiz_submit_repository
+        self._quiz_answer_repo = quiz_answer_repository
 
     async def get_today_quizes(self) -> Sequence[Quiz]:
         now = datetime.utcnow()
@@ -27,8 +27,16 @@ class QuizService:
             raise QuizNotFoundError
 
         correct = quiz.game.name == answer
-        quiz_submit = QuizSubmit(answer=answer, correct=correct, quiz_id=quiz_id, user_id=user_id)
+        quiz_submit = QuizAnswer(answer=answer, correct=correct, quiz_id=quiz_id, user_id=user_id)
 
-        await self._quiz_submit_repo.create(model=quiz_submit)
+        await self._quiz_answer_repo.create(model=quiz_submit)
 
         return correct
+
+    async def get_quiz_answer(self, *, quiz_id: int, user_id: int) -> Sequence[QuizAnswer]:
+        quiz = await self._quiz_repo.get(id=quiz_id)
+
+        if quiz is None:
+            raise QuizNotFoundError
+
+        return await self._quiz_answer_repo.get_by_quiz_id_and_user_id(quiz_id=quiz_id, user_id=user_id)
