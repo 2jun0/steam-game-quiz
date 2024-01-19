@@ -1,12 +1,10 @@
-from datetime import datetime
-
 from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
 from pydantic_core import Url
 
 from ..auth.dependency import CURRENT_USER_DEP
 from .dependency import get_quiz_service
-from .schema import DailyQuizesResponse, QuizAnswerResponse, SubmitAnswerRequest, SubmitAnswerResponse
+from .schema import DailyQuizesResponse, QuizAnswer, QuizAnswerResponse, SubmitAnswerRequest, SubmitAnswerResponse
 from .service import QuizService
 
 router = APIRouter()
@@ -37,4 +35,10 @@ class QuizCBV:
 
     @router.get("/quiz/answer")
     async def get_quiz_answer(self, quiz_id: int, current_user: CURRENT_USER_DEP) -> QuizAnswerResponse:
-        return QuizAnswerResponse(answer="answer", correct=True, created_at=datetime.now())
+        quiz_answers = await self.service.get_quiz_answer(quiz_id=quiz_id, user_id=current_user.id)
+
+        return QuizAnswerResponse(
+            quiz_answers=[
+                QuizAnswer(answer=qa.answer, correct=qa.correct, created_at=qa.created_at) for qa in quiz_answers
+            ]
+        )

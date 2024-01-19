@@ -20,7 +20,11 @@ class SubmitAnswerResponse(BaseModel):
     correct: bool
 
 
-class QuizAnswerResponse(BaseModel):
+class QuizAnswer(BaseModel):
     answer: str
     correct: bool
     created_at: datetime
+
+
+class QuizAnswerResponse(BaseModel):
+    quiz_answers: Sequence[QuizAnswer]
