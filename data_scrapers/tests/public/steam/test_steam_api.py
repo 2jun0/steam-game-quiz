@@ -1,7 +1,7 @@
 import pytest
 
-from src.steam.exception import SteamAPINoContentsException
-from src.steam.steam_api import SteamAPI
+from public.steam.exception import SteamAPINoContentsException
+from public.steam.steam_api import SteamAPI
 
 
 @pytest.fixture
