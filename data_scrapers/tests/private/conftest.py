@@ -1,11 +1,10 @@
-from typing import Any, Generator
-
 import pytest
 from pytest_factoryboy import register
 from sqlalchemy.orm import Session
 
 from private.game.model import Game
 from private.screenshot.model import GameScreenshot
+from tests.private.database import Session as _Session
 from tests.private.database import drop_tables, engine, init_database
 from tests.private.factories import GameFactory, GameScreenshotFactory
 
@@ -13,7 +12,7 @@ register(GameFactory)
 register(GameScreenshotFactory)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def database():
     init_database()
     yield
@@ -21,15 +20,9 @@ def database():
     engine.dispose()
 
 
-@pytest.fixture()
-def session() -> Generator[Session, Any, None]:
-    with Session(engine) as session:
-        yield session
-
-
-@pytest.fixture()
-def mock_session():
-    return
+@pytest.fixture
+def session() -> Session:
+    return _Session()
 
 
 @pytest.fixture
