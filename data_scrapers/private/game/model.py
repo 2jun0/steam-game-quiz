@@ -3,9 +3,18 @@ from typing import Optional
 
 from pydantic import BaseModel
 from sqlalchemy import Column, ForeignKey, String, Table
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from ..genre.model import Genre
 from ..model import Base, CreatedAtMixin, UpdatedAtMixin
+
+game_genre_link = Table(
+    "game_genre_link",
+    Base.metadata,
+    Column("id", primary_key=True),
+    Column("game_id", ForeignKey("game.id")),
+    Column("genre.id", ForeignKey("genre.id")),
+)
 
 
 class Game(CreatedAtMixin, UpdatedAtMixin, Base):
@@ -16,6 +25,8 @@ class Game(CreatedAtMixin, UpdatedAtMixin, Base):
     name: Mapped[str] = mapped_column(String(64))
     kr_name: Mapped[Optional[str]] = mapped_column(String(64))
     owners: Mapped[int] = mapped_column()
+
+    genres: Mapped[list[Genre]] = relationship(secondary=game_genre_link)
 
     def __repr__(self) -> str:
         return f"Game(id={self.id}, steam_id={self.steam_id}, name={self.name}, kr_name={self.kr_name})"
@@ -38,12 +49,3 @@ class GameDto(BaseModel):
     kr_name: Optional[str]
     created_at: datetime
     updated_at: datetime
-
-
-game_genre_link = Table(
-    "game_genre_link",
-    Base.metadata,
-    Column("id", primary_key=True),
-    Column("game_id", ForeignKey("game.id")),
-    Column("genre.id", ForeignKey("genre.id")),
-)
