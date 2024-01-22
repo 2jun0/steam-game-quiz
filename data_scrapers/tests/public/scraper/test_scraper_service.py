@@ -1,6 +1,5 @@
 import pytest
 
-from public.model import Game
 from public.scraper.service import scrap_game_screenshot, scrap_games
 from tests.public.utils.mock_lambda_api import MockLambdaAPI
 from tests.public.utils.mock_steam_api import MockSteamAPI
@@ -37,7 +36,7 @@ def test_scrap_games는_중복된_게임은_다시_저장하지_않는다(mock_s
 
 def test_scrap_screenshots은_스크린샷을_저장한다(mock_steam_api: MockSteamAPI):
     mock_steam_api.prepare_mock_data(game_size=1, screenshot_size=1)
-    saved_game = mock_steam_api.games[0]
+    saved_game = list(mock_steam_api.games.values())[0]
     game = create_random_game(steam_id=saved_game["steam_id"], name=saved_game["name"])
     lambda_api = MockLambdaAPI()
 
@@ -46,8 +45,10 @@ def test_scrap_screenshots은_스크린샷을_저장한다(mock_steam_api: MockS
     assert len(lambda_api.screenshots.values()) > 0
 
 
-def test_scrap_screenshot은_중복된_스크린샷은_다시_저장하지_않는다(mock_steam_api: MockSteamAPI, game: Game):
-    mock_steam_api.prepare_mock_data()
+def test_scrap_screenshot은_중복된_스크린샷은_다시_저장하지_않는다(mock_steam_api: MockSteamAPI):
+    mock_steam_api.prepare_mock_data(game_size=1, screenshot_size=1)
+    saved_game = list(mock_steam_api.games.values())[0]
+    game = create_random_game(steam_id=saved_game["steam_id"], name=saved_game["name"])
     lambda_api = MockLambdaAPI()
 
     scrap_game_screenshot(mock_steam_api, lambda_api, game)
