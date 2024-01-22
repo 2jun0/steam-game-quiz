@@ -9,6 +9,8 @@ class Game(BaseModel):
     steam_id: int
     name: str
     kr_name: Optional[str]
+    owners: int
+    genres: list[str]
     updated_at: datetime
     created_at: datetime
 
@@ -28,7 +30,7 @@ class NewGame(BaseModel):
     name: Optional[str]
     kr_name: Optional[str] = Field(default=None)
     owners: Optional[int] = Field(default=None)
-    genres: Optional[Sequence[str]] = Field(default=None)
+    genres: Optional[Sequence[str]] = Field(default=[])
 
 
 class NewGameScreenshot(BaseModel):
