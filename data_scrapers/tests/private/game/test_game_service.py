@@ -14,7 +14,10 @@ def test_get_some_games은_게임을_가져와야한다(session: Session):
 
 
 def test_save_games은_입력한_게임을_저장해야_한다(session: Session):
-    games = [{"steam_id": 1, "name": "game1", "kr_name": "게임1"}, {"steam_id": 2, "name": "game2", "kr_name": "게임2"}]
+    games = [
+        {"steam_id": 1, "name": "game1", "kr_name": "게임1", "owners": 100000, "genres": ["Adventure"]},
+        {"steam_id": 2, "name": "game2", "kr_name": "게임2", "owners": 100000, "genres": ["Adventure", "RPG"]},
+    ]
     save_games(session, games)
 
     saved = session.scalars(select(Game)).all()
