@@ -1,12 +1,10 @@
 from sqlalchemy import Table, create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy_utils import create_database, database_exists
 
 from private.config import setting
 from private.model import Base
 
 engine = create_engine(setting.DATABASE_URL, echo=True)  # type: ignore
-Session = scoped_session(sessionmaker(engine))
 
 
 def get_tables() -> list[Table]:
