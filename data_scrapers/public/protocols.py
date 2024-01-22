@@ -1,6 +1,7 @@
 from typing import Collection, Optional, Protocol
 
 from .model import (
+    GamalyticSteamGameDetailResponse,
     Game,
     GameScreenshot,
     NewGame,
@@ -19,6 +20,9 @@ class SteamAPI(Protocol):
         ...
 
     def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:
+        ...
+
+    def get_game_details_from_gamalytic(self, app_id: int) -> GamalyticSteamGameDetailResponse:
         ...
 
 

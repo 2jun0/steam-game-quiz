@@ -3,7 +3,12 @@ from typing import Any, Optional
 import requests
 
 from .. import protocols
-from ..model import SteamFeatureGameResponse, SteamGameDetailResponse, SteamGameScreenshotResponse
+from ..model import (
+    GamalyticSteamGameDetailResponse,
+    SteamFeatureGameResponse,
+    SteamGameDetailResponse,
+    SteamGameScreenshotResponse,
+)
 from .exception import SteamAPINoContentsException
 
 
@@ -48,6 +53,85 @@ class SteamAPI(protocols.SteamAPI):
         games = top_sellers["items"]
 
         return [SteamFeatureGameResponse(app_id=game["id"], name=game["name"]) for game in games]
+
+    def get_game_details_from_gamalytic(self, app_id: int) -> GamalyticSteamGameDetailResponse:
+        response = requests.get(f"https://api.gamalytic.com/game/{app_id}")
+
+        """
+        return example:
+        ```json
+        {
+            "name": "Abandoned Village Walking Group",
+            "description": (
+                "The mystery of the village's sacred tree. The day of the festival is approaching. The happiness and"
+                " pleasure of people. The salvation of mankind by the cursed village begins now. ・Game Introduction A"
+                " visual novel style horror adventure game!"
+            ),
+            "steamId": "2644840",
+            "reviews": 0,
+            "reviewsSteam": 0,
+            "reviewScore": 0,
+            "avgPlaytime": 0,
+            "price": 0,
+            "copiesSold": 0,
+            "accuracy": 0,
+            "revenue": 0,
+            "itemType": "",
+            "earlyAccess": false,
+            "bizModel": "Premium",
+            "developers": ["mokosoft"],
+            "publishers": ["mokosoft"],
+            "genres": ["Adventure", "Casual"],
+            "tags": [
+                "Choose Your Own Adventure",
+                "2D Platformer",
+                "Visual Novel",
+                "2D",
+                "Horror",
+                "Story Rich",
+                "Cute",
+                "Multiple Endings",
+                "Psychological Horror",
+                "Casual",
+                "Anime",
+                "Mystery",
+                "Psychological",
+                "Adventure",
+                "Atmospheric",
+                "Dark",
+                "Singleplayer",
+                "Gore",
+                "Violent",
+            ],
+            "languages": ["English", "Japanese"],
+            "features": ["Single-player", "Profile Features Limited"],
+            "weeklyHistogram": [],
+            "alsoPlayed": [],
+            "win": true,
+            "mac": false,
+            "linux": false,
+            "unreleased": true,
+            "mature": false,
+            "followers": 7,
+            "owners": 0,
+            "players": 0,
+            "steamPercent": 1,
+            "estimateDetails": {},
+            "wishlists": 84,
+            "predictions": {"gain": 0.5212854318941134, "m1": 30, "y1": 90},
+            "history": [],
+            "audienceOverlap": [],
+        }
+        ```
+        """
+
+        res_json = response.json()
+        if "name" not in res_json:
+            raise SteamAPINoContentsException(f"Can't find game name for steamid: {app_id}")
+
+        return GamalyticSteamGameDetailResponse(
+            name=res_json["name"], genres=res_json["genres"], owners=res_json["owners"]
+        )
 
     def get_game_details(self, app_id: int, language: Optional[str] = None) -> SteamGameDetailResponse:
         if language:

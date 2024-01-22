@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Sequence
 
 from pydantic import BaseModel, Field
 
@@ -37,6 +37,12 @@ class NewGameScreenshot(BaseModel):
 
 class SteamGameDetailResponse(BaseModel):
     name: str
+
+
+class GamalyticSteamGameDetailResponse(BaseModel):
+    name: str
+    genres: Sequence[str]
+    owners: int
 
 
 class SteamFeatureGameResponse(BaseModel):
