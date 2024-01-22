@@ -25,8 +25,10 @@ class GameScreenshot(BaseModel):
 
 class NewGame(BaseModel):
     steam_id: int
-    name: str
+    name: Optional[str]
     kr_name: Optional[str] = Field(default=None)
+    owners: Optional[int] = Field(default=None)
+    genres: Optional[Sequence[str]] = Field(default=None)
 
 
 class NewGameScreenshot(BaseModel):
