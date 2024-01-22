@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel
-from sqlalchemy import Column, ForeignKey, String, Table
+from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..genre.model import Genre
@@ -11,7 +11,7 @@ from ..model import Base, CreatedAtMixin, UpdatedAtMixin
 game_genre_link = Table(
     "game_genre_link",
     Base.metadata,
-    Column("id", primary_key=True),
+    Column("id", type_=Integer, primary_key=True),
     Column("game_id", ForeignKey("game.id")),
     Column("genre.id", ForeignKey("genre.id")),
 )
@@ -29,7 +29,10 @@ class Game(CreatedAtMixin, UpdatedAtMixin, Base):
     genres: Mapped[list[Genre]] = relationship(secondary=game_genre_link)
 
     def __repr__(self) -> str:
-        return f"Game(id={self.id}, steam_id={self.steam_id}, name={self.name}, kr_name={self.kr_name})"
+        return (
+            f"Game(id={self.id}, steam_id={self.steam_id}, name={self.name}, kr_name={self.kr_name},"
+            f" owners={self.owners})"
+        )
 
     def to_dto(self) -> "GameDto":
         return GameDto(
@@ -37,6 +40,8 @@ class Game(CreatedAtMixin, UpdatedAtMixin, Base):
             steam_id=self.steam_id,
             name=self.name,
             kr_name=self.kr_name,
+            owners=self.owners,
+            genres=[g.name for g in self.genres],
             created_at=self.created_at,
             updated_at=self.updated_at,
         )
@@ -47,5 +52,7 @@ class GameDto(BaseModel):
     steam_id: int
     name: str
     kr_name: Optional[str]
+    owners: int
+    genres: list[str]
     created_at: datetime
     updated_at: datetime
