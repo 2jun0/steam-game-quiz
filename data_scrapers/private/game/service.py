@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Sequence
 
 from sqlalchemy.orm import Session
@@ -24,6 +25,8 @@ def save_games(session: Session, games: Sequence[dict[str, Any]]):
                 genres.append(genre)
 
         del game["genres"]
+
+        game["released_at"] = datetime.fromtimestamp(game["released_at"])
 
         session.add(Game(**game, genres=genres))
 

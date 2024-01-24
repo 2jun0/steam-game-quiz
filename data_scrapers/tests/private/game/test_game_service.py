@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from private.game.model import Game
 from private.game.service import get_games_in_steam_ids, get_some_games, save_games
 from tests.private.utils.game import create_random_game
+from tests.private.utils.utils import random_datetime
 
 
 def test_get_some_games은_게임을_가져와야한다(session: Session):
@@ -14,9 +15,23 @@ def test_get_some_games은_게임을_가져와야한다(session: Session):
 
 
 def test_save_games은_입력한_게임을_저장해야_한다(session: Session):
+    random_datetime().timestamp
+
     games = [
-        {"steam_id": 1, "name": "game1", "kr_name": "게임1", "owners": 100000, "genres": ["Adventure"]},
-        {"steam_id": 2, "name": "game2", "kr_name": "게임2", "owners": 100000, "genres": ["Adventure", "RPG"]},
+        {
+            "steam_id": 1,
+            "name": "game1",
+            "kr_name": "게임1",
+            "released_at": random_datetime().timestamp(),
+            "genres": ["Adventure"],
+        },
+        {
+            "steam_id": 2,
+            "name": "game2",
+            "kr_name": "게임2",
+            "released_at": random_datetime().timestamp(),
+            "genres": ["Adventure", "RPG"],
+        },
     ]
     save_games(session, games)
 
