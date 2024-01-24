@@ -10,11 +10,11 @@ class Game(TypedDict):
     name: str
     steamId: int
     reviews: int
-    reviewScore: int
-    avgPlaytime: int
-    price: int
+    reviewScore: float
+    avgPlaytime: float
+    price: float
     copiesSold: int
-    revenue: int
+    revenue: float
     earlyAccess: bool
     developers: list[str]
     publishers: list[str]
