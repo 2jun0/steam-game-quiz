@@ -13,7 +13,7 @@ game_genre_link = Table(
     Base.metadata,
     Column("id", type_=Integer, primary_key=True),
     Column("game_id", ForeignKey("game.id")),
-    Column("genre.id", ForeignKey("genre.id")),
+    Column("genre_id", ForeignKey("genre.id")),
 )
 
 
