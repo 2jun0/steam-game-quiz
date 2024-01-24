@@ -1,7 +1,7 @@
 from typing import Optional, Sequence
 
 from ..logger import logger
-from ..model import NewGame, NewGameScreenshot
+from ..model import NewGame
 from ..protocols import LambdaAPI, SteamAPI
 from ..steam.exception import SteamAPINoContentsException
 
@@ -39,17 +39,6 @@ def _update_game_details(steam_api: SteamAPI, game: NewGame) -> Optional[NewGame
     except SteamAPINoContentsException as e:
         logger.info(e)
         return None
-
-
-def _remove_existed_new_screenshot(
-    lambda_api: LambdaAPI, screenshots: Sequence[NewGameScreenshot]
-) -> list[NewGameScreenshot]:
-    file_id2screenshot = {s.steam_file_id: s for s in screenshots}
-    exists = set(
-        s.steam_file_id for s in lambda_api.get_screenshots_in_steam_file_ids(list(file_id2screenshot.keys()))
-    )
-
-    return [file_id2screenshot[file_id] for file_id in file_id2screenshot.keys() - exists]
 
 
 def scrap_games(steam_api: SteamAPI, lambda_api: LambdaAPI) -> None:
