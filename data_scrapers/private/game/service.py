@@ -49,6 +49,7 @@ def save_games(session: Session, games: Sequence[dict[str, Any]]):
         models[existed.steam_id] = existed
 
     session.add_all(models.values())
+    session.commit()
 
 
 def get_games_in_steam_ids(session: Session, steam_ids: Sequence[int]) -> list[dict[str, Any]]:
