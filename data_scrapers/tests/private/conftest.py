@@ -18,3 +18,4 @@ def database():
 def session() -> Generator[Session, Any, None]:
     with Session(engine) as session:
         yield session
+        session.rollback()
