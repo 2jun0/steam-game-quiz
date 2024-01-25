@@ -1,14 +1,14 @@
 from random import choice, randint, sample
 from typing import Optional
 
-from public.model import (
+from public.protocols import SteamAPI
+from public.steam.exception import SteamAPINoContentsException
+from public.steam.model import (
     GamalyticSteamGameDetailResponse,
     SteamFeatureGameResponse,
     SteamGameDetailResponse,
     SteamGameScreenshotResponse,
 )
-from public.protocols import SteamAPI
-from public.steam.exception import SteamAPINoContentsException
 
 from ..utils.steam import create_random_game, create_random_genre, create_random_screenshot
 
@@ -59,7 +59,9 @@ class MockSteamAPI(SteamAPI):
 
     def get_game_details_from_gamalytic(self, app_id: int) -> GamalyticSteamGameDetailResponse:
         game = self._get_game(app_id=app_id)
-        return GamalyticSteamGameDetailResponse(name=game["name"], genres=game["genres"], owners=game["owners"])
+        return GamalyticSteamGameDetailResponse(
+            name=game["name"], genres=game["genres"], released_at=game["released_at"]
+        )
 
     def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:
         return [

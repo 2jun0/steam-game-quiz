@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from public.model import Game, GameScreenshot
+from public.aws_lambda.model import Game, GameScreenshot
 from public.protocols import LambdaAPI
 
 

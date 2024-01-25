@@ -1,8 +1,9 @@
 from typing import Sequence
 
+from ..aws_lambda.model import Game
 from ..logger import logger
-from ..model import Game, NewGameScreenshot
 from ..protocols import LambdaAPI, SteamAPI
+from .model import NewGameScreenshot
 
 
 def _remove_existed_new_screenshot(

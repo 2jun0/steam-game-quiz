@@ -1,5 +1,7 @@
-from random import randint, randrange
+from random import randint
 from typing import Optional
+
+from .utils import random_timestamp
 
 game_steam_id_counter = 1
 screenshot_file_id_counter = 1
@@ -13,13 +15,11 @@ def create_random_game(*, genres: Optional[list[str]] = None):
     if genres is None:
         genres = [create_random_genre() for _ in range(randint(0, 5))]
 
-    owners = randrange(0, 1000000, 1000)
-
     return {
         "name": f"Game #{game_steam_id_counter}",
         "steam_id": game_steam_id_counter,
         "genres": genres,
-        "owners": owners,
+        "released_at": random_timestamp(),
     }
 
 

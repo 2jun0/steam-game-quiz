@@ -1,11 +1,9 @@
 from typing import Collection, Optional, Protocol
 
-from .model import (
+from .aws_lambda.model import Game, GameScreenshot
+from .scraper.model import NewGame, NewGameScreenshot
+from .steam.model import (
     GamalyticSteamGameDetailResponse,
-    Game,
-    GameScreenshot,
-    NewGame,
-    NewGameScreenshot,
     SteamFeatureGameResponse,
     SteamGameDetailResponse,
     SteamGameScreenshotResponse,

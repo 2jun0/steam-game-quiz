@@ -1,9 +1,9 @@
 from typing import Optional, Sequence
 
 from ..logger import logger
-from ..model import NewGame
 from ..protocols import LambdaAPI, SteamAPI
 from ..steam.exception import SteamAPINoContentsException
+from .model import NewGame
 
 
 def _put_kor_name_in_new_game(steam_api: SteamAPI, game: NewGame) -> None:
@@ -18,7 +18,7 @@ def _put_game_detail_in_new_game(steam_api: SteamAPI, game: NewGame) -> None:
     game_detail = steam_api.get_game_details_from_gamalytic(game.steam_id)
 
     game.genres = game_detail.genres
-    game.owners = game_detail.owners
+    game.released_at = game_detail.released_at
 
 
 def _remove_existed_new_games(lambda_api: LambdaAPI, games: Sequence[NewGame]) -> list[NewGame]:
