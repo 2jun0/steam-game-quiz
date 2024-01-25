@@ -28,17 +28,27 @@ def _get_genres(session: Session, name: str) -> Genre:
 
 
 def save_games(session: Session, games: Sequence[dict[str, Any]]):
+    # turn to model
+    models: dict[int, Game] = {}  # steam_id, Game
     for game in games:
-        game_genres = []
+        args = game.copy()
+        args["genres"] = [_get_genres(session, genre_name) for genre_name in args["genres"]]
+        args["released_at"] = datetime.fromtimestamp(args["released_at"])
 
-        for genre_name in game["genres"]:
-            game_genres.append(_get_genres(session, genre_name))
+        models[args["steam_id"]] = Game(**args)
 
-        game["genres"] = game_genres
+    # detached된 객체의 식별자를 업데이트 함
+    existeds = repository.get_games_in_steam_ids(session, [g["steam_id"] for g in games])
+    for existed in existeds:
+        query = models[existed.steam_id]
+        existed.name = query.name
+        existed.kr_name = query.kr_name
+        existed.released_at = query.released_at
+        existed.genres = query.genres
 
-        game["released_at"] = datetime.fromtimestamp(game["released_at"])
+        models[existed.steam_id] = existed
 
-        session.add(Game(**game))
+    session.add_all(models.values())
 
 
 def get_games_in_steam_ids(session: Session, steam_ids: Sequence[int]) -> list[dict[str, Any]]:
