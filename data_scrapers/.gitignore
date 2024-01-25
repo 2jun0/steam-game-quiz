@@ -11,3 +11,5 @@ requirements.txt
 .DS_Store
 # vscode
 .vscode
+# data
+*.csv
