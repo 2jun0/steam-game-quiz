@@ -3,12 +3,14 @@ from typing import Optional, Sequence
 from pydantic import BaseModel, Field
 
 
-class NewGame(BaseModel):
+class Game(BaseModel):
     steam_id: int
-    name: Optional[str]
+    name: str
     kr_name: Optional[str] = Field(default=None)
-    released_at: Optional[float] = Field(default=None)
-    genres: Optional[Sequence[str]] = Field(default=[])
+    released_at: float
+    genres: Sequence[str]
+    tags: Sequence[str]
+    revenue: float
 
 
 class NewGameScreenshot(BaseModel):

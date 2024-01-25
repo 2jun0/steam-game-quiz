@@ -13,6 +13,15 @@ class GamalyticSteamGameDetailResponse(BaseModel):
     released_at: float
 
 
+class GamalyticSteamGameResponse(BaseModel):
+    app_id: int
+    name: str
+    genres: Sequence[str]
+    released_at: float
+    revenue: float
+    tags: Sequence[str]
+
+
 class SteamFeatureGameResponse(BaseModel):
     app_id: int
     name: str

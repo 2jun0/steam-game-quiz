@@ -6,9 +6,9 @@ import boto3
 from public.aws_lambda.exception import AWSLambdaException
 
 from .. import protocols
-from ..scraper.model import NewGame, NewGameScreenshot
+from ..scraper.model import NewGameScreenshot
 from .event import Event
-from .model import Game, GameScreenshot
+from .model import Game, GameScreenshot, SaveGame
 
 
 class LambdaAPI(protocols.LambdaAPI):
@@ -43,7 +43,7 @@ class LambdaAPI(protocols.LambdaAPI):
         screenshots: list[dict[str, Any]] = self.invoke_lambda(event)
         return [GameScreenshot(**s) for s in screenshots]
 
-    def save_games(self, games: Sequence[NewGame]):
+    def save_games(self, games: Sequence[SaveGame]):
         event = Event(name="save_games", payload=[g.model_dump() for g in games])
 
         self.invoke_lambda(event)

@@ -1,81 +1,72 @@
-from typing import Optional, Sequence
+import random
+from typing import Sequence
 
+from ..aws_lambda.model import SaveGame
+from ..config import setting
 from ..logger import logger
 from ..protocols import LambdaAPI, SteamAPI
-from ..steam.exception import SteamAPINoContentsException
-from .model import NewGame
+from .model import Game
 
 
-def _put_kor_name_in_new_game(steam_api: SteamAPI, game: NewGame) -> None:
-    try:
-        game_detail = steam_api.get_game_details(game.steam_id, language="korean")
-        game.kr_name = game_detail.name
-    except SteamAPINoContentsException:
-        pass  # game.kr_name will none
+def _scrap_all_steam_games(steam_api: SteamAPI, worker_cnt: int) -> list[Game]:
+    games = steam_api.get_all_games_from_gamalytic(worker_cnt)
+    return [
+        Game(
+            steam_id=game.app_id,
+            name=game.name,
+            released_at=game.released_at,
+            genres=game.genres,
+            tags=game.tags,
+            revenue=game.revenue,
+        )
+        for game in games
+    ]
 
 
-def _put_game_detail_in_new_game(steam_api: SteamAPI, game: NewGame) -> None:
-    game_detail = steam_api.get_game_details_from_gamalytic(game.steam_id)
-
-    game.genres = game_detail.genres
-    game.released_at = game_detail.released_at
+def _is_popular(game: Game) -> bool:
+    return game.revenue >= setting.MIN_REVENUE
 
 
-def _remove_existed_new_games(lambda_api: LambdaAPI, games: Sequence[NewGame]) -> list[NewGame]:
-    steam_id2game = {g.steam_id: g for g in games}
-    exists = set(g.steam_id for g in lambda_api.get_games_in_steam_ids(list(steam_id2game.keys())))
+def _is_not_sexual(game: Game) -> bool:
+    sexual_tags = ["Sexual Content", "NSFW"]
 
-    return [steam_id2game[steam_id] for steam_id in steam_id2game.keys() - exists]
+    return all(tag not in game.tags for tag in sexual_tags)
 
 
-def _update_game_details(steam_api: SteamAPI, game: NewGame) -> Optional[NewGame]:
-    try:
-        # put game detail
-        _put_game_detail_in_new_game(steam_api, game)
+def _filter_games(games: Sequence[Game]) -> list[Game]:
+    filtered = []
 
-        # update korean game name
-        _put_kor_name_in_new_game(steam_api, game)
-        return game
-    except SteamAPINoContentsException as e:
-        logger.info(e)
-        return None
+    for game in games:
+        if not _is_popular(game):
+            continue
+        if not _is_not_sexual(game):
+            continue
+        if game.steam_id == 900883:  # Elder Scroll 4 Edition
+            continue
+
+        filtered.append(game)
+
+    return filtered
 
 
 def scrap_games(steam_api: SteamAPI, lambda_api: LambdaAPI) -> None:
-    games: list[NewGame] = []
+    # get all steam games
+    logger.info("getting all steam games")
+    games = _scrap_all_steam_games(steam_api, setting.WORKER_CNT)
+    logger.info("game cnt: %d", len(games))
+    logger.debug("sample games: %s", random.sample(games, min(len(games), 5)))
 
-    # get feature games
-    logger.info("getting feature games")
-    for g in steam_api.get_feature_games():
-        games.append(NewGame(steam_id=g.app_id, name=g.name))
-    logger.info("feature games: %s", games)
+    # filter games
+    logger.info("filtering games")
+    games = _filter_games(games)
+    logger.info("game cnt: %s", len(games))
+    logger.debug("sample games: %s", random.sample(games, min(len(games), 5)))
 
-    # remove existed games
-    logger.info("removing existed games")
-    new_games = _remove_existed_new_games(lambda_api, games)
-    logger.info("remain games: %s", new_games)
-
-    # update game details
-    logger.info("update game details")
-    updated_new_games: list[NewGame] = []
-    for new_game in new_games:
-        game = _update_game_details(steam_api, new_game)
-        if game is None:
-            continue
-
-        updated_new_games.append(game)
-    logger.info("updated games: %s", updated_new_games)
-
-    # filter unfamous game
-    logger.info("filtering owner count < 100,000")
-    filtered_games: list[NewGame] = []
-    for new_game in updated_new_games:
-        if new_game.owners < 100_000:  # type: ignore
-            continue
-
-        filtered_games.append(new_game)
-    logger.info("filtered games: %s", filtered_games)
-
-    # save new games
-    lambda_api.save_games(filtered_games)
-    logger.info("saved games: %s", filtered_games)
+    # save games
+    logger.info("saving games")
+    games = lambda_api.save_games(
+        [
+            SaveGame(steam_id=g.steam_id, name=g.name, released_at=g.released_at, kr_name=g.kr_name, genres=g.genres)
+            for g in games
+        ]
+    )

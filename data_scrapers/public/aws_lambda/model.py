@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Sequence
 
 from pydantic import BaseModel, Field
 
@@ -10,7 +10,7 @@ class Game(BaseModel):
     name: str
     kr_name: Optional[str]
     released_at: datetime
-    genres: list[str]
+    genres: Sequence[str]
     updated_at: datetime
     created_at: datetime
 
@@ -23,3 +23,11 @@ class GameScreenshot(BaseModel):
     game: Game = Field(repr=False)
     updated_at: datetime
     created_at: datetime
+
+
+class SaveGame(BaseModel):
+    steam_id: int
+    name: str
+    kr_name: Optional[str]
+    released_at: float
+    genres: Sequence[str]

@@ -4,6 +4,7 @@ from .. import protocols
 from . import gamalytic_api, steampowered_api
 from .model import (
     GamalyticSteamGameDetailResponse,
+    GamalyticSteamGameResponse,
     SteamFeatureGameResponse,
     SteamGameDetailResponse,
     SteamGameScreenshotResponse,
@@ -25,6 +26,21 @@ class SteamAPI(protocols.SteamAPI):
         return GamalyticSteamGameDetailResponse(
             name=details["name"], genres=details["genres"], released_at=details["releaseDate"] / 1000
         )
+
+    def get_all_games_from_gamalytic(self, worker_cnt: int) -> list[GamalyticSteamGameResponse]:
+        games = gamalytic_api.get_all_steam_games(worker_cnt)
+
+        return [
+            GamalyticSteamGameResponse(
+                app_id=game["steamId"],
+                name=game["name"],
+                genres=game["genres"],
+                released_at=game["releaseDate"] / 1000,
+                revenue=game["revenue"],
+                tags=game["tags"],
+            )
+            for game in games
+        ]
 
     def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:
         screenshots = steampowered_api.get_community_screenshots(app_id, page)
