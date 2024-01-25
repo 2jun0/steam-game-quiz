@@ -1,6 +1,15 @@
 import ast
 import csv
+import pathlib
+import sys
 from typing import Sequence, TypedDict
+
+from sqlalchemy.orm import Session
+
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
+
+from private.database import engine  # noqa: E402
+from private.game import service  # noqa: E402
 
 
 class Game(TypedDict):
@@ -24,39 +33,27 @@ class Game(TypedDict):
     id: int
 
 
-MIN_REVENUE = 10000000  # 10M
+def save_games(games: Sequence[Game]):
+    with Session(engine) as session:
+        service.save_games(
+            session,
+            [
+                {
+                    "name": game["name"],
+                    "steam_id": game["steamId"],
+                    "kr_name": None,
+                    "released_at": game["releaseDate"] / 1000,
+                    "genres": game["genres"],  # type: ignore
+                }
+                for game in games
+            ],
+        )
 
-
-def is_popular(game: Game) -> bool:
-    return game["revenue"] >= MIN_REVENUE
-
-
-def is_not_sexual(game: Game) -> bool:
-    sexual_tags = ["Sexual Content", "NSFW"]
-
-    return all(tag not in game["tags"] for tag in sexual_tags)
-
-
-def filter_games(games: Sequence[Game]) -> list[Game]:
-    filtered = []
-
-    for game in games:
-        if not is_popular(game):
-            continue
-
-        if not is_not_sexual(game):
-            continue
-
-        if game["steamId"] == 900883:
-            continue
-
-        filtered.append(game)
-
-    return filtered
+        session.commit()
 
 
 if __name__ == "__main__":
-    with open("games.csv", "r") as f:
+    with open("filtered_games.csv", "r") as f:
         fieldnames: list[str] = Game.__annotations__.keys()  # type: ignore
         reader = csv.DictReader(f, fieldnames)
 
@@ -74,9 +71,4 @@ if __name__ == "__main__":
 
             games.append(game)  # type: ignore
 
-        games = filter_games(games)
-
-    with open("filtered_games.csv", "w") as f:
-        writer = csv.DictWriter(f, Game.__annotations__.keys())
-
-        writer.writerows(games)
+    save_games(games)
