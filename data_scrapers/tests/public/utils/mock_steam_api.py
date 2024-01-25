@@ -21,9 +21,10 @@ SCREENSHOT_PAGE_SIZE = 100
 
 
 class MockSteamAPI(SteamAPI):
-    games: dict[int, dict] = {}
-    genres: list[str] = []
-    screenshots: dict[int, list[dict]] = {}
+    def __init__(self) -> None:
+        self.games: dict[int, dict] = {}
+        self.genres: list[str] = []
+        self.screenshots: dict[int, list[dict]] = {}
 
     def prepare_mock_data(
         self, *, genre_size=MOCK_GENRE_SIZE, game_size=MOCK_GAME_SIZE, screenshot_size=MOCK_SCREENSHOT_SIZE
