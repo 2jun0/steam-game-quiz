@@ -120,7 +120,7 @@ def get_app_details(app_id: int, language: Optional[str] = None) -> GameDetails:
         ```
     """
     game_response = res.json()[str(app_id)]
-    if not game_response["succuess"]:
+    if not game_response["success"]:
         raise SteamAPINoContentsException(f"Can't find app details app_id: {app_id}")
 
     return game_response["data"]
