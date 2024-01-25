@@ -1,138 +1,49 @@
-from typing import Any, Optional
-
-import requests
+from typing import Optional
 
 from .. import protocols
-from ..model import SteamFeatureGameResponse, SteamGameDetailResponse, SteamGameScreenshotResponse
-from .exception import SteamAPINoContentsException
+from . import gamalytic_api, steampowered_api
+from .model import (
+    GamalyticSteamGameDetailResponse,
+    GamalyticSteamGameResponse,
+    SteamFeatureGameResponse,
+    SteamGameDetailResponse,
+    SteamGameScreenshotResponse,
+)
 
 
 class SteamAPI(protocols.SteamAPI):
     def get_feature_games(self) -> list[SteamFeatureGameResponse]:
-        response = requests.get("https://store.steampowered.com/api/featuredcategories", verify=False)
-        """
-        json example:
-        ```json
-        {
-            ...
-            "top_sellers": {
-                "id": "cat_topsellers",
-                "name": "Top Sellers",
-                "items": [
-                {
-                    "id": 1086940,
-                    "type": 0,
-                    "name": "Baldur's Gate 3",
-                    "discounted": false,
-                    "discount_percent": 0,
-                    "original_price": 6600000,
-                    "final_price": 6600000,
-                    "currency": "KRW",
-                    "large_capsule_image": "...",
-                    "small_capsule_image": "...",
-                    "windows_available": true,
-                    "mac_available": true,
-                    "linux_available": false,
-                    "streamingvideo_available": false,
-                    "header_image": "...",
-                    "controller_support": "full"
-                },
-                ...
-            }
-            ...
-        }
-        ```
-        """
-
-        top_sellers: dict[str, Any] = response.json()["top_sellers"]
-        games = top_sellers["items"]
-
+        games = steampowered_api.get_feature_games()
         return [SteamFeatureGameResponse(app_id=game["id"], name=game["name"]) for game in games]
 
     def get_game_details(self, app_id: int, language: Optional[str] = None) -> SteamGameDetailResponse:
-        if language:
-            response = requests.get(f"https://store.steampowered.com/api/appdetails?appids={app_id}&l={language}")
-        else:
-            response = requests.get(f"https://store.steampowered.com/api/appdetails?appids={app_id}")
+        details = steampowered_api.get_app_details(app_id, language)
+        return SteamGameDetailResponse(name=details["name"])
 
-        """
-        return example:
-        ```json
-        {
-            "271590": {
-                "success": true,
-                "data": {
-                    "type": "game",
-                    "name": "Grand Theft Auto V",
-                    "steam_appid": 271590,
-                    "required_age": "18",
-                    "is_free": false,
-                    "controller_support": "full",
-                    "dlc": [
-                        771300
-                    ],
-                    ...
-                }
-            }
-        }
-        ```
-        """
+    def get_game_details_from_gamalytic(self, app_id: int) -> GamalyticSteamGameDetailResponse:
+        details = gamalytic_api.get_game_details(app_id)
 
-        game_response = response.json()[str(app_id)]
+        return GamalyticSteamGameDetailResponse(
+            name=details["name"], genres=details["genres"], released_at=details["releaseDate"] / 1000
+        )
 
-        try:
-            game_detail: dict[str, Any] = game_response["data"]
-        except KeyError:
-            raise SteamAPINoContentsException(f"Can't find data key: {game_response}")
+    def get_all_games_from_gamalytic(self, worker_cnt: int) -> list[GamalyticSteamGameResponse]:
+        games = gamalytic_api.get_all_steam_games(worker_cnt)
 
-        return SteamGameDetailResponse(name=game_detail["name"])
+        return [
+            GamalyticSteamGameResponse(
+                app_id=game["steamId"],
+                name=game["name"],
+                genres=game["genres"],
+                released_at=game["releaseDate"] / 1000,
+                revenue=game["revenue"],
+                tags=game["tags"],
+            )
+            for game in games
+        ]
 
     def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:
-        response = requests.get(
-            f"https://steamcommunity.com/library/appcommunityfeed/{app_id}?p={page}&rgSections[]=2"
-        )
-        """
-        return example:
-        ```json
-        {
-            "cached": false,
-            "hub": [
-                {
-                "published_file_id": "3095185741",
-                "type": 5,
-                "title": "Que empieza el calor",
-                "preview_image_url": "...",
-                "full_image_url": "...",
-                "image_width": 1920,
-                "image_height": 1080,
-                "comment_count": 25,
-                "votes_for": 40,
-                "content_descriptorids": [],
-                "spoiler_tag": null,
-                "description": "Que empieza el calor",
-                "rating_stars": 4,
-                "maybe_inappropriate_sex": 0,
-                "maybe_inappropriate_violence": 0,
-                "youtube_video_id": null,
-                "creator": {
-                    "name": "...",
-                    "steamid": "...",
-                    "avatar": "...",
-                    "online_state": 1
-                },
-                "reactions": [
-                    {
-                    "reaction_type": 14,
-                    "count": 1
-                    }
-                ]
-            },
-            ...
-        }
-        ```
-        """
-
-        screenshots: list[dict[str, Any]] = response.json()["hub"]
+        screenshots = steampowered_api.get_community_screenshots(app_id, page)
 
         return [
             SteamGameScreenshotResponse(

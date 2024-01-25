@@ -9,3 +9,7 @@ build
 requirements.txt
 # MacOS
 .DS_Store
+# vscode
+.vscode
+# data
+*.csv
