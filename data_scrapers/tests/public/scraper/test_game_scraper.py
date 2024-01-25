@@ -1,8 +1,10 @@
 import pytest
 
+from public.config import setting
 from public.scraper.game import scrap_games
 from tests.public.utils.mock_lambda_api import MockLambdaAPI
 from tests.public.utils.mock_steam_api import MockSteamAPI
+from tests.public.utils.steam import create_random_game
 
 
 @pytest.fixture
@@ -19,15 +21,27 @@ def test_scrap_geams는_새_게임을_저장한다(mock_steam_api: MockSteamAPI)
     assert len(lambda_api.games.values()) > 0
 
 
-def test_scrap_games는_중복된_게임은_다시_저장하지_않는다(mock_steam_api: MockSteamAPI):
-    mock_steam_api.prepare_mock_data()
+def test_scrap_geams는_수익이_높은_게임만_저장한다(mock_steam_api: MockSteamAPI):
+    popular_game = create_random_game(revenue=setting.MIN_REVENUE, tags=[])
+    unpopular_game = create_random_game(revenue=setting.MIN_REVENUE - 1, tags=[])
+    mock_steam_api.add_mock_game(popular_game)
+    mock_steam_api.add_mock_game(unpopular_game)
     lambda_api = MockLambdaAPI()
 
     scrap_games(mock_steam_api, lambda_api)
-    before_scraped = lambda_api.games.copy()
 
-    # duplicated games
+    saved = list(lambda_api.games.values())
+    assert len(saved) == 1
+    assert saved[0].steam_id == popular_game["steam_id"]
+
+
+@pytest.mark.parametrize("sex_tag", ("Sexual Content", "NSFW"))
+def test_scrap_geams는_성적인_게임을_저장하지_않는다(mock_steam_api: MockSteamAPI, sex_tag: str):
+    sexual_game = create_random_game(revenue=setting.MIN_REVENUE, tags=[sex_tag])
+    mock_steam_api.add_mock_game(sexual_game)
+    lambda_api = MockLambdaAPI()
+
     scrap_games(mock_steam_api, lambda_api)
-    after_scraped = lambda_api.games
 
-    assert before_scraped == after_scraped
+    saved = list(lambda_api.games.values())
+    assert len(saved) == 0

@@ -5,6 +5,7 @@ from public.protocols import SteamAPI
 from public.steam.exception import SteamAPINoContentsException
 from public.steam.model import (
     GamalyticSteamGameDetailResponse,
+    GamalyticSteamGameResponse,
     SteamFeatureGameResponse,
     SteamGameDetailResponse,
     SteamGameScreenshotResponse,
@@ -63,6 +64,19 @@ class MockSteamAPI(SteamAPI):
             name=game["name"], genres=game["genres"], released_at=game["released_at"]
         )
 
+    def get_all_games_from_gamalytic(self, worker_cnt: int) -> list[GamalyticSteamGameResponse]:
+        return [
+            GamalyticSteamGameResponse(
+                app_id=g["steam_id"],
+                name=g["name"],
+                genres=g["genres"],
+                revenue=g["revenue"],
+                tags=g["tags"],
+                released_at=g["released_at"],
+            )
+            for g in self.games.values()
+        ]
+
     def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:
         return [
             SteamGameScreenshotResponse(file_id=s["file_id"], full_image_url=s["url"])
@@ -74,3 +88,6 @@ class MockSteamAPI(SteamAPI):
             raise SteamAPINoContentsException
 
         return self.games[app_id]
+
+    def add_mock_game(self, game):
+        self.games[game["steam_id"]] = game
