@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "data-scrapers"
-version = "0.1.0"
+version = "1"
 description = ""
 authors = ["2jun0 <soo28819@gmail.com>"]
 readme = "README.md"
