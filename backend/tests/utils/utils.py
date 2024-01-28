@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 from random import randint
 
 import dateutil.parser
@@ -25,6 +25,10 @@ def random_email() -> str:
 
 def random_bool() -> bool:
     return randint(0, 1) == 1
+
+
+def random_datetime() -> datetime:
+    return datetime(year=randint(1999, 2024), month=randint(1, 12), day=randint(1, 20))
 
 
 def jsontime2datetime(jsontime: str) -> datetime:

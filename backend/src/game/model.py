@@ -1,7 +1,26 @@
-from sqlalchemy import BigInteger, Column
+from datetime import datetime
+
+from sqlalchemy import BigInteger, Column, UniqueConstraint
 from sqlmodel import Field, Relationship, SQLModel
 
 from ..model import CreatedAtMixin, UpdatedAtMixin
+
+
+class GameGenreLink(SQLModel, table=True):
+    __tablename__: str = "game_genre_link"
+    __table_args__ = (UniqueConstraint("game_id", "genre_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+
+    game_id: int = Field(foreign_key="game.id")
+    genre_id: int = Field(foreign_key="genre.id")
+
+
+class Genre(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+    __tablename__: str = "genre"
+
+    id: int | None = Field(default=None, primary_key=True)
+    name: str = Field(max_length=64, unique=True)
 
 
 class Game(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
@@ -10,7 +29,9 @@ class Game(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     steam_id: int = Field(unique=True)
     name: str = Field(max_length=64)
+    released_at: datetime = Field()
     kr_name: str | None = Field(max_length=64)
+    genres: list[Genre] = Relationship(link_model=GameGenreLink)
 
 
 class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
