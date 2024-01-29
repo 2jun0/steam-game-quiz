@@ -1,9 +1,12 @@
 from datetime import datetime, time
 from typing import Sequence
 
+from pydantic_core import Url
+
 from .exception import QuizNotFoundError
 from .model import Quiz, QuizAnswer
 from .repository import QuizAnswerRepository, QuizRepository
+from .schema import DailyQuiz
 
 
 class QuizService:
@@ -11,13 +14,24 @@ class QuizService:
         self._quiz_repo = quiz_repository
         self._quiz_answer_repo = quiz_answer_repository
 
-    async def get_today_quizes(self) -> Sequence[Quiz]:
+    def _today_quizzes(self, quizzes: Sequence[Quiz]) -> list[DailyQuiz]:
+        daily_quizzes: list[DailyQuiz] = []
+        for quiz in quizzes:
+            assert quiz.id is not None
+
+            screenshots = [Url(s.url) for s in quiz.screenshots]
+            daily_quizzes.append(DailyQuiz(quiz_id=quiz.id, screenshots=screenshots))
+
+        return daily_quizzes
+
+    async def get_today_quizzes(self) -> Sequence[DailyQuiz]:
         now = datetime.utcnow()
         today = now.date()
         start_at = datetime.combine(today, time.min)
         end_at = datetime.combine(today, time.max)
 
-        return await self._quiz_repo.get_by_created_at_interval_with_screenshots(start_at=start_at, end_at=end_at)
+        quizzes = await self._quiz_repo.get_by_created_at_interval_with_screenshots(start_at=start_at, end_at=end_at)
+        return self._today_quizzes(quizzes)
 
     async def submit_answer(self, *, quiz_id: int, user_id: int, answer: str) -> bool:
         """퀴즈에 대한 정답 여부를 반환하는 함수"""
