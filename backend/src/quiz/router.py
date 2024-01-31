@@ -1,10 +1,17 @@
 from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
-from pydantic_core import Url
+from pydantic import HttpUrl
 
 from ..auth.dependency import CURRENT_USER_DEP
 from .dependency import get_quiz_service
-from .schema import DailyQuizesResponse, QuizAnswer, QuizAnswerResponse, SubmitAnswerRequest, SubmitAnswerResponse
+from .schema import (
+    DailyQuiz,
+    DailyQuizzesResponse,
+    QuizAnswer,
+    QuizAnswerResponse,
+    SubmitAnswerRequest,
+    SubmitAnswerResponse,
+)
 from .service import QuizService
 
 router = APIRouter()
@@ -15,14 +22,9 @@ class QuizCBV:
     service: QuizService = Depends(get_quiz_service)
 
     @router.get("/quiz/daily_quizes")
-    async def get_daily_quizes(self) -> DailyQuizesResponse:
-        quizes = await self.service.get_today_quizes()
-
-        return DailyQuizesResponse(
-            daily_quizes=[
-                DailyQuizesResponse.DailyQuiz(screenshots=[Url(s.url) for s in quiz.screenshots]) for quiz in quizes
-            ]
-        )
+    async def get_daily_quizzes(self) -> DailyQuizzesResponse:
+        quizzes = await self.service.get_today_quizzes()
+        return DailyQuizzesResponse(daily_quizes=quizzes)
 
     @router.post("/quiz/submit_answer")
     async def submit_answer(

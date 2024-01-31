@@ -4,10 +4,12 @@ from typing import Sequence
 from pydantic import BaseModel, HttpUrl
 
 
-class DailyQuizesResponse(BaseModel):
-    class DailyQuiz(BaseModel):
-        screenshots: Sequence[HttpUrl]
+class DailyQuiz(BaseModel):
+    quiz_id: int
+    screenshots: Sequence[HttpUrl]
 
+
+class DailyQuizzesResponse(BaseModel):
     daily_quizes: Sequence[DailyQuiz]
 
 
