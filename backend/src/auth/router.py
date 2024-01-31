@@ -9,7 +9,10 @@ router = APIRouter(tags=["auth"])
 
 router.include_router(fastapi_users.get_logout_router(auth_backend), prefix="/auth")
 router.include_router(
-    fastapi_users.get_oauth_router(google_oauth_client, auth_backend, settings.OAUTH2_SECRET), prefix="/auth/google"
+    fastapi_users.get_oauth_router(
+        google_oauth_client, auth_backend, settings.OAUTH2_SECRET, settings.GOOGLE_OAUTH2_REDIRECT_URL
+    ),
+    prefix="/auth/google",
 )
 
 
