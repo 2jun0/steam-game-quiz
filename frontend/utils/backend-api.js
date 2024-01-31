@@ -2,7 +2,7 @@ import { apiAxios } from "./api-axios"
 
 const axios = apiAxios()
 
-export async function getDailyQuizes() {
+export async function getDailyQuizzes() {
     const url = `/quiz/daily_quizes`
 
     try {
