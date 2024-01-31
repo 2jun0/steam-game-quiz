@@ -1,11 +1,9 @@
-'use client'
-
 import { checkLogin, logout } from "@/utils/backend-api";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthInterface {
-    isLogined: boolean;
+    isLogined?: boolean;
     logout: ({ redirectUrl }: { redirectUrl: string }) => Promise<void>;
     afterLogin: ({ redirectUrl }: { redirectUrl: string }) => Promise<void>;
 }
@@ -26,7 +24,7 @@ export function AuthProvider({ children }: {
     children: React.ReactNode;
 }) {
     const router = useRouter()
-    const [isLogined, setLogined] = useState(false)
+    const [isLogined, setLogined] = useState<boolean>()
 
 	useEffect(() => {
         checkLogin().then(setLogined)

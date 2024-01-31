@@ -36,22 +36,24 @@ export const Navbar = () => {
 	const { isLogined, logout } = useAuth();
 
 	const loginLogout =
-		isLogined ? (
-			<Button
-				className="text-sm font-normal text-default-600 bg-default-100"
-				variant="flat"
-				onClick={() => logout({ redirectUrl: window.location.href })}
-			>
-				Logout
-			</Button>)
-		: (
-			<Button
-				className="text-sm font-normal text-default-600 bg-default-100"
-				variant="flat"
-				onClick={onOpen}
-			>
-				Login
-			</Button>
+		isLogined === undefined ? 
+			<></>
+			: isLogined ? (
+				<Button
+					className="text-sm font-normal text-default-600 bg-default-100"
+					variant="flat"
+					onClick={() => logout({ redirectUrl: window.location.href })}
+				>
+					Logout
+				</Button>)
+			: (
+				<Button
+					className="text-sm font-normal text-default-600 bg-default-100"
+					variant="flat"
+					onClick={onOpen}
+				>
+					Login
+				</Button>
 		);
 
 	return (
