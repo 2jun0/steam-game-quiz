@@ -1,3 +1,5 @@
+'use client'
+
 import {
 	Navbar as NextUINavbar,
 	NavbarContent,
@@ -8,9 +10,7 @@ import {
 	NavbarMenuItem,
 } from "@nextui-org/navbar";
 import { Button } from "@nextui-org/button";
-import { Kbd } from "@nextui-org/kbd";
 import { Link } from "@nextui-org/link";
-import { Input } from "@nextui-org/input";
 
 import { link as linkStyles } from "@nextui-org/theme";
 
@@ -24,32 +24,35 @@ import {
 	GithubIcon,
 	DiscordIcon,
 	HeartFilledIcon,
-	SearchIcon,
 } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
+import { LoginModal } from "./login-modal";
+import { useDisclosure } from "@nextui-org/react";
+import { useAuth } from "@/app/auth/provider";
 
 export const Navbar = () => {
-	const searchInput = (
-		<Input
-			aria-label="Search"
-			classNames={{
-				inputWrapper: "bg-default-100",
-				input: "text-sm",
-			}}
-			endContent={
-				<Kbd className="hidden lg:inline-block" keys={["command"]}>
-					K
-				</Kbd>
-			}
-			labelPlacement="outside"
-			placeholder="Search..."
-			startContent={
-				<SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-			}
-			type="search"
-		/>
-	);
+	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+	const { isLogined, logout } = useAuth();
+
+	const loginLogout =
+		isLogined ? (
+			<Button
+				className="text-sm font-normal text-default-600 bg-default-100"
+				variant="flat"
+				onClick={() => logout({ redirectUrl: window.location.href })}
+			>
+				Logout
+			</Button>)
+		: (
+			<Button
+				className="text-sm font-normal text-default-600 bg-default-100"
+				variant="flat"
+				onClick={onOpen}
+			>
+				Login
+			</Button>
+		);
 
 	return (
 		<NextUINavbar maxWidth="xl" position="sticky">
@@ -83,7 +86,7 @@ export const Navbar = () => {
 				justify="end"
 			>
 				<NavbarItem className="hidden sm:flex gap-2">
-					<Link isExternal href={siteConfig.links.twitter} aria-label="Twitter">
+					{/* <Link isExternal href={siteConfig.links.twitter} aria-label="Twitter">
 						<TwitterIcon className="text-default-500" />
 					</Link>
 					<Link isExternal href={siteConfig.links.discord} aria-label="Discord">
@@ -91,34 +94,21 @@ export const Navbar = () => {
 					</Link>
 					<Link isExternal href={siteConfig.links.github} aria-label="Github">
 						<GithubIcon className="text-default-500" />
-					</Link>
-					<ThemeSwitch />
+					</Link> */}
+					<ThemeSwitch />  
 				</NavbarItem>
-				<NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
-				<NavbarItem className="hidden md:flex">
-					<Button
-            isExternal
-						as={Link}
-						className="text-sm font-normal text-default-600 bg-default-100"
-						href={siteConfig.links.sponsor}
-						startContent={<HeartFilledIcon className="text-danger" />}
-						variant="flat"
-					>
-						Sponsor
-					</Button>
+				<NavbarItem className="md:flex">
+					{loginLogout}
 				</NavbarItem>
 			</NavbarContent>
 
 			<NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-				<Link isExternal href={siteConfig.links.github} aria-label="Github">
-					<GithubIcon className="text-default-500" />
-				</Link>
 				<ThemeSwitch />
-				<NavbarMenuToggle />
+				{loginLogout}
+				{/* <NavbarMenuToggle /> */}
 			</NavbarContent>
 
-			<NavbarMenu>
-				{searchInput}
+			{/* <NavbarMenu>
 				<div className="mx-4 mt-2 flex flex-col gap-2">
 					{siteConfig.navMenuItems.map((item, index) => (
 						<NavbarMenuItem key={`${item}-${index}`}>
@@ -138,7 +128,8 @@ export const Navbar = () => {
 						</NavbarMenuItem>
 					))}
 				</div>
-			</NavbarMenu>
+			</NavbarMenu> */}
+			<LoginModal isOpen={isOpen} onOpenChange={onOpenChange}/>
 		</NextUINavbar>
 	);
 };
