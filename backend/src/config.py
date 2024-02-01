@@ -11,6 +11,8 @@ class Config(BaseSettings):
     # ELASTIC_SEARCH_URL: str
     CORS_ORIGINS: list[str] = []
 
+    QUIZ_ANSWER_SUBMISSION_LIMIT: int = 3
+
     # auth
     JWT_SECRET: str
     OAUTH2_SECRET: str
