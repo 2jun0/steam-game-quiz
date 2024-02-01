@@ -1,10 +1,23 @@
 "use client"
 
-import { getDailyQuizzes } from "@/utils/backend-api";
+import { getDailyQuizzes, getQuizAnswer } from "@/utils/backend-api";
+import { useParams } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
 interface DailyQuizInterface {
-    quizzes: [];
+    quiz?: QuizInterface;
+    answers: QuizAnswerInterface[];
+}
+
+interface QuizAnswerInterface {
+    answer: string;
+    correct: boolean;
+    created_at: any;
+}
+
+interface QuizInterface {
+    quiz_id: number;
+    screenshots: string[];
 }
 
 const DailyQuizContext = createContext<DailyQuizInterface | null>(null)
@@ -21,13 +34,22 @@ export function useDailyQuiz() {
 export function DailyQuizProvider({ children }: {
     children: React.ReactNode;
 }) {
-    const [quizzes, setQuizzes] = useState<[]>([]);
+    const { page } = useParams();
+    const quizPage = page ? Number(page) : 1
+
+    const [quiz, setQuiz] = useState<QuizInterface>();
+    const [answers, setAnswers] = useState<QuizAnswerInterface[]>([])
 
 	useEffect(() => {
-		getDailyQuizzes().then(setQuizzes);
-	}, []);
+		getDailyQuizzes().then((quizzes) => {
+            const q = quizzes[quizPage - 1];
 
-    const value = {quizzes};
+            setQuiz(q)
+            getQuizAnswer(q.quiz_id).then(setAnswers);
+        });
+	}, [quizPage]);
+
+    const value = {quiz, answers};
 
     return <DailyQuizContext.Provider value={value}>{children}</DailyQuizContext.Provider>
 };

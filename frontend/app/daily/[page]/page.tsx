@@ -1,22 +1,32 @@
 'use client'
 
-import { subtitle, title } from "@/components/primitives";
-import {Autocomplete, AutocompleteItem, Pagination, Select, SelectItem} from "@nextui-org/react";
+import { title } from "@/components/primitives";
+import {Autocomplete, AutocompleteItem, Pagination, Select, SelectItem, Tooltip} from "@nextui-org/react";
 import {Button} from '@nextui-org/button';
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {Image} from "@nextui-org/react";
-import {getDailyQuizzes, autoCompleteGameName, submitAnswer} from "@/utils/backend-api"
-import { useRouter, useParams, usePathname } from "next/navigation";
+import {autoCompleteGameName, submitAnswer} from "@/utils/backend-api"
+import { useRouter, useParams } from "next/navigation";
 import { useDailyQuiz } from "./provider";
+
+type GameState = 'success' | 'failed' | 'playing'
 
 export default function DailyQuiz() {
 	const router = useRouter();
     const { page } = useParams();
     const quizPage = page ? Number(page) : 1
 
-	const { quizzes } = useDailyQuiz();
-	const quiz = quizzes[quizPage]
+	const { quiz, answers } = useDailyQuiz();
+	const gameState = useMemo<GameState>(() => {
+		for (let answer of answers) {
+			if (answer.correct) {
+				return 'success'
+			}
+		}
+
+		return answers.length >= 3 ? 'failed' : 'playing'
+	}, [answers])
 
 	const [screenshotPage, setScreenshotPage] = useState(1);
 	const [autoCompleteNames, setAutoCompleteNames] = useState([]);
@@ -27,20 +37,22 @@ export default function DailyQuiz() {
 		router.push(`/daily/${newPage}`)
 	}
 
-	const onChangeGuessName = async (query: string) => {
-		const names = await autoCompleteGameName(query)
-		setAutoCompleteNames(names)
+	function onChangeGuessName(query: string) {
+		autoCompleteGameName(query).then(setAutoCompleteNames)
+		setGuessName(query)
 	}
 
 	const onSubmitQuizAnswer = async () => {
-		const correct = await submitAnswer(quizzes[quizPage]["quiz_id"], guessName)
+		if (quiz) {
+			const correct = await submitAnswer(quiz.quiz_id, guessName)
+		}
 	}
 
 	return (
 		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
 			<div className="inline-block max-w-lg text-center justify-center">
 				<h1 className={title()}>Guess The &nbsp;</h1>
-				<h1 className={title({ color: "blue" })}>Steam Game&nbsp;</h1>
+				<h1 className={title({ color: "blue" })}>Steam Game</h1>
 				<br />
 			</div>
 
@@ -90,7 +102,7 @@ export default function DailyQuiz() {
 						className="aspect-[3/2] object-cover w-full"
 						height="400"
 						src={
-							quizzes.length > 0 ? quizzes[quizPage]['screenshots'][screenshotPage-1] : "https://generated.vusercontent.net/placeholder.svg"
+							quiz ? quiz.screenshots[screenshotPage-1] : "https://generated.vusercontent.net/placeholder.svg"
 						}
 						width="600" />
 					<button className="absolute right-0 z-30 p-4 bg-gray-200/50 dark:bg-gray-700/50 rounded-l-lg" 
@@ -114,29 +126,77 @@ export default function DailyQuiz() {
 				</div>
 			</div>
 
-			<form className="flex flex-col max-w-2xl gap-6 w-full">
-				<Autocomplete 
-					variant="bordered"
-					label="Enter your guess here" 
-					className="w-full"
-					onInputChange={onChangeGuessName}>
-					{autoCompleteNames.map((name) => (
-						<AutocompleteItem key={name['name']} textValue={name['name']}>
-							<div className="flex gap-2 items-center">
-								{name['name']}
-								<span className="text-sm text-gray-500">{name['locale_name']}</span>
-							</div>
-							{/* <div>
-							{name['name']}
-							<p className="text-sm text-gray-500">{name['locale_name']}</p>
-							</div> */}
-						</AutocompleteItem>
-					))}
-				</Autocomplete>
-				<Button className="w-full" type="button" variant="shadow" color="primary" onClick={onSubmitQuizAnswer}>
-					Submit Guess
-				</Button>
-			</form>
+			{
+				gameState == "failed" ? (
+					<div className="grid place-items-center">
+						<p className="text-red-500">You&apos;ve used up all your attempts for the quiz! 😿</p>
+						<p>The Game is <span className="text-green-500">Nier Automata</span></p>
+						<p>Try other quizzes!</p>
+					</div>
+				) : <></>
+			}
+
+			{
+				gameState == "success" ? (
+					<div className="grid place-items-center">
+						<p className="text-green-500">Your answer is right! 😼</p>
+						<p>The Game is <span className="text-green-500">Nier Automata</span></p>
+						<p>Try other quizzes!</p>
+					</div>
+				) : <></>
+			}
+
+			<div className="max-w-2xl justify-center items-center">
+				<div className="flex gap-5">
+					{Array.from({ length: 3 }).map((_,i) => {
+						return (
+							answers[i] ? 
+								answers[i].correct ?
+									<Tooltip key={`answer ${i} success`} content={answers[i]?.answer} color="success">
+										<Button className="min-w-11 w-11 h-11 rounded-medium" color="success"></Button>
+									</Tooltip>
+								:
+									<Tooltip key={`answer ${i} danger`} content={answers[i]?.answer} color="danger">
+										<Button className="min-w-11 w-11 h-11 rounded-medium" color="danger"></Button>
+									</Tooltip>
+							: 
+								<Tooltip key={`answer ${i}`} isDisabled>
+									<Button className="min-w-11 w-11 h-11 rounded-medium"></Button>
+								</Tooltip>
+						)
+					})}
+				</div>
+			</div>
+
+			{
+				gameState == 'playing' ? (
+					<form className="flex flex-col max-w-2xl gap-6 w-full">
+						<Autocomplete 
+							variant="bordered"
+							label="Enter your guess here" 
+							className="w-full"
+							isDisabled={answers.length >= 3}
+							onKeyDown={(e: any) => e.continuePropagation()}
+							onInputChange={onChangeGuessName}>
+							{autoCompleteNames.map((name) => (
+								<AutocompleteItem key={name['name']} textValue={name['name']}>
+									<div className="flex gap-2 items-center">
+										{name['name']}
+										<span className="text-sm text-gray-500">{name['locale_name']}</span>
+									</div>
+									{/* <div>
+									{name['name']}
+									<p className="text-sm text-gray-500">{name['locale_name']}</p>
+									</div> */}
+								</AutocompleteItem>
+							))}
+						</Autocomplete>
+						<Button className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3}>
+							Submit Guess
+						</Button>
+					</form>
+				) : <></>
+			}
 		</section>
 	);
 }

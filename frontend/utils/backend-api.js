@@ -15,6 +15,20 @@ export async function getDailyQuizzes() {
     }
 };
 
+export async function getQuizAnswer(quiz_id) {
+    const url = `/quiz/answer?quiz_id=${quiz_id}`
+
+    try {
+        const res = await axios.get(url, {
+            withCredentials: true
+        })
+        return res.data['quiz_answers']
+    } catch (error) {
+        console.error(error)
+        return []
+    }
+}
+
 export async function submitAnswer(quiz_id, answer) {
     const url = `/quiz/submit_answer`
 
