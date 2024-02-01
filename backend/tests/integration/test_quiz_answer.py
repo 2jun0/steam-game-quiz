@@ -90,3 +90,14 @@ def test_get_answer_with_not_existed_quiz_id(client: TestClient, current_user: U
 
     res = client.get(f"/quiz/answer?quiz_id={quiz_id}")
     assert res.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_get_correct_answer(client: TestClient, session: Session, current_user: User):
+    quiz = create_random_quiz(session)
+    create_random_quiz_answer(session, quiz_id=quiz.id, user_id=current_user.id, correct=True)
+
+    res = client.get(f"/quiz/correct_answer?quiz_id={quiz.id}")
+    assert res.status_code == status.HTTP_200_OK
+    res_json = res.json()
+
+    assert res_json == {"correct_answer": quiz.game.name}
