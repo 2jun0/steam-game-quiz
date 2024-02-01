@@ -15,3 +15,10 @@ def test_get_correct_answer(client: TestClient, session: Session, current_user: 
     res_json = res.json()
 
     assert res_json == {"correct_answer": quiz.game.name}
+
+
+def test_get_correct_answer_with_unauthorized_request(client: TestClient):
+    quiz_id = 1
+
+    res = client.get(f"/quiz/correct_answer?quiz_id={quiz_id}")
+    assert res.status_code == status.HTTP_401_UNAUTHORIZED
