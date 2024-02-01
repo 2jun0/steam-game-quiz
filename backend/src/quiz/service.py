@@ -3,7 +3,8 @@ from typing import Sequence
 
 from pydantic_core import Url
 
-from .exception import QuizNotFoundError
+from ..config import settings
+from .exception import QuizAlreadyCompletedError, QuizNotCompletedError, QuizNotFoundError
 from .model import Quiz, QuizAnswer
 from .repository import QuizAnswerRepository, QuizRepository
 from .schema import DailyQuiz
@@ -40,6 +41,10 @@ class QuizService:
         if quiz is None:
             raise QuizNotFoundError
 
+        quiz_answers = await self._quiz_answer_repo.get_by_quiz_id_and_user_id(quiz_id=quiz_id, user_id=user_id)
+        if self._is_quiz_completed(answers=quiz_answers):
+            raise QuizAlreadyCompletedError
+
         correct = quiz.game.name == answer
         quiz_submit = QuizAnswer(answer=answer, correct=correct, quiz_id=quiz_id, user_id=user_id)
 
@@ -54,3 +59,28 @@ class QuizService:
             raise QuizNotFoundError
 
         return await self._quiz_answer_repo.get_by_quiz_id_and_user_id(quiz_id=quiz_id, user_id=user_id)
+
+    async def get_correct_answer(self, *, quiz_id: int, user_id: int) -> str:
+        quiz = await self._quiz_repo.get_with_game(id=quiz_id)
+
+        if quiz is None:
+            raise QuizNotFoundError
+
+        quiz_answers = await self._quiz_answer_repo.get_by_quiz_id_and_user_id(quiz_id=quiz_id, user_id=user_id)
+        if not self._is_quiz_completed(answers=quiz_answers):
+            raise QuizNotCompletedError
+
+        return quiz.game.name
+
+    def _is_quiz_completed(self, *, answers: Sequence[QuizAnswer]) -> bool:
+        return self._has_correct_answer(answers=answers) or self._is_submission_limit_reached(answers=answers)
+
+    def _has_correct_answer(self, *, answers: Sequence[QuizAnswer]) -> bool:
+        for answer in answers:
+            if answer.correct:
+                return True
+
+        return False
+
+    def _is_submission_limit_reached(self, *, answers: Sequence[QuizAnswer]) -> bool:
+        return len(answers) >= settings.QUIZ_ANSWER_SUBMISSION_LIMIT

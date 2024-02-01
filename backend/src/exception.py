@@ -20,3 +20,8 @@ class CustomHTTPException(HTTPException):
 class NotFoundError(CustomHTTPException):
     STATUS_CODE = status.HTTP_404_NOT_FOUND
     DETAIL = "Not Found Error"
+
+
+class BadRequestError(CustomHTTPException):
+    STATUS_CODE = status.HTTP_400_BAD_REQUEST
+    DETAIL = "Bad Request Error"

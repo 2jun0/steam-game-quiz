@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
-from pydantic import HttpUrl
 
 from ..auth.dependency import CURRENT_USER_DEP
 from .dependency import get_quiz_service
 from .schema import (
-    DailyQuiz,
+    CorrectAnswerResponse,
     DailyQuizzesResponse,
     QuizAnswer,
     QuizAnswerResponse,
@@ -44,3 +43,9 @@ class QuizCBV:
                 QuizAnswer(answer=qa.answer, correct=qa.correct, created_at=qa.created_at) for qa in quiz_answers
             ]
         )
+
+    @router.get("/quiz/correct_answer")
+    async def get_correct_answer(self, quiz_id: int, current_user: CURRENT_USER_DEP):
+        correct_answer = await self.service.get_correct_answer(quiz_id=quiz_id, user_id=current_user.id)
+
+        return CorrectAnswerResponse(correct_answer=correct_answer)

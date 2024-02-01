@@ -30,3 +30,7 @@ class QuizAnswer(BaseModel):
 
 class QuizAnswerResponse(BaseModel):
     quiz_answers: Sequence[QuizAnswer]
+
+
+class CorrectAnswerResponse(BaseModel):
+    correct_answer: str
