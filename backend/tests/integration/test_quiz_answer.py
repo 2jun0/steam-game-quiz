@@ -61,7 +61,7 @@ def test_post_submit_answer_with_exceed_submission_limit(client: TestClient, ses
     assert res.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_post_submit_answer_with_quiz_end(client: TestClient, session: Session, current_user: User):
+def test_post_submit_answer_with_quiz_completed(client: TestClient, session: Session, current_user: User):
     quiz = create_random_quiz(session)
     create_random_quiz_answer(session, quiz_id=quiz.id, user_id=current_user.id, correct=True)
 
