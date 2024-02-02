@@ -4,29 +4,20 @@ import { title } from "@/components/primitives";
 import {Autocomplete, AutocompleteItem, Pagination, Select, SelectItem, Tooltip} from "@nextui-org/react";
 import {Button} from '@nextui-org/button';
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {Image} from "@nextui-org/react";
 import {autoCompleteGameName, submitAnswer} from "@/utils/backend-api"
 import { useRouter, useParams } from "next/navigation";
 import { useDailyQuiz } from "./provider";
 
-type GameState = 'success' | 'failed' | 'playing'
+
 
 export default function DailyQuiz() {
 	const router = useRouter();
     const { page } = useParams();
     const quizPage = page ? Number(page) : 1
 
-	const { quiz, answers } = useDailyQuiz();
-	const gameState = useMemo<GameState>(() => {
-		for (let answer of answers) {
-			if (answer.correct) {
-				return 'success'
-			}
-		}
-
-		return answers.length >= 3 ? 'failed' : 'playing'
-	}, [answers])
+	const { quiz, answers, gameState, correctAnswer } = useDailyQuiz();
 
 	const [screenshotPage, setScreenshotPage] = useState(1);
 	const [autoCompleteNames, setAutoCompleteNames] = useState([]);
@@ -130,7 +121,7 @@ export default function DailyQuiz() {
 				gameState == "failed" ? (
 					<div className="grid place-items-center">
 						<p className="text-red-500">You&apos;ve used up all your attempts for the quiz! 😿</p>
-						<p>The Game is <span className="text-green-500">Nier Automata</span></p>
+						<p>The Game is <span className="text-green-500">{correctAnswer}</span></p>
 						<p>Try other quizzes!</p>
 					</div>
 				) : <></>
@@ -140,7 +131,7 @@ export default function DailyQuiz() {
 				gameState == "success" ? (
 					<div className="grid place-items-center">
 						<p className="text-green-500">Your answer is right! 😼</p>
-						<p>The Game is <span className="text-green-500">Nier Automata</span></p>
+						<p>The Game is <span className="text-green-500">{correctAnswer}</span></p>
 						<p>Try other quizzes!</p>
 					</div>
 				) : <></>
