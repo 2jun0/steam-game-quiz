@@ -1,12 +1,16 @@
 "use client"
 
-import { getDailyQuizzes, getQuizAnswer } from "@/utils/backend-api";
+import { getCorrectAnswer, getDailyQuizzes, getQuizAnswer } from "@/utils/backend-api";
 import { useParams } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+
+type GameState = 'success' | 'failed' | 'playing'
 
 interface DailyQuizInterface {
     quiz?: QuizInterface;
     answers: QuizAnswerInterface[];
+    gameState: GameState;
+    correctAnswer?: string;
 }
 
 interface QuizAnswerInterface {
@@ -39,17 +43,39 @@ export function DailyQuizProvider({ children }: {
 
     const [quiz, setQuiz] = useState<QuizInterface>();
     const [answers, setAnswers] = useState<QuizAnswerInterface[]>([])
+    const [correctAnswer, setCorrectAnswer] = useState<string>()
 
 	useEffect(() => {
 		getDailyQuizzes().then((quizzes) => {
             const q = quizzes[quizPage - 1];
-
             setQuiz(q)
-            getQuizAnswer(q.quiz_id).then(setAnswers);
         });
 	}, [quizPage]);
 
-    const value = {quiz, answers};
+    useEffect(() => {
+        if (quiz) {
+            getQuizAnswer(quiz.quiz_id).then(setAnswers);
+        }
+    }, [quiz]);
+
+    const gameState = useMemo<GameState>(() => {
+		for (let answer of answers) {
+			if (answer.correct) {
+				return 'success'
+			}
+		}
+
+		return answers.length >= 3 ? 'failed' : 'playing'
+	}, [answers]);
+
+    useEffect(() => {
+        if (quiz && (gameState == "failed" || gameState == "success")) {
+            getCorrectAnswer(quiz.quiz_id).then(setCorrectAnswer)
+        }
+    }, [gameState, quiz])
+
+
+    const value = {quiz, answers, gameState, correctAnswer};
 
     return <DailyQuizContext.Provider value={value}>{children}</DailyQuizContext.Provider>
 };

@@ -29,6 +29,19 @@ export async function getQuizAnswer(quiz_id) {
     }
 }
 
+export async function getCorrectAnswer(quiz_id) {
+    const url = `/quiz/correct_answer?quiz_id=${quiz_id}`
+
+    try {
+        const res = await axios.get(url, {
+            withCredentials: true
+        })
+        return res.data["correct_answer"]
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 export async function submitAnswer(quiz_id, answer) {
     const url = `/quiz/submit_answer`
 
