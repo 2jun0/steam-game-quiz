@@ -1,13 +1,13 @@
 mkdir ./build
 # remove previous build
-rm ./build/private_lambda.zip
+rm ./build/database_lambda.zip
 # get dependency
 poetry export -f requirements.txt --without-hashes > requirements.txt
 pip install --platform manylinux2014_x86_64 --implementation cp --python-version 3.9 --only-binary=:all: --upgrade -r requirements.txt -t ./package
 # zip package with source codes
 cd ./package
-zip -r ../build/private_lambda.zip *
+zip -r ../build/database_lambda.zip *
 cd ..
-zip -r ./build/private_lambda.zip private
+zip -r ./build/database_lambda.zip database_lambda
 # remove packages
 rm -r ./package

@@ -3,7 +3,7 @@ from typing import Any, Generator
 import pytest
 from sqlalchemy.orm import Session
 
-from tests.private.database import create_tables, drop_tables, engine, init_database
+from tests.database_lambda.database import create_tables, drop_tables, engine, init_database
 
 
 @pytest.fixture(autouse=True)

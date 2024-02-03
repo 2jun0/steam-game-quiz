@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from private.screenshot.model import GameScreenshot
+from database_lambda.screenshot.model import GameScreenshot
 
 from .game import create_random_game
 

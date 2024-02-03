@@ -3,21 +3,20 @@ from typing import Any, Sequence
 
 import boto3
 
-from public.aws_lambda.exception import AWSLambdaException
-
 from .. import protocols
+from ..config import setting
 from ..scraper.model import NewGameScreenshot
 from .event import Event
+from .exception import AWSLambdaException
 from .model import Game, GameScreenshot, SaveGame
 
 
 class LambdaAPI(protocols.LambdaAPI):
-    def __init__(self, private_function_name: str) -> None:
-        self.private_function_name = private_function_name
+    def __init__(self) -> None:
         self.client = boto3.client("lambda")
 
     def invoke_lambda(self, event: Event) -> Any:
-        response = self.client.invoke(FunctionName=self.private_function_name, Payload=json.dumps(event))
+        response = self.client.invoke(FunctionName=setting.DATABASE_LAMBDA_NAME, Payload=json.dumps(event))
 
         if "FunctionError" in response:
             raise AWSLambdaException(response["FunctionError"])

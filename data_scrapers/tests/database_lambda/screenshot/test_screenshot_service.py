@@ -1,10 +1,10 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from private.screenshot.model import GameScreenshot
-from private.screenshot.service import get_screenshots_in_steam_file_ids, save_screenshots
-from tests.private.utils.game import create_random_game
-from tests.private.utils.screenshot import create_random_game_screenshot
+from database_lambda.screenshot.model import GameScreenshot
+from database_lambda.screenshot.service import get_screenshots_in_steam_file_ids, save_screenshots
+from tests.database_lambda.utils.game import create_random_game
+from tests.database_lambda.utils.screenshot import create_random_game_screenshot
 
 
 def test_save_screenshots은_입력한_스크린샷을_저장해야_한다(session: Session):

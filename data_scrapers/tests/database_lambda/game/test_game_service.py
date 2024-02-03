@@ -1,10 +1,10 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from private.game.model import Game
-from private.game.service import get_games_in_steam_ids, get_some_games, save_games
-from tests.private.utils.game import create_random_game
-from tests.private.utils.utils import random_datetime
+from database_lambda.game.model import Game
+from database_lambda.game.service import get_games_in_steam_ids, get_some_games, save_games
+from tests.database_lambda.utils.game import create_random_game
+from tests.database_lambda.utils.utils import random_datetime
 
 
 def test_get_some_games은_게임을_가져와야한다(session: Session):

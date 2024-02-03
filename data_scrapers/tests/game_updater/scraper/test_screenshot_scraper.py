@@ -1,9 +1,9 @@
 import pytest
 
-from public.scraper.screenshot import scrap_game_screenshot
-from tests.public.utils.mock_lambda_api import MockLambdaAPI
-from tests.public.utils.mock_steam_api import MockSteamAPI
-from tests.public.utils.model import create_random_game
+from game_updater.scraper.screenshot import scrap_game_screenshot
+from tests.game_updater.utils.mock_lambda_api import MockLambdaAPI
+from tests.game_updater.utils.mock_steam_api import MockSteamAPI
+from tests.game_updater.utils.model import create_random_game
 
 
 @pytest.fixture

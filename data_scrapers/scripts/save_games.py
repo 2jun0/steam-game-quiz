@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
-from private.database import engine  # noqa: E402
-from private.game import service  # noqa: E402
+from database_lambda.database import engine  # noqa: E402
+from database_lambda.game import service  # noqa: E402
 
 
 class Game(TypedDict):

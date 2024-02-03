@@ -1,10 +1,10 @@
 import pytest
 
-from public.config import setting
-from public.scraper.game import scrap_games
-from tests.public.utils.mock_lambda_api import MockLambdaAPI
-from tests.public.utils.mock_steam_api import MockSteamAPI
-from tests.public.utils.steam import create_random_game
+from game_updater.config import setting
+from game_updater.scraper.game import scrap_games
+from tests.game_updater.utils.mock_lambda_api import MockLambdaAPI
+from tests.game_updater.utils.mock_steam_api import MockSteamAPI
+from tests.game_updater.utils.steam import create_random_game
 
 
 @pytest.fixture

@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Sequence
 
-from public.aws_lambda.model import Game, GameScreenshot, SaveGame
-from public.protocols import LambdaAPI
+from game_updater.aws_lambda.model import Game, GameScreenshot, SaveGame
+from game_updater.protocols import LambdaAPI
 
 
 class MockLambdaAPI(LambdaAPI):

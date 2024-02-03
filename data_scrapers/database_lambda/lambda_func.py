@@ -2,11 +2,11 @@ from typing import Any, Callable
 
 from sqlalchemy.orm import Session
 
-from private.database import engine, init_database
-from private.event import Event, EventName
-from private.game.service import get_games_in_steam_ids, get_some_games, save_games
-from private.logger import logger
-from private.screenshot.service import get_screenshots_in_steam_file_ids, save_screenshots
+from database_lambda.database import engine, init_database
+from database_lambda.event import Event, EventName
+from database_lambda.game.service import get_games_in_steam_ids, get_some_games, save_games
+from database_lambda.logger import logger
+from database_lambda.screenshot.service import get_screenshots_in_steam_file_ids, save_screenshots
 
 funcs: dict[EventName, Callable[..., Any]] = {
     "save_games": save_games,

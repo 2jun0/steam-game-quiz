@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from private.genre.model import Genre
+from database_lambda.genre.model import Genre
 
 genre_counter = 1
 

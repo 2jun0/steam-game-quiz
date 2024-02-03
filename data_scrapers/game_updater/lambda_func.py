@@ -1,9 +1,9 @@
 from typing import Any
 
-from public.aws_lambda.lambda_api import LambdaAPI
-from public.logger import logger
-from public.scraper.service import scrap_game_screenshot_for_all, scrap_games
-from public.steam.steam_api import SteamAPI
+from game_updater.aws_lambda.lambda_api import LambdaAPI
+from game_updater.logger import logger
+from game_updater.scraper.service import scrap_game_screenshot_for_all, scrap_games
+from game_updater.steam.steam_api import SteamAPI
 
 
 def scrap_games_job(lambda_api: LambdaAPI):
@@ -23,7 +23,7 @@ def scrap_screenshots_job(lambda_api: LambdaAPI):
 
 
 def lambda_handler(event: Any, context: Any):
-    lambda_api = LambdaAPI("private")
+    lambda_api = LambdaAPI()
 
     scrap_games_job(lambda_api)
     # scrap_screenshots_job(lambda_api)

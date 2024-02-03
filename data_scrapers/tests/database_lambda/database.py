@@ -1,11 +1,11 @@
 from sqlalchemy import Table, create_engine
 from sqlalchemy_utils import create_database, database_exists
 
-import private.game.model  # noqa: F401
-import private.genre.model  # noqa: F401
-import private.screenshot.model  # noqa: F401
-from private.config import setting
-from private.model import Base
+import database_lambda.game.model  # noqa: F401
+import database_lambda.genre.model  # noqa: F401
+import database_lambda.screenshot.model  # noqa: F401
+from database_lambda.config import setting
+from database_lambda.model import Base
 
 engine = create_engine(setting.DATABASE_URL, echo=True)  # type: ignore
 

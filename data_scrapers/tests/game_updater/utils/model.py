@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from public.aws_lambda.model import Game
+from game_updater.aws_lambda.model import Game
 
 from .utils import random_datetime
 

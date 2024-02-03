@@ -4,8 +4,8 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from private.game.model import Game
-from private.genre.model import Genre
+from database_lambda.game.model import Game
+from database_lambda.genre.model import Genre
 
 from .genre import create_random_genre
 from .utils import random_datetime

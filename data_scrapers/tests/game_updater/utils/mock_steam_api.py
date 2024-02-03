@@ -1,9 +1,9 @@
 from random import choice, randint, sample
 from typing import Optional
 
-from public.protocols import SteamAPI
-from public.steam.exception import SteamAPINoContentsException
-from public.steam.model import (
+from game_updater.protocols import SteamAPI
+from game_updater.steam.exception import SteamAPINoContentsException
+from game_updater.steam.model import (
     GamalyticSteamGameDetailResponse,
     GamalyticSteamGameResponse,
     SteamFeatureGameResponse,
