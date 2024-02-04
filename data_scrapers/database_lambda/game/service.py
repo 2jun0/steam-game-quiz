@@ -11,10 +11,11 @@ from .model import Game
 genres: dict[str, Genre] = {}
 
 
-def get_some_games(session: Session) -> list[dict[str, Any]]:
-    some_games = repository.get_all_games(session)
-
-    return [g.to_dto().model_dump(mode="json") for g in some_games]
+# TODO: get_all_games로 바꾸기
+# def get_some_games(session: Session) -> list[dict[str, Any]]:
+#     some_games = repository.get_all_games(session)
+#
+# return [g.to_dto().model_dump(mode="json") for g in some_games]
 
 
 def _get_genres(session: Session, name: str) -> Genre:
@@ -49,9 +50,3 @@ def save_games(session: Session, games: Sequence[dict[str, Any]]):
         models[existed.steam_id] = existed
 
     session.add_all(models.values())
-
-
-def get_games_in_steam_ids(session: Session, steam_ids: Sequence[int]) -> list[dict[str, Any]]:
-    games = repository.get_games_in_steam_ids(session, steam_ids)
-
-    return [g.to_dto().model_dump(mode="json") for g in games]

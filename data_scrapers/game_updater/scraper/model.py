@@ -11,9 +11,3 @@ class Game(BaseModel):
     genres: Sequence[str]
     tags: Sequence[str]
     revenue: float
-
-
-class NewGameScreenshot(BaseModel):
-    steam_file_id: int
-    url: str = Field(max_length=2048)
-    game_id: int

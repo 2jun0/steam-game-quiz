@@ -1,23 +1,13 @@
 from datetime import datetime
 from typing import Sequence
 
-from game_updater.aws_lambda.model import Game, GameScreenshot, SaveGame
+from game_updater.aws_lambda.model import Game, SaveGame
 from game_updater.protocols import LambdaAPI
 
 
 class MockLambdaAPI(LambdaAPI):
     def __init__(self):
         self.games: dict[int, Game] = {}
-        self.screenshots: dict[int, GameScreenshot] = {}
-
-    def get_some_games(self) -> list[Game]:
-        return list(self.games.values())
-
-    def get_games_in_steam_ids(self, steam_ids: Sequence[int]) -> list[Game]:
-        return [self.games[id] for id in steam_ids if id in self.games]
-
-    def get_screenshots_in_steam_file_ids(self, steam_file_ids: Sequence[int]) -> list[GameScreenshot]:
-        return [self.screenshots[id] for id in steam_file_ids if id in self.screenshots]
 
     def save_games(self, games: Sequence[SaveGame]):
         for game in games:
@@ -31,7 +21,3 @@ class MockLambdaAPI(LambdaAPI):
                 updated_at=datetime.utcnow(),
                 created_at=datetime.utcnow(),
             )
-
-    def save_screenshots(self, screenshots: Sequence[GameScreenshot]):
-        for screenshot in screenshots:
-            self.screenshots[screenshot.steam_file_id] = screenshot
