@@ -2,14 +2,16 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from database_lambda.game.model import Game
-from database_lambda.game.service import save_games
+from database_lambda.game.service import get_all_games, save_games
+from tests.database_lambda.utils.game import create_random_game
 from tests.database_lambda.utils.utils import random_datetime
 
-# def test_get_some_games은_게임을_가져와야한다(session: Session):
-#     _ = [create_random_game(session) for _ in range(2)]
 
-#     given = get_some_games(session)
-#     assert len(given) == 2
+def test_get_all_games은_게임을_가져와야한다(session: Session):
+    saved = [create_random_game(session) for _ in range(2)]
+
+    given = get_all_games(session)
+    assert set(g["id"] for g in given) == set(g.id for g in saved)
 
 
 def test_save_games은_입력한_게임을_저장해야_한다(session: Session):

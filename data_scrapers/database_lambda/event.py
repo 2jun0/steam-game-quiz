@@ -1,11 +1,6 @@
 from typing import Any, Literal, TypedDict
 
-EventName = Literal[
-    "save_games",
-    "save_screenshots",
-    "get_games_in_steam_ids",
-    "get_screenshots_in_steam_file_ids",
-]
+EventName = Literal["get_all_games", "save_games", "save_screenshots"]
 
 
 class Event(TypedDict):

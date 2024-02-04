@@ -11,11 +11,10 @@ from .model import Game
 genres: dict[str, Genre] = {}
 
 
-# TODO: get_all_games로 바꾸기
-# def get_some_games(session: Session) -> list[dict[str, Any]]:
-#     some_games = repository.get_all_games(session)
-#
-# return [g.to_dto().model_dump(mode="json") for g in some_games]
+def get_all_games(session: Session) -> list[dict[str, Any]]:
+    some_games = repository.get_all_games(session)
+
+    return [g.to_dto().model_dump(mode="json") for g in some_games]
 
 
 def _get_genres(session: Session, name: str) -> Genre:
