@@ -1,6 +1,6 @@
 from typing import Any, Literal, TypedDict
 
-EventName = Literal["get_all_games", "save_games", "save_screenshots"]
+EventName = Literal["get_all_games", "save_games", "save_screenshots", "save_quizzes"]
 
 
 class Event(TypedDict):
