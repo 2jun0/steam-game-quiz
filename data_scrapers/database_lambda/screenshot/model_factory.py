@@ -25,9 +25,9 @@ def _create_models(screenshots: Iterable[SaveGameScreenshot]) -> dict[STEAM_FILE
     return models
 
 
-def to_models(session: Session, screenshots: Iterable[SaveGameScreenshot]) -> Iterable[GameScreenshot]:
+def to_models(session: Session, screenshots: Iterable[SaveGameScreenshot]) -> list[GameScreenshot]:
     models = _create_models(screenshots)
     # detached된 객체의 식별자 업데이트
     _attach_models(session, models)
 
-    return models.values()
+    return list(models.values())
