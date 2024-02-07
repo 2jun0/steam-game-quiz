@@ -1,10 +1,12 @@
+from collections.abc import Sequence
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Config(BaseSettings):
     DATABASE_LAMBDA_NAME: str = "database"
     DAILY_QUIZ_CNT: int = 5
-    GAME_GENERES: list[str] = [
+    GAME_GENERES: Sequence[str] = [
         "Action",
         "Adventure",
         "Massively Multiplayer",
