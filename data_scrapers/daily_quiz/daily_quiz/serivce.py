@@ -1,6 +1,7 @@
 from typing import Iterable
 
 from ..aws_lambda.model import Game, SaveQuiz
+from ..config import setting
 from ..protocols import LambdaAPI, SteamAPI
 from .game_picker import pick_games
 from .genre_picker import pick_genres
@@ -22,7 +23,7 @@ def new_daily_quizzes(lambda_api: LambdaAPI, steam_api: SteamAPI):
     all_games = lambda_api.get_all_games()
 
     # 장르 선택
-    picked_genres = pick_genres()
+    picked_genres = pick_genres(setting.DAILY_QUIZ_CNT)
 
     # 게임 선택
     picked_games = pick_games(all_games, picked_genres)
