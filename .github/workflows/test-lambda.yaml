@@ -1,4 +1,4 @@
-name: Test scraper
+name: Test aws lambda
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      working-directory: ./data_scrapers
+      working-directory: ./aws_lambdas
 
     steps:
       - uses: actions/checkout@v3
