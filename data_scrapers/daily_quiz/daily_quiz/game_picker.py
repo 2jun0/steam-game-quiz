@@ -51,7 +51,7 @@ def _pick_older_newer_games(
 def _pick_unique_per_category(categorized_games: Iterable[GameGroup]) -> set[Game]:
     unique_games: set[Game] = set()
 
-    for games in categorized_games:
+    for games in sorted(categorized_games, key=len):
         games_ = list(set(games) - unique_games)
         game = random.choice(games_)
         unique_games.add(game)
@@ -62,7 +62,7 @@ def _pick_unique_per_category(categorized_games: Iterable[GameGroup]) -> set[Gam
 def pick_games(
     games: Iterable[Game],
     genres: Iterable[str],
-):
+) -> set[Game]:
     categorized_games = _categorize_games_by_genre(games, genres)
 
     # 오래된 게임 / 최신 게임으로 분리
@@ -70,4 +70,4 @@ def pick_games(
     olders, newers = _pick_older_newer_games(categorized_games, median_released_at)
 
     # 최종 게임 선발
-    return _pick_unique_per_category(categorized_games)
+    return _pick_unique_per_category(olders + newers)
