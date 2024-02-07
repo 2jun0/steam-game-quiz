@@ -11,8 +11,25 @@ def test_pick_genres는_입력된_개수만큼_유일한_장르_개수를_반환
     assert len(set(genres)) == genre_cnt
 
 
-@pytest.mark.parametrize("setting_genres", (tuple(setting.GAME_GENERES), ("Adventure", "RPG")))
-@pytest.mark.parametrize("genre_cnt", (5, 10))
+@pytest.mark.parametrize(
+    "setting_genres",
+    (
+        ("Action", "Adventure", "Massively Multiplayer", "Strategy", "RPG"),
+        (
+            "Action",
+            "Adventure",
+            "Massively Multiplayer",
+            "Strategy",
+            "RPG",
+            "Indie",
+            "Simulation",
+            "Casual",
+            "Racing",
+            "Sports",
+        ),
+    ),
+)
+@pytest.mark.parametrize("genre_cnt", (1, 5))
 def test_pick_genres는_설정값에서_장르를_선택해야_한다(genre_cnt: int, setting_genres: tuple[str]):
     setting.GAME_GENERES = setting_genres
     genres = pick_genres(genre_cnt)
