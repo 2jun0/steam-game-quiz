@@ -1,10 +1,11 @@
 import random
 from collections import defaultdict
+from collections.abc import Collection, Iterable, Sequence
 from datetime import datetime
-from typing import Iterable, Sequence
 
 from ..aws_lambda.model import Game
 from ..config import setting
+from .exception import NotEnoughGamesError
 from .utils import divide_randomly
 
 GameGroup = list[Game]
@@ -53,15 +54,29 @@ def _pick_unique_per_category(categorized_games: Iterable[GameGroup]) -> set[Gam
 
     for games in sorted(categorized_games, key=len):
         games_ = list(set(games) - unique_games)
+
+        if len(games_) == 0:
+            flat = [g for g in games for games in categorized_games]
+            raise NotEnoughGamesError(
+                f"게임의 수가 너무 적어 게임 선택 알고리즘을 작동할 수 없습니다. 지금까지 선발된 게임: {set(flat)}"
+            )
+
         game = random.choice(games_)
         unique_games.add(game)
 
     return unique_games
 
 
+def _validate_final_games(games: Collection, genres: Collection):
+    if len(games) != len(genres):
+        raise NotEnoughGamesError(
+            f"게임의 수가 너무 적어 게임 선택 알고리즘을 작동할 수 없습니다. 최종 선발된 게임: {games}"
+        )
+
+
 def pick_games(
     games: Iterable[Game],
-    genres: Iterable[str],
+    genres: Sequence[str],
 ) -> set[Game]:
     categorized_games = _categorize_games_by_genre(games, genres)
 
@@ -70,4 +85,6 @@ def pick_games(
     olders, newers = _pick_older_newer_games(categorized_games, median_released_at)
 
     # 최종 게임 선발
-    return _pick_unique_per_category(olders + newers)
+    final_games = _pick_unique_per_category(olders + newers)
+    _validate_final_games(final_games, genres)
+    return final_games
