@@ -43,7 +43,7 @@ def _pick_older_newer_games(
     older_part, newer_part = divide_randomly(categorized_games, setting.OLDER_GAME_COUNT)
 
     olders = [_filter_older_games(games, median_released_at) for games in older_part]
-    newers = [_filter_newer_games(games, median_released_at) for games in older_part]
+    newers = [_filter_newer_games(games, median_released_at) for games in newer_part]
 
     return olders, newers
 
