@@ -13,3 +13,5 @@ requirements.txt
 .vscode
 # data
 *.csv
+# jupyter notebook
+.ipynb
