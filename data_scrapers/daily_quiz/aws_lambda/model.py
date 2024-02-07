@@ -14,6 +14,9 @@ class Game(BaseModel):
     updated_at: datetime
     created_at: datetime
 
+    def __hash__(self) -> int:
+        return hash(self.id)
+
 
 class SaveGameScreenshot(BaseModel):
     steam_file_id: int
