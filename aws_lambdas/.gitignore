@@ -1,0 +1,17 @@
+# python virtualenv
+.venv
+# cache
+__pycache__
+# env
+*.env
+# for packages
+build
+requirements.txt
+# MacOS
+.DS_Store
+# vscode
+.vscode
+# data
+*.csv
+# jupyter notebook
+.ipynb

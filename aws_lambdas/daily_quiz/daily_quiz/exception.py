@@ -1,0 +1,2 @@
+class NotEnoughGamesError(Exception):
+    pass

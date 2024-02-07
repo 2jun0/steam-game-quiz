@@ -1,0 +1,45 @@
+name: Test aws lambda
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./aws_lambdas
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: install poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.6.1
+        
+      - name: setup a local virtual environment
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+        
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+          path: ${{env.working-directory}}/.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+      
+      - name: install the project dependencies
+        run: poetry install
+        working-directory: ${{env.working-directory}}
+
+      - name: test app
+        run: poetry run python -m pytest tests -c pytest.ini
+        working-directory: ${{env.working-directory}}
