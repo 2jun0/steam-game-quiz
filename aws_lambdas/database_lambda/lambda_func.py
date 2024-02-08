@@ -9,12 +9,14 @@ def lambda_handler(event: Any, context: Any):
     from database_lambda.event import Event, EventName
     from database_lambda.game.service import get_all_games, save_games
     from database_lambda.logger import logger
+    from database_lambda.quiz.service import save_quizzes
     from database_lambda.screenshot.service import save_screenshots
 
     funcs: dict[EventName, Callable[..., Any]] = {
         "save_games": save_games,
         "save_screenshots": save_screenshots,
         "get_all_games": get_all_games,
+        "save_quizzes": save_quizzes,
     }
 
     def handle_event(session: Session, event: Event) -> Any:
