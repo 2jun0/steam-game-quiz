@@ -2,7 +2,7 @@ from typing import Any, Callable
 
 from sqlalchemy.orm import Session
 
-from database_lambda.database import engine, init_database
+from database_lambda.database import engine
 from database_lambda.event import Event, EventName
 from database_lambda.game.service import get_all_games, save_games
 from database_lambda.logger import logger
@@ -28,8 +28,6 @@ def handle_event(session: Session, event: Event) -> Any:
 
 
 def lambda_handler(event: Event, context: Any):
-    # init_database()
-
     logger.info("Handle event [required event is %s]", event)
 
     with Session(engine) as session:
