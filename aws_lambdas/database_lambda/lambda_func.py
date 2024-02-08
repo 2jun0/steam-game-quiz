@@ -28,7 +28,7 @@ def handle_event(session: Session, event: Event) -> Any:
 
 
 def lambda_handler(event: Event, context: Any):
-    init_database()
+    # init_database()
 
     logger.info("Handle event [required event is %s]", event)
 
