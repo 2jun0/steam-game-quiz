@@ -35,4 +35,5 @@ class LambdaAPI(protocols.LambdaAPI):
 
     def get_all_games(self) -> list[Game]:
         event = Event(name="get_all_games", payload=None)
-        return self.invoke_lambda(event)
+        res = self.invoke_lambda(event)
+        return [Game(**g) for g in res]
