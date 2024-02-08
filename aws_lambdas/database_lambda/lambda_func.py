@@ -1,34 +1,34 @@
 from typing import Any, Callable
 
-from sqlalchemy.orm import Session
 
-from database_lambda.database import engine, init_database
-from database_lambda.event import Event, EventName
-from database_lambda.game.service import get_all_games, save_games
-from database_lambda.logger import logger
-from database_lambda.screenshot.service import save_screenshots
+def lambda_handler(event: Any, context: Any):
 
-funcs: dict[EventName, Callable[..., Any]] = {
-    "save_games": save_games,
-    "save_screenshots": save_screenshots,
-    "get_all_games": get_all_games,
-}
+    from sqlalchemy.orm import Session
 
+    from database_lambda.database import engine
+    from database_lambda.event import Event, EventName
+    from database_lambda.game.service import get_all_games, save_games
+    from database_lambda.logger import logger
+    from database_lambda.quiz.service import save_quizzes
+    from database_lambda.screenshot.service import save_screenshots
 
-def handle_event(session: Session, event: Event) -> Any:
-    func = funcs[event["name"]]
+    funcs: dict[EventName, Callable[..., Any]] = {
+        "save_games": save_games,
+        "save_screenshots": save_screenshots,
+        "get_all_games": get_all_games,
+        "save_quizzes": save_quizzes,
+    }
 
-    if "payload" in event:
-        result = func(session, event["payload"])
-    else:
-        result = func(session)
+    def handle_event(session: Session, event: Event) -> Any:
+        func = funcs[event["name"]]
 
-    session.commit()
-    return result
+        if "payload" in event and event["payload"]:
+            result = func(session, event["payload"])
+        else:
+            result = func(session)
 
-
-def lambda_handler(event: Event, context: Any):
-    init_database()
+        session.commit()
+        return result
 
     logger.info("Handle event [required event is %s]", event)
 

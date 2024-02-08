@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "data-scrapers"
-version = "1"
+name = "aws-lambdas"
+version = "2"
 description = ""
 authors = ["2jun0 <soo28819@gmail.com>"]
 readme = "README.md"
@@ -14,6 +14,7 @@ pydantic-settings = "^2.1.0"
 pymysql = "^1.1.0"
 cryptography = "^41.0.7"
 urllib3 = "^1"
+pydantic = "^2.6.1"
 
 
 [tool.poetry.group.dev.dependencies]
