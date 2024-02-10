@@ -84,6 +84,18 @@ export async function authGoogleAuthorize() {
     }
 };
 
+export async function authFacebookAuthorize() {
+    const url = `/auth/facebook/authorize`
+
+    try {
+        const res = await axios.get(url)
+        const json = res.data
+        return json["authorization_url"]
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 export async function checkLogin() {
     const url = `/auth/check`
 

@@ -1,7 +1,7 @@
 import { Button, Modal, ModalBody, ModalContent, ModalHeader, ModalFooter } from "@nextui-org/react"
-import { GoogleIcon } from "./icons"
+import { FacebookIcon, GoogleIcon } from "./icons"
 import { FC } from "react";
-import { authGoogleAuthorize } from "@/utils/backend-api";
+import { authFacebookAuthorize, authGoogleAuthorize } from "@/utils/backend-api";
 import { useRouter } from 'next/navigation'
 
 export interface LoginModalProps {
@@ -13,8 +13,14 @@ export const LoginModal: FC<LoginModalProps> = ({isOpen, onOpenChange}) => {
     const router = useRouter()
 
     const loginGoogle = async (onClose: () => any) => {
-        const auth_url = await authGoogleAuthorize()
-        router.push(auth_url)
+        const authUrl = await authGoogleAuthorize()
+        router.push(authUrl)
+        onClose()
+    }
+
+    const loginFacebook = async (onClose: () => any) => {
+        const authUrl = await authFacebookAuthorize()
+        router.push(authUrl)
         onClose()
     }
 
@@ -31,6 +37,9 @@ export const LoginModal: FC<LoginModalProps> = ({isOpen, onOpenChange}) => {
                         <ModalBody className="items-center">
                             <Button className="w-full bg-default-100" startContent={<GoogleIcon/>} onClick={() => {loginGoogle(onClose)}}>
                                 Continue with Google
+                            </Button>
+                            <Button className="w-full bg-default-100" startContent={<FacebookIcon/>} onClick={() => {loginFacebook(onClose)}}>
+                                Continue with Facebook
                             </Button>
                         </ModalBody>
                         <ModalFooter>
