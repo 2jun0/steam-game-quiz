@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useAuth } from "./provider";
 import { apiAxios } from "@/utils/api-axios";
 import { CircularProgress } from "@nextui-org/react";
+import { AxiosError } from "axios";
 
 const axios = apiAxios()
 
@@ -21,8 +22,19 @@ export default function CallbackOAuth2({api_callback_url, children}: {
         }).then(({ data }) => {
             console.debug("OAuth2 callback recieved:", data)
             afterLogin({ redirectUrl: '/' })
+        }).catch((error: AxiosError) => {
+            if (error.response?.status == 400) {
+                const {detail} = error.response?.data as any
+                
+                if (detail == "OAUTH_USER_ALREADY_EXISTS") {
+                    alert("An account with the same email address has already been signed in.")
+                    afterLogin({ redirectUrl: '/' })
+                    return
+                }
+            }
+            throw error
         })
-    }, [afterLogin, api_callback_url, searchParams])
+    }, [])
 
     return (
         <>
