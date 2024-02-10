@@ -19,6 +19,9 @@ class Config(BaseSettings):
     GOOGLE_OAUTH2_CLIENT_ID: str
     GOOGLE_OAUTH2_CLIENT_SECRET: str
     GOOGLE_OAUTH2_REDIRECT_URL: str | None = None
+    FACEBOOK_OAUTH2_CLIENT_ID: str
+    FACEBOOK_OAUTH2_CLIENT_SECRET: str
+    FACEBOOK_OAUTH2_REDIRECT_URL: str | None = None
 
     ENVIRONMENT: Envrionment = Envrionment.PRODUCTION
 
