@@ -3,14 +3,10 @@
 import {
 	Navbar as NextUINavbar,
 	NavbarContent,
-	NavbarMenu,
-	NavbarMenuToggle,
 	NavbarBrand,
 	NavbarItem,
-	NavbarMenuItem,
 } from "@nextui-org/navbar";
 import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
 
 import { link as linkStyles } from "@nextui-org/theme";
 
@@ -56,7 +52,7 @@ export const Navbar = () => {
 				<NavbarBrand as="li" className="gap-3 max-w-fit">
 					<NextLink className="flex justify-start items-center gap-1" href="/">
 						<Logo />
-						<p className="font-bold text-inherit">Game Detective</p>
+						<p className="font-bold text-inherit">Steam Game Quiz</p>
 					</NextLink>
 				</NavbarBrand>
 				<ul className="hidden lg:flex gap-4 justify-start ml-2">
