@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlmodel import Field, Relationship, SQLModel
 
 from ..game.model import Game, GameScreenshot
@@ -34,5 +36,16 @@ class QuizAnswer(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     correct: bool = Field()
 
     user_id: int = Field(foreign_key="user.id")
+    quiz_id: int = Field(foreign_key="quiz.id")
+    quiz: Quiz = Relationship()
+
+
+class DailyQuiz(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+    __tablename__: str = "daily_quiz"
+
+    id: int | None = Field(default=None, primary_key=True)
+
+    target_date: date = Field(nullable=False)
+
     quiz_id: int = Field(foreign_key="quiz.id")
     quiz: Quiz = Relationship()
