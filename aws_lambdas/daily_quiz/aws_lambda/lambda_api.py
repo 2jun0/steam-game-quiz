@@ -1,5 +1,6 @@
 import json
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 import boto3
 
@@ -9,7 +10,7 @@ from .. import protocols
 from ..config import setting
 from .event import Event
 from .exception import AWSLambdaException
-from .model import SaveGameScreenshot, SaveQuiz
+from .model import SaveDailyQuiz, SaveGameScreenshot, SaveQuiz
 
 
 class LambdaAPI(protocols.LambdaAPI):
@@ -31,6 +32,10 @@ class LambdaAPI(protocols.LambdaAPI):
 
     def save_quizzes(self, quizzes: Iterable[SaveQuiz]):
         event = Event(name="save_quizzes", payload=[q.model_dump() for q in quizzes])
+        self.invoke_lambda(event)
+
+    def save_daily_quizzes(self, daily_quizzes: Iterable[SaveDailyQuiz]):
+        event = Event(name="save_daily_quizzes", payload=[q.model_dump() for q in daily_quizzes])
         self.invoke_lambda(event)
 
     def get_all_games(self) -> list[Game]:

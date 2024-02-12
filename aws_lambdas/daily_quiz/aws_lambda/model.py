@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional, Sequence
 
 from pydantic import BaseModel
@@ -26,3 +26,8 @@ class SaveGameScreenshot(BaseModel):
 
 class SaveQuiz(BaseModel):
     screenshots: Sequence[SaveGameScreenshot]
+
+
+class SaveDailyQuiz(BaseModel):
+    quiz: SaveQuiz
+    target_date: date

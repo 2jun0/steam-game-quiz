@@ -1,4 +1,5 @@
 import random
+from datetime import date, datetime
 from typing import Sequence, TypeVar
 
 T = TypeVar("T")
@@ -14,3 +15,7 @@ def divide_randomly(x: Sequence[T], k: int) -> tuple[list[T], list[T]]:
     b = [x[b_i] for b_i in b_idxes]
 
     return a, b
+
+
+def utc_today() -> date:
+    return datetime.utcnow().date()
