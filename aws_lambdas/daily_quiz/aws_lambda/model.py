@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional, Sequence
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 
 
 class Game(BaseModel):
@@ -26,3 +26,12 @@ class SaveGameScreenshot(BaseModel):
 
 class SaveQuiz(BaseModel):
     screenshots: Sequence[SaveGameScreenshot]
+
+
+class SaveDailyQuiz(BaseModel):
+    quiz: SaveQuiz
+    target_date: date
+
+    @field_serializer("target_date")
+    def serialize_target_date(self, target_date: date, _info) -> str:
+        return str(target_date)

@@ -1,5 +1,7 @@
 from typing import Any, Callable
 
+from .quiz.service import save_daily_quizzes
+
 
 def lambda_handler(event: Any, context: Any):
 
@@ -17,6 +19,7 @@ def lambda_handler(event: Any, context: Any):
         "save_screenshots": save_screenshots,
         "get_all_games": get_all_games,
         "save_quizzes": save_quizzes,
+        "save_daily_quizzes": save_daily_quizzes,
     }
 
     def handle_event(session: Session, event: Event) -> Any:
