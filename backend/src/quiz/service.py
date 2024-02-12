@@ -35,7 +35,9 @@ class QuizService:
     async def get_today_quizzes(self) -> Sequence[schema.DailyQuiz]:
         utc_now_date = datetime.utcnow().date()
 
-        daily_quizzes = await self._daily_quiz_repo.get_by_target_date_with_quiz(target_date=utc_now_date)
+        daily_quizzes = await self._daily_quiz_repo.get_by_target_date_with_quiz_and_screenshots(
+            target_date=utc_now_date
+        )
         return self._today_quizzes(daily_quizzes)
 
     async def submit_answer(self, *, quiz_id: int, user_id: int, answer: str) -> bool:
