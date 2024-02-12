@@ -4,7 +4,7 @@ from ..game.model import Game, GameScreenshot
 from ..model import CreatedAtMixin, UpdatedAtMixin
 
 
-class QuizScreenshotLink(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+class QuizScreenshotLink(SQLModel, table=True):
     __tablename__: str = "quiz_screenshot_link"
 
     id: int | None = Field(default=None, primary_key=True)
