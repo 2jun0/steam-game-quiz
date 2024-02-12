@@ -1,5 +1,3 @@
-from datetime import date
-
 import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -15,7 +13,7 @@ def test_save_daily_quizzes은_입력한_데일리_퀴즈를_저장해야_한다
     saved_games = [create_random_game(session) for _ in range(2)]
     daily_quizzes: list[SaveDailyQuiz] = [
         {
-            "target_date": date(2023, 1, 10),
+            "target_date": "2023-1-10",
             "quiz": {
                 "screenshots": [
                     {"steam_file_id": 1, "url": "https://fake.url/1", "game_id": saved_games[0].id},
@@ -27,7 +25,7 @@ def test_save_daily_quizzes은_입력한_데일리_퀴즈를_저장해야_한다
             },
         },
         {
-            "target_date": date(2023, 1, 10),
+            "target_date": "2023-1-10",
             "quiz": {
                 "screenshots": [
                     {"steam_file_id": 6, "url": "https://fake.url/6", "game_id": saved_games[1].id},
@@ -50,7 +48,7 @@ def test_save_daily_quizzes은_한_퀴즈에_여러개의_게임_스크린샷이
     saved_games = [create_random_game(session) for _ in range(2)]
     daily_quizzes: list[SaveDailyQuiz] = [
         {
-            "target_date": date(2023, 1, 10),
+            "target_date": "2023-1-10",
             "quiz": {
                 "screenshots": [
                     {"steam_file_id": 1, "url": "https://fake.url/1", "game_id": saved_games[0].id},
@@ -71,7 +69,7 @@ def test_save_daily_quizzes은_한_퀴즈에_중복된_스크린샷이_있으면
     saved_games = [create_random_game(session) for _ in range(2)]
     daily_quizzes: list[SaveDailyQuiz] = [
         {
-            "target_date": date(2023, 1, 10),
+            "target_date": "2023-1-10",
             "quiz": {
                 "screenshots": [
                     {"steam_file_id": 1, "url": "https://fake.url/1", "game_id": saved_games[0].id},

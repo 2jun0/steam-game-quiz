@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from datetime import datetime
 
 from sqlalchemy.orm import Session
 
@@ -18,7 +19,8 @@ def to_quiz_models(session: Session, quizzes: Iterable[SaveQuiz]) -> list[Quiz]:
 
 def to_daily_quiz_model(session: Session, daily_quiz: SaveDailyQuiz) -> DailyQuiz:
     quiz_model = to_quiz_model(session, daily_quiz["quiz"])
-    return DailyQuiz(target_date=daily_quiz["target_date"], quiz=quiz_model)
+    target_date = datetime.strptime(daily_quiz["target_date"], "%Y-%m-%d").date()
+    return DailyQuiz(target_date=target_date, quiz=quiz_model)
 
 
 def to_daily_quiz_models(session: Session, daily_quizzes: Iterable[SaveDailyQuiz]) -> list[DailyQuiz]:
