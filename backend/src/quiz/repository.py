@@ -56,7 +56,11 @@ class DailyQuizRepository(IRepository[DailyQuiz], CRUDMixin):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def get_by_target_date_with_quiz(self, *, target_date: date) -> Sequence[DailyQuiz]:
-        stmt = select(DailyQuiz).where(DailyQuiz.target_date == target_date).options(selectinload(DailyQuiz.quiz))
+    async def get_by_target_date_with_quiz_and_screenshots(self, *, target_date: date) -> Sequence[DailyQuiz]:
+        stmt = (
+            select(DailyQuiz)
+            .where(DailyQuiz.target_date == target_date)
+            .options(selectinload(DailyQuiz.quiz).selectinload(Quiz.screenshots))  # type: ignore
+        )
         rs = await self._session.exec(stmt)
         return rs.all()
