@@ -7,10 +7,10 @@ from .model import Quiz
 from .schema import SaveQuiz
 
 
-def to_models(session: Session, quizzes: Iterable[SaveQuiz]) -> list[Quiz]:
-    models: list[Quiz] = []
-    for quiz in quizzes:
-        screenshot_models = screenshot_model_factory.to_models(session, screenshots=quiz["screenshots"])
-        models.append(Quiz(screenshots=screenshot_models))
+def to_model(session: Session, quiz: SaveQuiz) -> Quiz:
+    screenshot_models = screenshot_model_factory.to_models(session, screenshots=quiz["screenshots"])
+    return Quiz(screenshots=screenshot_models)
 
-    return models
+
+def to_models(session: Session, quizzes: Iterable[SaveQuiz]) -> list[Quiz]:
+    return [to_model(session, quiz) for quiz in quizzes]
