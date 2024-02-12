@@ -1,5 +1,5 @@
 from fastapi_users_db_sqlmodel import SQLModelBaseOAuthAccount, SQLModelBaseUserDB
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
 
 from ..model import CreatedAtMixin, UpdatedAtMixin
 
@@ -16,9 +16,3 @@ class OAuthAccount(CreatedAtMixin, UpdatedAtMixin, SQLModelBaseOAuthAccount, tab
     id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
     user: User = Relationship(back_populates="oauth_accounts")
-
-
-class GuestUser(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
-    __tablename__: str = "guest_account"
-
-    id: int | None = Field(default=None, primary_key=True)
