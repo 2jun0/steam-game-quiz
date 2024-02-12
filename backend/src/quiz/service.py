@@ -1,38 +1,42 @@
-from datetime import datetime, time
-from typing import Sequence
+from collections.abc import Iterable, Sequence
+from datetime import datetime
 
 from pydantic_core import Url
 
 from ..config import settings
+from . import schema
 from .exception import QuizAlreadyCompletedError, QuizNotCompletedError, QuizNotFoundError
-from .model import Quiz, QuizAnswer
-from .repository import QuizAnswerRepository, QuizRepository
-from .schema import DailyQuiz
+from .model import DailyQuiz, QuizAnswer
+from .repository import DailyQuizRepository, QuizAnswerRepository, QuizRepository
 
 
 class QuizService:
-    def __init__(self, *, quiz_repository: QuizRepository, quiz_answer_repository: QuizAnswerRepository) -> None:
+    def __init__(
+        self,
+        *,
+        quiz_repository: QuizRepository,
+        quiz_answer_repository: QuizAnswerRepository,
+        daily_quiz_repository: DailyQuizRepository
+    ) -> None:
         self._quiz_repo = quiz_repository
         self._quiz_answer_repo = quiz_answer_repository
+        self._daily_quiz_repo = daily_quiz_repository
 
-    def _today_quizzes(self, quizzes: Sequence[Quiz]) -> list[DailyQuiz]:
-        daily_quizzes: list[DailyQuiz] = []
-        for quiz in quizzes:
-            assert quiz.id is not None
+    def _today_quizzes(self, daily_quizzes: Iterable[DailyQuiz]) -> list[schema.DailyQuiz]:
+        today_quizzes: list[schema.DailyQuiz] = []
+        for daily_quiz in daily_quizzes:
+            assert daily_quiz.quiz.id is not None
 
-            screenshots = [Url(s.url) for s in quiz.screenshots]
-            daily_quizzes.append(DailyQuiz(quiz_id=quiz.id, screenshots=screenshots))
+            screenshots = [Url(s.url) for s in daily_quiz.quiz.screenshots]
+            today_quizzes.append(schema.DailyQuiz(quiz_id=daily_quiz.quiz_id, screenshots=screenshots))
 
-        return daily_quizzes
+        return today_quizzes
 
-    async def get_today_quizzes(self) -> Sequence[DailyQuiz]:
-        now = datetime.utcnow()
-        today = now.date()
-        start_at = datetime.combine(today, time.min)
-        end_at = datetime.combine(today, time.max)
+    async def get_today_quizzes(self) -> Sequence[schema.DailyQuiz]:
+        utc_now_date = datetime.utcnow().date()
 
-        quizzes = await self._quiz_repo.get_by_created_at_interval_with_screenshots(start_at=start_at, end_at=end_at)
-        return self._today_quizzes(quizzes)
+        daily_quizzes = await self._daily_quiz_repo.get_by_target_date_with_quiz(target_date=utc_now_date)
+        return self._today_quizzes(daily_quizzes)
 
     async def submit_answer(self, *, quiz_id: int, user_id: int, answer: str) -> bool:
         """퀴즈에 대한 정답 여부를 반환하는 함수"""
