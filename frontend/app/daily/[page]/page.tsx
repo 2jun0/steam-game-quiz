@@ -9,6 +9,7 @@ import {Image} from "@nextui-org/react";
 import {autoCompleteGameName, submitAnswer} from "@/utils/backend-api"
 import { useRouter, useParams } from "next/navigation";
 import { useDailyQuiz } from "./provider";
+import { LoginRequiredButton } from "@/components/login-required-button";
 
 
 
@@ -182,9 +183,9 @@ export default function DailyQuiz() {
 								</AutocompleteItem>
 							))}
 						</Autocomplete>
-						<Button className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3}>
+						<LoginRequiredButton className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3}>
 							Submit Guess
-						</Button>
+						</LoginRequiredButton>
 					</form>
 				) : <></>
 			}
