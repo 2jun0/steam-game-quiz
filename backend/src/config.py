@@ -29,4 +29,4 @@ class Config(BaseSettings):
 
 
 settings = Config()  # type: ignore
-app_configs: dict[str, Any] = {"title": "API", "version": 1}
+app_configs: dict[str, Any] = {"title": "API", "version": "1"}
