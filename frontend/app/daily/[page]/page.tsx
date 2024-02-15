@@ -26,7 +26,10 @@ export default function DailyQuiz() {
 
 	function onChangeQuizPage(event: any) {
         const newPage = event.target.value
-		router.push(`/daily/${newPage}`)
+
+		if (newPage && page != newPage) {
+			router.push(`/daily/${newPage}`)
+		}
 	}
 
 	function onChangeGuessName(query: string) {
