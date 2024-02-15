@@ -29,4 +29,8 @@ class Config(BaseSettings):
 
 
 settings = Config()  # type: ignore
-app_configs: dict[str, Any] = {"title": "API"}
+
+if settings.ENVIRONMENT == Envrionment.PRODUCTION:
+    app_configs: dict[str, Any] = {"title": "SteamQuizGame API", "version": "1", "docs_url": None, "redoc_url": None}
+else:
+    app_configs: dict[str, Any] = {"title": "SteamQuizGame API", "version": "1"}
