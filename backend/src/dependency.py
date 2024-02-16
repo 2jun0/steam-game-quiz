@@ -16,7 +16,6 @@ async def get_session() -> AsyncGenerator[AsyncSession, Any]:
 
 async def es_client() -> AsyncGenerator[AsyncElasticsearch, Any]:
     yield es_client_
-    await es_client_.close()
 
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]

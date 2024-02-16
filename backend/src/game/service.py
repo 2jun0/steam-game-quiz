@@ -17,12 +17,14 @@ class GameService:
         game_names: list[str] = []
         res = await self._es_client.search(
             index=GAME_INDEX,
-            query={
-                "bool": {
-                    "should": [
-                        {"match_phrase_prefix": {"q_name": {"query": query.lower()}}},
-                        {"match_phrase_prefix": {"name": {"query": query.lower()}}},
-                    ]
+            body={
+                "query": {
+                    "bool": {
+                        "should": [
+                            {"match_phrase_prefix": {"q_name": {"query": query.lower()}}},
+                            {"match_phrase_prefix": {"name": {"query": query.lower()}}},
+                        ]
+                    }
                 }
             },
         )
