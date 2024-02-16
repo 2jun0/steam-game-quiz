@@ -20,3 +20,4 @@ async def es_client() -> AsyncGenerator[AsyncElasticsearch, Any]:
 
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
+ElasticSearchClientDep = Annotated[AsyncElasticsearch, Depends(es_client)]

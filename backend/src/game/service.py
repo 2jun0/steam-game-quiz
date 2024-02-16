@@ -1,23 +1,34 @@
-from sqlmodel import col, or_, select
-from sqlmodel.ext.asyncio.session import AsyncSession
+from elasticsearch import AsyncElasticsearch
 
-from .model import Game
+from ..es import GAME_INDEX
 from .schema import AutoCompleteName
 
 
 class GameService:
-    def __init__(self, session: AsyncSession) -> None:
-        self._session = session
+    def __init__(self, es_client: AsyncElasticsearch) -> None:
+        self._es_client = es_client
 
     async def auto_complete_name(self, query: str) -> list[AutoCompleteName]:
-        MIN_PARTIAL_QUERY_LEN = 3
+        game_names = await self._search_game_name(query)
 
-        if len(query) < MIN_PARTIAL_QUERY_LEN:
-            stmt = select(Game.name, Game.kr_name).where(or_(Game.name == query, Game.kr_name == query))
-        else:
-            stmt = select(Game.name, Game.kr_name).where(
-                or_(col(Game.name).contains(query), col(Game.kr_name).contains(query))
-            )
+        return [AutoCompleteName(name=name, locale_name=None) for name in game_names]
 
-        rs = await self._session.exec(stmt)
-        return [AutoCompleteName(name=name, locale_name=kr_name) for name, kr_name in rs.all()]
+    async def _search_game_name(self, query: str) -> list[str]:
+        game_names: list[str] = []
+        res = await self._es_client.search(
+            index=GAME_INDEX,
+            query={
+                "bool": {
+                    "should": [
+                        {"match_phrase_prefix": {"q_name": {"query": query.lower()}}},
+                        {"match_phrase_prefix": {"name": {"query": query.lower()}}},
+                    ]
+                }
+            },
+        )
+
+        for hit in res["hits"]["hits"]:
+            name = hit["_source"]["name"]
+            game_names.append(name)
+
+        return game_names
