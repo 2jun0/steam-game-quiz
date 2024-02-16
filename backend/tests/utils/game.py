@@ -1,8 +1,10 @@
 from datetime import datetime
 from threading import Lock
 
+from elasticsearch import Elasticsearch
 from sqlmodel import Session
 
+from src.es import GAME_INDEX
 from src.game.model import Game
 
 from .utils import random_datetime, random_kr_string, random_name
@@ -32,3 +34,8 @@ def create_random_game(
     session.refresh(game)
 
     return game
+
+
+def index_game(es_client: Elasticsearch, game: Game):
+    q_name = "".join([c if c.isalnum() else " " for c in game.name])
+    es_client.index(index=GAME_INDEX, document={"q_name": q_name, "name": game.name, "id": game.id}, refresh=True)
