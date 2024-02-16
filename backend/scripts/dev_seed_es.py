@@ -11,10 +11,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 from src.database import engine  # noqa: E402
-from src.es import es_client  # noqa: E402
+from src.es import GAME_INDEX, es_client  # noqa: E402
 from src.game.model import Game  # noqa: E402
-
-GAME_INDEX = "game_index"
 
 
 async def get_all_games(session: AsyncSession) -> Sequence[Game]:
@@ -24,11 +22,16 @@ async def get_all_games(session: AsyncSession) -> Sequence[Game]:
 
 def bulk_game_data(games: Iterable[Game]) -> Generator[dict[str, Any], Any, None]:
     for game in games:
-        yield {"_index": GAME_INDEX, "id": game.id, "name": game.name}
+        q_name = "".join([c if c.isalnum() else " " for c in game.name])
+        yield {"_index": GAME_INDEX, "id": game.id, "name": game.name, "q_name": q_name}
 
 
 async def main():
-    await es_client.indices.create(index=GAME_INDEX)
+    try:
+        await es_client.indices.delete(index=GAME_INDEX)
+        await es_client.indices.create(index=GAME_INDEX)
+    except Exception:
+        pass
 
     async with AsyncSession(engine) as session:
         games = await get_all_games(session)
