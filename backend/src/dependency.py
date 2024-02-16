@@ -1,11 +1,12 @@
-from typing import Annotated, Any, AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Annotated, Any
 
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .config import settings
 from .database import engine
+from .es import es_client as es_client_
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, Any]:
@@ -13,8 +14,9 @@ async def get_session() -> AsyncGenerator[AsyncSession, Any]:
         yield session
 
 
-async def es_client() -> AsyncElasticsearch:
-    return AsyncElasticsearch(settings.ELASTIC_SEARCH_URL)  # type: ignore
+async def es_client() -> AsyncGenerator[AsyncElasticsearch, Any]:
+    yield es_client_
+    await es_client_.close()
 
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
