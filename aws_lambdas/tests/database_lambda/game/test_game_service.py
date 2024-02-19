@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from database_lambda.game.model import Game
+from database_lambda.game.schema import SaveGame
 from database_lambda.game.service import get_all_games, save_games
 from tests.database_lambda.utils.game import create_random_game
 from tests.database_lambda.utils.utils import random_datetime
@@ -15,7 +16,7 @@ def test_get_all_games은_게임을_가져와야한다(session: Session):
 
 
 def test_save_games은_입력한_게임을_저장해야_한다(session: Session):
-    games = [
+    games: list[SaveGame] = [
         {
             "steam_id": 1,
             "name": "game1",
@@ -39,7 +40,7 @@ def test_save_games은_입력한_게임을_저장해야_한다(session: Session)
 
 
 def test_save_games은_이미_저장한_게임을_중복저장하지_않는다(session: Session):
-    games = [
+    games: list[SaveGame] = [
         {
             "steam_id": 1,
             "name": "game1",
@@ -66,14 +67,14 @@ def test_save_games은_이미_저장한_게임을_중복저장하지_않는다(s
 
 
 def test_save_games은_이미_저장한_게임은_업데이트_한다(session: Session):
-    before_game = {
+    before_game: SaveGame = {
         "steam_id": 1,
         "name": "game1",
         "kr_name": "게임1",
         "released_at": random_datetime().timestamp(),
         "genres": ["Adventure"],
     }
-    after_game = {
+    after_game: SaveGame = {
         "steam_id": 1,
         "name": "game2",
         "kr_name": "게임2",
