@@ -4,7 +4,7 @@ from typing import Any
 from elasticsearch import Elasticsearch
 from sqlalchemy.orm import Session
 
-from . import repository
+from . import es, repository
 from .model_factory import to_models
 from .schema import SaveGame
 
@@ -18,3 +18,4 @@ def get_all_games(session: Session) -> list[dict[str, Any]]:
 def save_games(session: Session, es_client: Elasticsearch, games: Iterable[SaveGame]):
     models = to_models(session, games)
     session.add_all(models)
+    es.save_docs(es_client, games=models)
