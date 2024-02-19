@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Config(BaseSettings):
     DATABASE_LAMBDA_NAME: str = "database"
     DAILY_QUIZ_CNT: int = 5
+    QUIZ_SCREENSHOT_CNT: int = 5
     GAME_GENERES: Sequence[str] = [
         "Action",
         "Adventure",

@@ -1,3 +1,4 @@
+import random
 from collections.abc import Iterable
 from datetime import date, timedelta
 
@@ -15,7 +16,8 @@ def create_quizzes(steam_api: SteamAPI, games: Iterable[Game]) -> list[SaveQuiz]
     for game in games:
         # 스크린샷 크롤링
         screenshots = scrap_screenshots(steam_api, game)
-        quizzes.append(SaveQuiz(screenshots=screenshots))
+        quiz_screenshots = random.sample(screenshots, k=setting.QUIZ_SCREENSHOT_CNT)
+        quizzes.append(SaveQuiz(screenshots=quiz_screenshots))
 
     return quizzes
 
