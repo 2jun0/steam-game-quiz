@@ -4,6 +4,7 @@ from fastapi_restful.cbv import cbv
 from ..auth.dependency import CURRENT_USER_DEP
 from .daily_quiz_loader import DailyQuizLoader
 from .dependency import get_daily_quiz_loader, get_quiz_answer_service, get_quiz_service
+from .guest.router import router as guest_router
 from .quiz_answer_service import QuizAnswerService
 from .quiz_service import QuizService
 from .schema import (
@@ -16,6 +17,7 @@ from .schema import (
 )
 
 router = APIRouter()
+router.include_router(guest_router)
 
 
 @cbv(router)
