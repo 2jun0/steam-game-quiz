@@ -1,3 +1,4 @@
+import base64
 import json
 from uuid import uuid4
 
@@ -16,7 +17,7 @@ def test_get_guest_answer(session: Session, client: TestClient):
     guest = {
         "id": str(uuid4()),
         "quiz_answers": {
-            quiz.id: [
+            str(quiz.id): [
                 {"answer": answer, "correct": False, "created_at": "2024-02-20T16:02:01.816Z"}
                 for answer in wrong_answers
             ]
@@ -25,13 +26,13 @@ def test_get_guest_answer(session: Session, client: TestClient):
 
     res = client.get(
         f"/quiz/guest/answer?quiz_id={quiz.id}",
-        cookies={"guest": json.dumps(guest)},
+        cookies={"guest": base64.b64encode(json.dumps(guest).encode()).decode()},
     )
     assert res.status_code == status.HTTP_200_OK
     res_json = res.json()
 
     # 제출(저장) 순서도 동일해야 한다.
-    for quiz_ans_res, quiz_ans in zip(res_json["quiz_answers"], guest["quiz_answers"][quiz.id]):
+    for quiz_ans_res, quiz_ans in zip(res_json["quiz_answers"], guest["quiz_answers"][str(quiz.id)]):
         assert quiz_ans_res["answer"] == quiz_ans["answer"]
         assert quiz_ans_res["correct"] == quiz_ans["correct"]
         assert jsontime2datetime(quiz_ans_res["created_at"]) == jsontime2datetime(quiz_ans["created_at"])

@@ -1,3 +1,4 @@
+import base64
 import json
 from uuid import uuid4
 
@@ -18,9 +19,9 @@ def test_post_guest_submit_true_answer(client: TestClient, session: Session):
     res_json = res.json()
     assert res_json["correct"] is True
 
-    guest = json.loads(res.cookies["guest"])
+    guest = json.loads(base64.b64decode(res.cookies["guest"]))
 
-    quiz_answer = guest["quiz_answers"][0]
+    quiz_answer = guest["quiz_answers"][str(quiz.id)][0]
     assert quiz_answer["answer"] == quiz.game.name
     assert quiz_answer["correct"] is True
 
@@ -38,18 +39,18 @@ def test_post_guest_submit_false_answer(client: TestClient, session: Session):
         res = client.post(
             "/quiz/guest/submit_answer",
             json={"quiz_id": quiz.id, "answer": wrong_answer},
-            cookies={"guest": json.dumps(guest)},
+            cookies={"guest": base64.b64encode(json.dumps(guest).encode()).decode()},
         )
         assert res.status_code == status.HTTP_200_OK
 
         res_json = res.json()
         assert res_json["correct"] is False
 
-        guest = json.loads(res.cookies["guest"])
+        guest = json.loads(base64.b64decode(res.cookies["guest"]))
 
-        quiz_answer = guest["quiz_answers"][0]
-        assert quiz_answer["answer"] == quiz.game.name
-        assert quiz_answer["correct"] is True
+        quiz_answer = guest["quiz_answers"][str(quiz.id)][-1]
+        assert quiz_answer["answer"] == wrong_answer
+        assert quiz_answer["correct"] is False
 
 
 def test_post_guest_submit_answer_with_not_existed_quiz_id(client: TestClient):
@@ -64,7 +65,7 @@ def test_post_guest_submit_answer_with_exceed_submission_limit(client: TestClien
     guest = {
         "id": str(uuid4()),
         "quiz_answers": {
-            quiz.id: [
+            str(quiz.id): [
                 {"answer": wrong_answer, "correct": False, "created_at": "2024-02-20T16:02:01.816Z"}
                 for _ in range(settings.QUIZ_ANSWER_SUBMISSION_LIMIT)
             ]
@@ -74,7 +75,7 @@ def test_post_guest_submit_answer_with_exceed_submission_limit(client: TestClien
     res = client.post(
         "/quiz/guest/submit_answer",
         json={"quiz_id": quiz.id, "answer": "아무거나 방방빙방"},
-        cookies={"guest": json.dumps(guest)},
+        cookies={"guest": base64.b64encode(json.dumps(guest).encode()).decode()},
     )
     assert res.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -85,13 +86,13 @@ def test_post_guest_submit_answer_with_prior_correct_answer(client: TestClient, 
     guest = {
         "id": str(uuid4()),
         "quiz_answers": {
-            quiz.id: [{"answer": quiz.game.name, "correct": True, "created_at": "2024-02-20T16:02:01.816Z"}]
+            str(quiz.id): [{"answer": quiz.game.name, "correct": True, "created_at": "2024-02-20T16:02:01.816Z"}]
         },
     }
 
     res = client.post(
         "/quiz/guest/submit_answer",
         json={"quiz_id": quiz.id, "answer": "아무거나 방방빙방"},
-        cookies={"guest": json.dumps(guest)},
+        cookies={"guest": base64.b64encode(json.dumps(guest).encode()).decode()},
     )
     assert res.status_code == status.HTTP_400_BAD_REQUEST

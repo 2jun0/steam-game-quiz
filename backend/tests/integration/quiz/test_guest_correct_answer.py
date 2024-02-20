@@ -1,3 +1,4 @@
+import base64
 import json
 from uuid import uuid4
 
@@ -19,7 +20,10 @@ def test_get_guest_correct_answer_with_correct_submission(client: TestClient, se
         },
     }
 
-    res = client.get(f"/quiz/guest/correct_answer?quiz_id={quiz.id}", cookies={"guest": json.dumps(guest)})
+    res = client.get(
+        f"/quiz/guest/correct_answer?quiz_id={quiz.id}",
+        cookies={"guest": base64.b64encode(json.dumps(guest).encode()).decode()},
+    )
     assert res.status_code == status.HTTP_200_OK
     res_json = res.json()
 
@@ -40,7 +44,10 @@ def test_get_guest_correct_answer_with_exceed_submission_limit(client: TestClien
         },
     }
 
-    res = client.get(f"/quiz/guest/correct_answer?quiz_id={quiz.id}", cookies={"guest": json.dumps(guest)})
+    res = client.get(
+        f"/quiz/guest/correct_answer?quiz_id={quiz.id}",
+        cookies={"guest": base64.b64encode(json.dumps(guest).encode()).decode()},
+    )
     assert res.status_code == status.HTTP_200_OK
     res_json = res.json()
 
