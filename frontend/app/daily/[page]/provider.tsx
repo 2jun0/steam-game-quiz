@@ -1,6 +1,7 @@
 "use client"
 
-import { getCorrectAnswer, getDailyQuizzes, getQuizAnswer } from "@/utils/backend-api";
+import { useAuth } from "@/app/auth/provider";
+import { getCorrectAnswer, getCorrectAnswerForGuest, getDailyQuizzes, getQuizAnswer, getQuizAnswerForGuest } from "@/utils/backend-api";
 import { useParams } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
@@ -40,6 +41,7 @@ export function DailyQuizProvider({ children }: {
 }) {
     const { page } = useParams();
     const quizPage = page ? Number(page) : 1
+    const { isLogined } = useAuth();
 
     const [quiz, setQuiz] = useState<QuizInterface>();
     const [answers, setAnswers] = useState<QuizAnswerInterface[]>([])
@@ -54,9 +56,13 @@ export function DailyQuizProvider({ children }: {
 
     useEffect(() => {
         if (quiz) {
-            getQuizAnswer(quiz.quiz_id).then(setAnswers);
+            if (isLogined) {
+                getQuizAnswer(quiz.quiz_id).then(setAnswers);
+            } else {
+                getQuizAnswerForGuest(quiz.quiz_id).then(setAnswers)
+            }
         }
-    }, [quiz]);
+    }, [isLogined, quiz]);
 
     const gameState = useMemo<GameState>(() => {
 		for (let answer of answers) {
@@ -70,9 +76,13 @@ export function DailyQuizProvider({ children }: {
 
     useEffect(() => {
         if (quiz && (gameState == "failed" || gameState == "success")) {
-            getCorrectAnswer(quiz.quiz_id).then(setCorrectAnswer)
+            if (isLogined) {
+                getCorrectAnswer(quiz.quiz_id).then(setCorrectAnswer)
+            } else {
+                getCorrectAnswerForGuest(quiz.quiz_id).then(setCorrectAnswer)
+            }
         }
-    }, [gameState, quiz])
+    }, [gameState, isLogined, quiz])
 
 
     const value = {quiz, answers, gameState, correctAnswer};

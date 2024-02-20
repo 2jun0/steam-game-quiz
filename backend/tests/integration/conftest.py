@@ -16,7 +16,7 @@ from tests.utils.database import create_all_table, drop_tables
 from tests.utils.es import create_all_indexes, delete_all_indexes
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def client() -> Generator[TestClient, Any, None]:
     with TestClient(app) as client:
         yield client

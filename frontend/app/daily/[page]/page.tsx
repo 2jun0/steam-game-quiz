@@ -6,11 +6,10 @@ import {Button} from '@nextui-org/button';
 
 import React, { useState } from "react";
 import {Image} from "@nextui-org/react";
-import {autoCompleteGameName, submitAnswer} from "@/utils/backend-api"
+import {autoCompleteGameName, submitAnswer, submitAnswerForGuest} from "@/utils/backend-api"
 import { useRouter, useParams } from "next/navigation";
 import { useDailyQuiz } from "./provider";
-import { LoginRequiredButton } from "@/components/login-required-button";
-
+import { useAuth } from "@/app/auth/provider";
 
 
 export default function DailyQuiz() {
@@ -23,6 +22,7 @@ export default function DailyQuiz() {
 	const [screenshotPage, setScreenshotPage] = useState(1);
 	const [autoCompleteNames, setAutoCompleteNames] = useState([]);
 	const [guessName, setGuessName] = useState('');
+	const { isLogined } = useAuth();
 
 	function onChangeQuizPage(event: any) {
         const newPage = event.target.value
@@ -33,13 +33,18 @@ export default function DailyQuiz() {
 	}
 
 	function onChangeGuessName(query: string) {
-		autoCompleteGameName(query).then(setAutoCompleteNames)
-		setGuessName(query)
+		if (query != guessName) {
+			autoCompleteGameName(query).then(setAutoCompleteNames)
+		}
 	}
 
 	const onSubmitQuizAnswer = async () => {
 		if (quiz) {
-			const correct = await submitAnswer(quiz.quiz_id, guessName)
+			if (isLogined) {
+				await submitAnswer(quiz.quiz_id, guessName)
+			} else {
+				await submitAnswerForGuest(quiz.quiz_id, guessName)
+			}
 		}
 	}
 
@@ -58,6 +63,7 @@ export default function DailyQuiz() {
 						className="max-w-xs"
 						selectedKeys={[quizPage.toString()]}
 						onChange={onChangeQuizPage}
+						aria-label="daily quiz select"
 					>
 						<SelectItem key={1} value={1}>
 							Daily Quiz #1
@@ -172,23 +178,19 @@ export default function DailyQuiz() {
 							className="w-full"
 							isDisabled={answers.length >= 3}
 							onKeyDown={(e: any) => e.continuePropagation()}
-							onInputChange={onChangeGuessName}>
-							{autoCompleteNames.map((name) => (
-								<AutocompleteItem key={name['name']} textValue={name['name']}>
-									<div className="flex gap-2 items-center">
-										{name['name']}
-										<span className="text-sm text-gray-500">{name['locale_name']}</span>
-									</div>
-									{/* <div>
-									{name['name']}
-									<p className="text-sm text-gray-500">{name['locale_name']}</p>
-									</div> */}
-								</AutocompleteItem>
-							))}
+							defaultItems={autoCompleteNames}
+							onSelectionChange={(key) => {
+								if(key) setGuessName(key.toString())
+							}}
+							defaultInputValue={guessName}
+							allowsCustomValue={true}
+							onInputChange={onChangeGuessName}
+						>
+							{(name) => <AutocompleteItem key={name['name']}>{name['name']}</AutocompleteItem>}
 						</Autocomplete>
-						<LoginRequiredButton className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3}>
+						<Button className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3}>
 							Guess
-						</LoginRequiredButton>
+						</Button>
 					</form>
 				) : <></>
 			}

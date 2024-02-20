@@ -4,8 +4,6 @@ from src.auth.model import User
 
 from .utils import random_email
 
-QUIZ_SCREENSHOT_COUNT = 5
-
 
 def create_random_user(
     session: Session,
