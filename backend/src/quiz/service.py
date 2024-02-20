@@ -1,13 +1,9 @@
-from collections.abc import Iterable, Sequence
-from datetime import datetime
-
-from pydantic_core import Url
+from collections.abc import Sequence
 
 from ..config import settings
-from . import schema
 from .exception import QuizAlreadyCompletedError, QuizNotCompletedError, QuizNotFoundError
-from .model import DailyQuiz, QuizAnswer
-from .repository import DailyQuizRepository, QuizAnswerRepository, QuizRepository
+from .model import QuizAnswer
+from .repository import QuizAnswerRepository, QuizRepository
 
 
 class QuizService:
@@ -16,29 +12,9 @@ class QuizService:
         *,
         quiz_repository: QuizRepository,
         quiz_answer_repository: QuizAnswerRepository,
-        daily_quiz_repository: DailyQuizRepository
     ) -> None:
         self._quiz_repo = quiz_repository
         self._quiz_answer_repo = quiz_answer_repository
-        self._daily_quiz_repo = daily_quiz_repository
-
-    def _today_quizzes(self, daily_quizzes: Iterable[DailyQuiz]) -> list[schema.DailyQuiz]:
-        today_quizzes: list[schema.DailyQuiz] = []
-        for daily_quiz in daily_quizzes:
-            assert daily_quiz.quiz.id is not None
-
-            screenshots = [Url(s.url) for s in daily_quiz.quiz.screenshots]
-            today_quizzes.append(schema.DailyQuiz(quiz_id=daily_quiz.quiz_id, screenshots=screenshots))
-
-        return today_quizzes
-
-    async def get_today_quizzes(self) -> Sequence[schema.DailyQuiz]:
-        utc_now_date = datetime.utcnow().date()
-
-        daily_quizzes = await self._daily_quiz_repo.get_by_target_date_with_quiz_and_screenshots(
-            target_date=utc_now_date
-        )
-        return self._today_quizzes(daily_quizzes)
 
     async def submit_answer(self, *, quiz_id: int, user_id: int, answer: str) -> bool:
         """퀴즈에 대한 정답 여부를 반환하는 함수"""

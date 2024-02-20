@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
 
 from ..auth.dependency import CURRENT_USER_DEP
-from .dependency import get_quiz_service
+from .daily_quiz_loader import DailyQuizLoader
+from .dependency import get_daily_quiz_loader, get_quiz_service
 from .schema import (
     CorrectAnswerResponse,
     DailyQuizzesResponse,
@@ -19,10 +20,11 @@ router = APIRouter()
 @cbv(router)
 class QuizCBV:
     service: QuizService = Depends(get_quiz_service)
+    daily_quiz_loader: DailyQuizLoader = Depends(get_daily_quiz_loader)
 
     @router.get("/quiz/daily_quizes")
     async def get_daily_quizzes(self) -> DailyQuizzesResponse:
-        quizzes = await self.service.get_today_quizzes()
+        quizzes = await self.daily_quiz_loader.get_daily_quizzes()
         return DailyQuizzesResponse(daily_quizes=quizzes)
 
     @router.post("/quiz/submit_answer")
