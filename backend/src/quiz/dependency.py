@@ -4,26 +4,10 @@ from fastapi import Depends
 
 from ..dependency import SessionDep
 from .daily_quiz_loader import DailyQuizLoader
+from .quiz_answer_service import QuizAnswerService
+from .quiz_service import QuizService
+from .quiz_validator import QuizValidator
 from .repository import DailyQuizRepository, QuizAnswerRepository, QuizRepository
-from .service import QuizService
-
-
-async def get_quiz_service(
-    quiz_repository: "QuizRepositoryDep",
-    quiz_submit_repository: "QuizAnswerRepositoryDep",
-) -> QuizService:
-    return QuizService(
-        quiz_repository=quiz_repository,
-        quiz_answer_repository=quiz_submit_repository,
-    )
-
-
-async def get_daily_quiz_loader(
-    daily_quiz_repository: "DailyQuizRepositoryDep",
-):
-    return DailyQuizLoader(
-        daily_quiz_repository=daily_quiz_repository,
-    )
 
 
 async def get_quiz_repository(session: SessionDep) -> QuizRepository:
@@ -41,5 +25,43 @@ async def get_daily_quiz_repository(session: SessionDep) -> DailyQuizRepository:
 QuizRepositoryDep = Annotated[QuizRepository, Depends(get_quiz_repository)]
 QuizAnswerRepositoryDep = Annotated[QuizAnswerRepository, Depends(get_quiz_answer_repository)]
 DailyQuizRepositoryDep = Annotated[DailyQuizRepository, Depends(get_daily_quiz_repository)]
+
+
+async def get_quiz_validator() -> QuizValidator:
+    return QuizValidator()
+
+
+QuizValidatorDep = Annotated[QuizValidator, Depends(get_quiz_validator)]
+
+
+async def get_quiz_service(
+    quiz_repository: QuizRepositoryDep,
+    quiz_answer_repository: QuizAnswerRepositoryDep,
+    quiz_validator: QuizValidatorDep,
+) -> QuizService:
+    return QuizService(
+        quiz_repository=quiz_repository, quiz_answer_repository=quiz_answer_repository, quiz_validator=quiz_validator
+    )
+
+
+async def get_quiz_answer_service(
+    quiz_repository: QuizRepositoryDep,
+    quiz_answer_repository: QuizAnswerRepositoryDep,
+    quiz_validator: QuizValidatorDep,
+) -> QuizAnswerService:
+    return QuizAnswerService(
+        quiz_repository=quiz_repository, quiz_answer_repository=quiz_answer_repository, quiz_validator=quiz_validator
+    )
+
+
+async def get_daily_quiz_loader(
+    daily_quiz_repository: DailyQuizRepositoryDep,
+):
+    return DailyQuizLoader(
+        daily_quiz_repository=daily_quiz_repository,
+    )
+
+
 QuizServiceDep = Annotated[QuizService, Depends(get_quiz_service)]
+QuizAnswerServiceDep = Annotated[QuizAnswerService, Depends(get_quiz_answer_service)]
 DailyQuizLoaderDep = Annotated[DailyQuizLoader, Depends(get_daily_quiz_loader)]
