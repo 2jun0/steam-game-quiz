@@ -25,3 +25,8 @@ class NotFoundError(CustomHTTPException):
 class BadRequestError(CustomHTTPException):
     STATUS_CODE = status.HTTP_400_BAD_REQUEST
     DETAIL = "Bad Request Error"
+
+
+class UnauthorizedError(CustomHTTPException):
+    STATUS_CODE = status.HTTP_401_UNAUTHORIZED
+    DETAIL = "Unauthorized Error"

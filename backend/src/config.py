@@ -8,7 +8,7 @@ from .constants import Envrionment
 
 class Config(BaseSettings):
     DATABASE_URL: MySQLDsn | str
-    # ELASTIC_SEARCH_URL: str
+    ELASTIC_SEARCH_URL: str
     CORS_ORIGINS: list[str] = []
 
     QUIZ_ANSWER_SUBMISSION_LIMIT: int = 3

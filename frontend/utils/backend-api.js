@@ -59,6 +59,50 @@ export async function submitAnswer(quiz_id, answer) {
     }
 };
 
+export async function getQuizAnswerForGuest(quiz_id) {
+    const url = `/quiz/guest/answer?quiz_id=${quiz_id}`
+
+    try {
+        const res = await axios.get(url, {
+            withCredentials: true
+        })
+        return res.data['quiz_answers']
+    } catch (error) {
+        console.error(error)
+        return []
+    }
+}
+
+export async function getCorrectAnswerForGuest(quiz_id) {
+    const url = `/quiz/guest/correct_answer?quiz_id=${quiz_id}`
+
+    try {
+        const res = await axios.get(url, {
+            withCredentials: true
+        })
+        return res.data["correct_answer"]
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export async function submitAnswerForGuest(quiz_id, answer) {
+    const url = `/quiz/guest/submit_answer`
+
+    try {
+        const res = await axios.post(url, {
+            quiz_id,
+            answer
+        }, {
+            withCredentials: true
+        })
+        const json = res.data
+        return json["correct"]
+    } catch (error) {
+        console.error(error)
+    }
+};
+
 export async function autoCompleteGameName(query) {
     const url = `/game/auto_complete_name?query=${query}`
     
