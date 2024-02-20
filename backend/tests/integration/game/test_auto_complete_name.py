@@ -1,3 +1,6 @@
+from collections.abc import Generator
+from typing import Any
+
 import pytest
 from elasticsearch import Elasticsearch
 from fastapi import status
@@ -5,7 +8,14 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 from src.game.model import Game
+from src.main import app
 from tests.utils.game import create_random_game, index_game
+
+
+@pytest.fixture(scope="module")
+def client() -> Generator[TestClient, Any, None]:
+    with TestClient(app) as client:
+        yield client
 
 
 def create_indexed_game(session: Session, es_client: Elasticsearch, name: str) -> Game:
