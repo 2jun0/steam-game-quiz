@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from .model import Quiz, QuizAnswer
+from .model import QuizAnswer
 from .quiz_validator import QuizValidator
 from .repository import QuizAnswerRepository, QuizRepository
 
