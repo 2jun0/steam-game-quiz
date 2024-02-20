@@ -187,7 +187,7 @@ export default function DailyQuiz() {
 							))}
 						</Autocomplete>
 						<LoginRequiredButton className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3}>
-							Submit Guess
+							Guess
 						</LoginRequiredButton>
 					</form>
 				) : <></>
