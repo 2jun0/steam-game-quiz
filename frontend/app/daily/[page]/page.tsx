@@ -147,11 +147,11 @@ export default function DailyQuiz() {
 						return (
 							answers[i] ? 
 								answers[i].correct ?
-									<Tooltip key={`answer ${i} success`} content={answers[i]?.answer} color="success">
+									<Tooltip key={`answer ${i} success`} content={answers[i]?.answer} color="success" placement="bottom">
 										<Button className="min-w-11 w-11 h-11 rounded-medium" color="success"></Button>
 									</Tooltip>
 								:
-									<Tooltip key={`answer ${i} danger`} content={answers[i]?.answer} color="danger">
+									<Tooltip key={`answer ${i} danger`} content={answers[i]?.answer} color="danger" placement="bottom">
 										<Button className="min-w-11 w-11 h-11 rounded-medium" color="danger"></Button>
 									</Tooltip>
 							: 
