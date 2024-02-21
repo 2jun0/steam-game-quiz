@@ -11,14 +11,14 @@ def _bulk_upsert_game_data(games: Iterable[Game]) -> Generator[dict[str, Any], A
     for game in games:
         q_name = "".join([c if c.isalnum() else " " for c in game.name])
         yield {
-            "_op_type": "update",
             "_index": GAME_INDEX,
             "_id": game.id,
-            "_type": "document",
-            "doc": {"id": game.id, "name": game.name, "q_name": q_name},
+            "id": game.id,
+            "name": game.name,
+            "q_name": q_name,
             "doc_as_upsert": True,
         }
 
 
 def save_docs(es_client: Elasticsearch, *, games: Iterable[Game]):
-    helpers.bulk(es_client, _bulk_upsert_game_data(games))
+    helpers.bulk(es_client, _bulk_upsert_game_data(games), refresh=True)
