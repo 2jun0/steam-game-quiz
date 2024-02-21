@@ -18,4 +18,5 @@ def get_all_games(*, session: Session, **kwargs) -> list[dict[str, Any]]:
 def save_games(games: Iterable[SaveGame], *, session: Session, es_client: Elasticsearch, **kwargs):
     models = to_models(session, games)
     session.add_all(models)
+    session.flush()
     es.save_docs(es_client, games=models)
