@@ -41,16 +41,25 @@ export default function AutoCompleteGameName({onChangeGuessName}: {onChangeGuess
 
     // Specify how each of the Autocomplete values should change when the input
     // field is altered by the user
-    const onInputChange = async (value: string) => {
-        const _autoCompleteNames = await autoCompleteGameName(value) as Array<CompleteName>
-        setAutoCompleteNames(_autoCompleteNames)
+    const onInputChange = (value: string) => {
         setFieldState((prevState) => ({
             inputValue: value,
             selectedKey: value === "" ? null : prevState.selectedKey,
-            items: _autoCompleteNames,
+            items: autoCompleteNames,
         }));
-
         onChangeGuessName(value)
+
+        const updateAfter = async () => {
+            const _autoCompleteNames = await autoCompleteGameName(value) as Array<CompleteName>
+            setAutoCompleteNames(_autoCompleteNames)
+            setFieldState((prevState) => ({
+                inputValue: value,
+                selectedKey: value === "" ? null : prevState.selectedKey,
+                items: _autoCompleteNames,
+            }));
+        }
+
+        updateAfter()
     };
 
   // Show entire list if user opens the menu manually
