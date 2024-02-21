@@ -8,6 +8,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 type GameState = 'success' | 'failed' | 'playing'
 
 interface DailyQuizInterface {
+    quizzes: QuizInterface[];
     quiz?: QuizInterface;
     loadAnswers: Function;
     answers: QuizAnswerInterface[];
@@ -24,6 +25,7 @@ interface QuizAnswerInterface {
 interface QuizInterface {
     quiz_id: number;
     screenshots: string[];
+    feature: string;
 }
 
 const DailyQuizContext = createContext<DailyQuizInterface | null>(null)
@@ -45,13 +47,21 @@ export function DailyQuizProvider({ children }: {
     const { isLogined } = useAuth();
 
     const [quiz, setQuiz] = useState<QuizInterface>();
+    const [quizzes, setQuizzes] = useState<QuizInterface[]>([]);
     const [answers, setAnswers] = useState<QuizAnswerInterface[]>([])
     const [correctAnswer, setCorrectAnswer] = useState<string>()
 
 	useEffect(() => {
-		getDailyQuizzes().then((quizzes) => {
-            const q = quizzes[quizPage - 1];
+		getDailyQuizzes().then((_quizzes) => {
+            _quizzes.forEach((_quiz: { feature: string; }) => {
+                const features = _quiz.feature.split(" ")
+                features[1] = '#' + features[1]
+                _quiz.feature = features.join(' ')
+            })
+
+            const q = _quizzes[quizPage - 1];
             setQuiz(q)
+            setQuizzes(_quizzes)
         });
 	}, [quizPage]);
 
@@ -90,7 +100,7 @@ export function DailyQuizProvider({ children }: {
     }, [gameState, isLogined, quiz])
 
 
-    const value = {quiz, loadAnswers, answers, gameState, correctAnswer};
+    const value = {quizzes, quiz, loadAnswers, answers, gameState, correctAnswer};
 
     return <DailyQuizContext.Provider value={value}>{children}</DailyQuizContext.Provider>
 };

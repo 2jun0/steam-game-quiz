@@ -18,7 +18,7 @@ export default function DailyQuiz() {
     const { page } = useParams();
     const quizPage = page ? Number(page) : 1
 	const { isLogined } = useAuth();
-	const { quiz, loadAnswers, answers, gameState, correctAnswer } = useDailyQuiz();
+	const { quizzes, quiz, loadAnswers, answers, gameState, correctAnswer } = useDailyQuiz();
 
 	const [screenshotPage, setScreenshotPage] = useState(1);
 	const [guessName, setGuessName] = useState('');
@@ -53,29 +53,24 @@ export default function DailyQuiz() {
 
 			<div className="relative group rounded-lg overflow-hidden py-5 gap-10 items-center space-y-4">
 				<div className="flex max-w-2xl justify-center items-center">
-					<Select
-						size="sm"
-						className="max-w-xs"
-						selectedKeys={[quizPage.toString()]}
-						onChange={onChangeQuizPage}
-						aria-label="daily quiz select"
-					>
-						<SelectItem key={1} value={1}>
-							Daily Quiz #1
-						</SelectItem>
-						<SelectItem key={2} value={2}>
-							Daily Quiz #2
-						</SelectItem>
-						<SelectItem key={3} value={3}>
-							Daily Quiz #3
-						</SelectItem>
-						<SelectItem key={4} value={4}>
-							Daily Quiz #4
-						</SelectItem>
-						<SelectItem key={5} value={5}>
-							Daily Quiz #5
-						</SelectItem>
-					</Select>
+					{quizzes.length > 0?
+						<Select
+							size="sm"
+							className="max-w-xs"
+							selectedKeys={[quizPage.toString()]}
+							onChange={onChangeQuizPage}
+							aria-label="daily quiz select"
+						>
+							{
+								quizzes.map((_quiz, index) => (
+									<SelectItem key={index+1} textValue={`Daily Quiz ${index+1} #${_quiz.feature}`}>
+										Daily Quiz {index+1} #{_quiz.feature}
+									</SelectItem>
+								))
+							}
+						</Select>
+						:<></>
+					}
 				</div>
 				<div className="flex max-w-2xl justify-center items-center">
 					<button className="absolute left-0 z-30 p-4 bg-gray-200/50 dark:bg-gray-700/50 rounded-r-lg" 

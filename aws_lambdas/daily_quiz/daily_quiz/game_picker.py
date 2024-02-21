@@ -1,7 +1,9 @@
 import random
 from collections import defaultdict
 from collections.abc import Collection, Iterable, Sequence
+from dataclasses import dataclass
 from datetime import datetime
+from typing import Literal, Union
 
 from ..aws_lambda.model import Game
 from ..config import setting
@@ -11,7 +13,19 @@ from .utils import divide_randomly
 GameGroup = list[Game]
 
 
-def _categorize_games_by_genre(games: Iterable[Game], genres: Iterable[str]) -> list[GameGroup]:
+@dataclass(unsafe_hash=True)
+class Category:
+    genre: str
+    released_at: Union[Literal["older"], Literal["newer"], None] = None
+
+
+@dataclass
+class CategorizedGameGroup:
+    category: Category
+    games: list[Game]
+
+
+def _categorize_games_by_genre(games: Iterable[Game], genres: Iterable[str]) -> list[CategorizedGameGroup]:
     categorized: dict[str, GameGroup] = defaultdict(list)
 
     for game in games:
@@ -21,7 +35,7 @@ def _categorize_games_by_genre(games: Iterable[Game], genres: Iterable[str]) -> 
 
             categorized[genre].append(game)
 
-    return list(categorized.values())
+    return [CategorizedGameGroup(category=Category(genre=genre), games=games) for genre, games in categorized.items()]
 
 
 def _filter_older_games(games: Iterable[Game], threshold_released_at: datetime) -> list[Game]:
@@ -39,32 +53,46 @@ def _get_median_released_at(games: Iterable[Game]) -> datetime:
 
 
 def _pick_older_newer_games(
-    categorized_games: Sequence[GameGroup], median_released_at: datetime
-) -> tuple[list[GameGroup], list[GameGroup]]:
+    categorized_games: Sequence[CategorizedGameGroup], median_released_at: datetime
+) -> tuple[list[CategorizedGameGroup], list[CategorizedGameGroup]]:
     older_part, newer_part = divide_randomly(categorized_games, setting.OLDER_GAME_COUNT)
 
-    olders = [_filter_older_games(games, median_released_at) for games in older_part]
-    newers = [_filter_newer_games(games, median_released_at) for games in newer_part]
+    olders = [
+        CategorizedGameGroup(
+            category=Category(genre=group.category.genre, released_at="older"),
+            games=_filter_older_games(group.games, median_released_at),
+        )
+        for group in older_part
+    ]
+    newers = [
+        CategorizedGameGroup(
+            category=Category(genre=group.category.genre, released_at="newer"),
+            games=_filter_newer_games(group.games, median_released_at),
+        )
+        for group in newer_part
+    ]
 
     return olders, newers
 
 
-def _pick_unique_per_category(categorized_games: Iterable[GameGroup]) -> set[Game]:
+def _pick_unique_per_category(categorized_groups: Iterable[CategorizedGameGroup]) -> dict[Category, Game]:
     unique_games: set[Game] = set()
+    unique_per_category: dict[Category, Game] = {}
 
-    for games in sorted(categorized_games, key=len):
-        games_ = list(set(games) - unique_games)
+    for group in sorted(categorized_groups, key=lambda g: len(g.games)):
+        games_ = list(set(group.games) - unique_games)
 
         if len(games_) == 0:
-            flat = [g for g in games for games in categorized_games]
+            flat = [g for g in group.games for group in categorized_groups]
             raise NotEnoughGamesError(
                 f"게임의 수가 너무 적어 게임 선택 알고리즘을 작동할 수 없습니다. 지금까지 선발된 게임: {set(flat)}"
             )
 
         game = random.choice(games_)
         unique_games.add(game)
+        unique_per_category[group.category] = game
 
-    return unique_games
+    return unique_per_category
 
 
 def _validate_final_games(games: Collection, genres: Collection):
@@ -74,10 +102,17 @@ def _validate_final_games(games: Collection, genres: Collection):
         )
 
 
+FEATURE = str
+
+
+def discribe_feature(games: dict[Category, Game]) -> dict[FEATURE, Game]:
+    return {f"{cate.released_at} {cate.genre}": game for cate, game in games.items()}
+
+
 def pick_games(
     games: Iterable[Game],
     genres: Sequence[str],
-) -> set[Game]:
+) -> dict[FEATURE, Game]:
     categorized_games = _categorize_games_by_genre(games, genres)
 
     # 오래된 게임 / 최신 게임으로 분리
@@ -87,4 +122,5 @@ def pick_games(
     # 최종 게임 선발
     final_games = _pick_unique_per_category(olders + newers)
     _validate_final_games(final_games, genres)
-    return final_games
+
+    return discribe_feature(final_games)
