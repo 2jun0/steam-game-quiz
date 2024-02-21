@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+import random
 from datetime import date
 from typing import Optional
 
@@ -72,16 +72,25 @@ def get_quiz_answer(
     return session.exec(stmt).first()
 
 
-def create_random_daily_quiz(session: Session, *, target_date: date, quiz_id: int | None = None) -> DailyQuiz:
+def create_random_daily_quiz(
+    session: Session, *, target_date: date, quiz_id: int | None = None, feature: str | None = None
+) -> DailyQuiz:
     if quiz_id is None:
         quiz = create_random_quiz(session)
         assert quiz.id is not None
         quiz_id = quiz.id
 
-    daily_quiz = DailyQuiz(target_date=target_date, quiz_id=quiz_id)
+    if feature is None:
+        feature = create_random_feature()
+
+    daily_quiz = DailyQuiz(target_date=target_date, quiz_id=quiz_id, feature=feature)
 
     session.add(daily_quiz)
     session.commit()
     session.refresh(daily_quiz)
 
     return daily_quiz
+
+
+def create_random_feature() -> str:
+    return random.choice(["Older Action", "Older Adventure", "Newer RPG", "Newer Sports"])
