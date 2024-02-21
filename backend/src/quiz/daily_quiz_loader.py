@@ -18,7 +18,9 @@ class DailyQuizLoader:
             assert daily_quiz.quiz.id is not None
 
             screenshots = [Url(s.url) for s in daily_quiz.quiz.screenshots]
-            quizzes.append(schema.DailyQuiz(quiz_id=daily_quiz.quiz_id, screenshots=screenshots))
+            quizzes.append(
+                schema.DailyQuiz(quiz_id=daily_quiz.quiz_id, screenshots=screenshots, feature=daily_quiz.feature)
+            )
 
         return quizzes
 

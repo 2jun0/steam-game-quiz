@@ -7,6 +7,7 @@ from pydantic import BaseModel, HttpUrl
 class DailyQuiz(BaseModel):
     quiz_id: int
     screenshots: Sequence[HttpUrl]
+    feature: str
 
 
 class DailyQuizzesResponse(BaseModel):

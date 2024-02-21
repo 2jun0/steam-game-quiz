@@ -48,4 +48,5 @@ class DailyQuiz(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     target_date: date = Field(nullable=False)
 
     quiz_id: int = Field(foreign_key="quiz.id")
+    feature: str = Field(max_length=64)
     quiz: Quiz = Relationship()
