@@ -6,6 +6,6 @@ from .model_factory import to_models
 from .schema import SaveGameScreenshot
 
 
-def save_screenshots(session: Session, screenshots: Iterable[SaveGameScreenshot]):
+def save_screenshots(screenshots: Iterable[SaveGameScreenshot], *, session: Session, **kwargs):
     models = to_models(session, screenshots)
     session.add_all(models)

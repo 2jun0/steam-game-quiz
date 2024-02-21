@@ -1,3 +1,4 @@
+from elasticsearch import Elasticsearch
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -11,11 +12,11 @@ from tests.database_lambda.utils.utils import random_datetime
 def test_get_all_games은_게임을_가져와야한다(session: Session):
     saved = [create_random_game(session) for _ in range(2)]
 
-    given = get_all_games(session)
+    given = get_all_games(session=session)
     assert set(g["id"] for g in given) == set(g.id for g in saved)
 
 
-def test_save_games은_입력한_게임을_저장해야_한다(session: Session):
+def test_save_games은_입력한_게임을_저장해야_한다(session: Session, es_client: Elasticsearch):
     games: list[SaveGame] = [
         {
             "steam_id": 1,
@@ -32,14 +33,14 @@ def test_save_games은_입력한_게임을_저장해야_한다(session: Session)
             "genres": ["Adventure", "RPG"],
         },
     ]
-    save_games(session, games)
+    save_games(games, session=session, es_client=es_client)
 
     saved = session.scalars(select(Game)).all()
 
     assert set(g["steam_id"] for g in games) == set(g.steam_id for g in saved)
 
 
-def test_save_games은_이미_저장한_게임을_중복저장하지_않는다(session: Session):
+def test_save_games은_이미_저장한_게임을_중복저장하지_않는다(session: Session, es_client: Elasticsearch):
     games: list[SaveGame] = [
         {
             "steam_id": 1,
@@ -57,16 +58,16 @@ def test_save_games은_이미_저장한_게임을_중복저장하지_않는다(s
         },
     ]
 
-    save_games(session, games)
+    save_games(games, session=session, es_client=es_client)
     before_saved = session.scalars(select(Game)).all()
 
-    save_games(session, games)
+    save_games(games, session=session, es_client=es_client)
     after_saved = session.scalars(select(Game)).all()
 
     assert before_saved == after_saved
 
 
-def test_save_games은_이미_저장한_게임은_업데이트_한다(session: Session):
+def test_save_games은_이미_저장한_게임은_업데이트_한다(session: Session, es_client: Elasticsearch):
     before_game: SaveGame = {
         "steam_id": 1,
         "name": "game1",
@@ -82,8 +83,8 @@ def test_save_games은_이미_저장한_게임은_업데이트_한다(session: S
         "genres": ["Adventure", "RPG"],
     }
 
-    save_games(session, [before_game])
-    save_games(session, [after_game])
+    save_games([before_game], session=session, es_client=es_client)
+    save_games([after_game], session=session, es_client=es_client)
     saved = session.scalars(select(Game)).one().to_dto()
 
     assert saved.name == after_game["name"]
