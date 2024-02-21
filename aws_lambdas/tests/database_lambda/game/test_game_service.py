@@ -1,3 +1,4 @@
+import pytest
 from elasticsearch import Elasticsearch
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -75,22 +76,46 @@ def test_save_games은_이미_저장한_게임을_중복저장하지_않는다(s
     assert before_docs == after_docs
 
 
-def test_save_games은_이미_저장한_게임은_업데이트_한다(session: Session, es_client: Elasticsearch):
-    before_game: SaveGame = {
-        "steam_id": 1,
-        "name": "game1",
-        "kr_name": "게임1",
-        "released_at": random_datetime().timestamp(),
-        "genres": ["Adventure"],
-    }
-    after_game: SaveGame = {
-        "steam_id": 1,
-        "name": "game2",
-        "kr_name": "게임2",
-        "released_at": random_datetime().timestamp(),
-        "genres": ["Adventure", "RPG"],
-    }
-
+@pytest.mark.parametrize(
+    ("before_game", "after_game"),
+    (
+        (
+            {
+                "steam_id": 1,
+                "name": "game1",
+                "kr_name": "게임1",
+                "released_at": random_datetime().timestamp(),
+                "genres": ["Adventure"],
+            },
+            {
+                "steam_id": 1,
+                "name": "game2",
+                "kr_name": "게임2",
+                "released_at": random_datetime().timestamp(),
+                "genres": ["RPG", "Adventure"],
+            },
+        ),
+        (
+            {
+                "steam_id": 1,
+                "name": "game2",
+                "kr_name": "게임2",
+                "released_at": random_datetime().timestamp(),
+                "genres": ["Adventure", "RPG"],
+            },
+            {
+                "steam_id": 1,
+                "name": "game1",
+                "kr_name": "게임1",
+                "released_at": random_datetime().timestamp(),
+                "genres": ["Adventure"],
+            },
+        ),
+    ),
+)
+def test_save_games은_이미_저장한_게임은_업데이트_한다(
+    session: Session, es_client: Elasticsearch, before_game: SaveGame, after_game: SaveGame
+):
     save_games([before_game], session=session, es_client=es_client)
     save_games([after_game], session=session, es_client=es_client)
 
@@ -98,7 +123,7 @@ def test_save_games은_이미_저장한_게임은_업데이트_한다(session: S
     saved = session.scalars(select(Game)).one().to_dto()
     assert saved.name == after_game["name"]
     assert saved.kr_name == after_game["kr_name"]
-    assert saved.genres == after_game["genres"]
+    assert set(saved.genres) == set(after_game["genres"])
 
     # check es
     docs = search_game_docs(es_client)
