@@ -189,7 +189,7 @@ export default function DailyQuiz() {
 						>
 							{(name) => <AutocompleteItem key={name['name']}>{name['name']}</AutocompleteItem>}
 						</Autocomplete>
-						<Button className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3 || guessName.trim().length > 0}>
+						<Button className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3 || guessName.trim().length == 0}>
 							Guess
 						</Button>
 					</form>
