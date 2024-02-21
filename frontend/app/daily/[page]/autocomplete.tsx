@@ -53,7 +53,7 @@ export default function AutoCompleteGameName({onChangeGuessName}: {onChangeGuess
             const _autoCompleteNames = await autoCompleteGameName(value) as Array<CompleteName>
             setAutoCompleteNames(_autoCompleteNames)
             setFieldState((prevState) => ({
-                inputValue: value,
+                inputValue: prevState.inputValue,
                 selectedKey: value === "" ? null : prevState.selectedKey,
                 items: _autoCompleteNames,
             }));
