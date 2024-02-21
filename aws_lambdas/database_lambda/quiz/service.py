@@ -19,7 +19,7 @@ def _validate_multiple_games(quiz: SaveQuiz):
         raise MultipleGamesInQuizError(f"한 퀴즈내에 여러개의 게임이 검출됨, 게임 id: {game_ids}")
 
 
-def save_quizzes(session: Session, quizzes: Iterable[SaveQuiz]):
+def save_quizzes(quizzes: Iterable[SaveQuiz], *, session: Session, **kwargs):
     for quiz in quizzes:
         _validate_duplicated_screenshots(quiz)
         _validate_multiple_games(quiz)
@@ -28,7 +28,7 @@ def save_quizzes(session: Session, quizzes: Iterable[SaveQuiz]):
     session.add_all(models)
 
 
-def save_daily_quizzes(session: Session, daily_quizzes: Iterable[SaveDailyQuiz]):
+def save_daily_quizzes(daily_quizzes: Iterable[SaveDailyQuiz], *, session: Session, **kwargs):
     for daily_quiz in daily_quizzes:
         _validate_duplicated_screenshots(daily_quiz["quiz"])
         _validate_multiple_games(daily_quiz["quiz"])

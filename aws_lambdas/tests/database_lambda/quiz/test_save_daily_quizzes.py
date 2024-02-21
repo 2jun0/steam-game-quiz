@@ -38,7 +38,7 @@ def test_save_daily_quizzes은_입력한_데일리_퀴즈를_저장해야_한다
         },
     ]
 
-    save_daily_quizzes(session, daily_quizzes)
+    save_daily_quizzes(daily_quizzes, session=session)
 
     saved = session.scalars(select(DailyQuiz)).all()
     assert len(saved) == 2
@@ -62,7 +62,7 @@ def test_save_daily_quizzes은_한_퀴즈에_여러개의_게임_스크린샷이
     ]
 
     with pytest.raises(MultipleGamesInQuizError):
-        save_daily_quizzes(session, daily_quizzes)
+        save_daily_quizzes(daily_quizzes, session=session)
 
 
 def test_save_daily_quizzes은_한_퀴즈에_중복된_스크린샷이_있으면_예외를_던져야_한다(session: Session):
@@ -83,4 +83,4 @@ def test_save_daily_quizzes은_한_퀴즈에_중복된_스크린샷이_있으면
     ]
 
     with pytest.raises(DuplicatedScreenshotsInQuizError):
-        save_daily_quizzes(session, daily_quizzes)
+        save_daily_quizzes(daily_quizzes, session=session)
