@@ -3,21 +3,19 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
-from ..genre.repository import get_genre
+from ..genre.model_factory import to_models as to_genre_models
 from . import repository
 from .model import Game
 from .schema import STEAM_ID, SaveGame
 
 
 def _create_model(session: Session, game: SaveGame) -> Game:
-    genres = [get_genre(session, name=genre_name) for genre_name in game["genres"]]
-
     return Game(
         steam_id=game["steam_id"],
         name=game["name"],
         kr_name=game["kr_name"],
         released_at=datetime.fromtimestamp(game["released_at"]),
-        genres=genres,
+        genres=to_genre_models(session, game["genres"]),
     )
 
 
