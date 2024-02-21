@@ -27,14 +27,16 @@ export default function AutoCompleteGameName({onChangeGuessName}: {onChangeGuess
     // option is selected from the list box
     const onSelectionChange = (key: React.Key) => {
         setFieldState((prevState) => {
-        let selectedItem = prevState.items.find((option) => option.name === key);
+            let selectedItem = prevState.items.find((option) => option.name === key);
 
-        return {
-            inputValue: selectedItem?.name || "",
-            selectedKey: key,
-            items: autoCompleteNames,
-        };
+            return {
+                inputValue: selectedItem?.name || "",
+                selectedKey: key,
+                items: autoCompleteNames,
+            };
         });
+
+        onChangeGuessName(key.toString());
     };
 
     // Specify how each of the Autocomplete values should change when the input
