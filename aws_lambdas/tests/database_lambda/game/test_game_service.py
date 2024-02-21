@@ -103,4 +103,4 @@ def test_save_games은_이미_저장한_게임은_업데이트_한다(session: S
     # check es
     docs = search_game_docs(es_client)
     assert len(docs) == 1
-    assert docs[0]["name"] == after_game["name"]
+    assert docs[0]["_source"]["name"] == after_game["name"]
