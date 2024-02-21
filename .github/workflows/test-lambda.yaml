@@ -20,6 +20,10 @@ jobs:
         with:
           python-version: "3.9"
 
+      - uses: isbang/compose-action@v1.5.1
+        with:
+          compose-file: ${{env.working-directory}}/docker-compose.test.yaml
+
       - name: install poetry
         uses: abatilo/actions-poetry@v2
         with:
