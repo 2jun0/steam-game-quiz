@@ -35,15 +35,16 @@ export default function DailyQuiz() {
 	function onChangeGuessName(query: string) {
 		if (query != guessName) {
 			autoCompleteGameName(query).then(setAutoCompleteNames)
+			setGuessName(query)
 		}
 	}
 
 	const onSubmitQuizAnswer = async () => {
 		if (quiz) {
 			if (isLogined) {
-				await submitAnswer(quiz.quiz_id, guessName)
+				await submitAnswer(quiz.quiz_id, guessName.trim())
 			} else {
-				await submitAnswerForGuest(quiz.quiz_id, guessName)
+				await submitAnswerForGuest(quiz.quiz_id, guessName.trim())
 			}
 		}
 	}
@@ -188,7 +189,7 @@ export default function DailyQuiz() {
 						>
 							{(name) => <AutocompleteItem key={name['name']}>{name['name']}</AutocompleteItem>}
 						</Autocomplete>
-						<Button className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3}>
+						<Button className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3 || guessName.trim().length == 0}>
 							Guess
 						</Button>
 					</form>
