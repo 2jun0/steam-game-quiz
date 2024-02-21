@@ -31,6 +31,7 @@ class SaveQuiz(BaseModel):
 class SaveDailyQuiz(BaseModel):
     quiz: SaveQuiz
     target_date: date
+    feature: str
 
     @field_serializer("target_date")
     def serialize_target_date(self, target_date: date, _info) -> str:

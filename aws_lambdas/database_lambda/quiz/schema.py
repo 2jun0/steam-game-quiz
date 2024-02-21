@@ -11,3 +11,4 @@ class SaveQuiz(TypedDict):
 class SaveDailyQuiz(TypedDict):
     quiz: SaveQuiz
     target_date: str
+    feature: str
