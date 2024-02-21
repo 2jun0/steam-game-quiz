@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from functools import cache
 
 from sqlalchemy.orm import Session
 
@@ -10,6 +11,7 @@ def _create_model(session: Session, name: str) -> Genre:
     return Genre(name=name)
 
 
+@cache
 def _to_model(session: Session, name: str) -> Genre:
     model = get_genre(session, name=name)
 
