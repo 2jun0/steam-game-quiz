@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from datetime import date
 
 from pydantic import BaseModel
-from sqlalchemy import Column, ForeignKey, Integer, Table
+from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..model import Base, CreatedAtMixin, UpdatedAtMixin
@@ -35,6 +35,7 @@ class DailyQuiz(CreatedAtMixin, UpdatedAtMixin, Base):
 
     quiz_id: Mapped[int] = mapped_column(ForeignKey("quiz.id"))
     quiz: Mapped[Quiz] = relationship()
+    feature: Mapped[str] = mapped_column(String(64))
 
     def to_dto(self) -> "DailyQuizDto":
         return DailyQuizDto(id=self.id, target_date=self.target_date, quiz_id=self.quiz_id, quiz=self.quiz.to_dto())

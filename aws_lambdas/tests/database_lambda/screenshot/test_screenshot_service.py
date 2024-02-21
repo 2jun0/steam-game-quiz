@@ -15,7 +15,7 @@ def test_save_screenshots은_입력한_스크린샷을_저장해야_한다(sessi
         {"steam_file_id": 3, "url": "https://fake.url/3", "game_id": saved_games[1].id},
         {"steam_file_id": 4, "url": "https://fake.url/4", "game_id": saved_games[1].id},
     ]
-    save_screenshots(session, screenshots)
+    save_screenshots(screenshots, session=session)
 
     saved = session.scalars(select(GameScreenshot)).all()
     assert len(saved) == 4
@@ -27,8 +27,8 @@ def test_save_screenshots은_이미_저장한_스크린샷은_업데이트_한�
     before: SaveGameScreenshot = {"steam_file_id": 1, "url": "https://fake.url/1", "game_id": saved_games[0].id}
     after: SaveGameScreenshot = {"steam_file_id": 1, "url": "https://fake.url/1a", "game_id": saved_games[0].id}
 
-    save_screenshots(session, [before])
-    save_screenshots(session, [after])
+    save_screenshots([before], session=session)
+    save_screenshots([after], session=session)
     saved = session.scalars(select(GameScreenshot)).one()
 
     assert saved.steam_file_id == after["steam_file_id"]

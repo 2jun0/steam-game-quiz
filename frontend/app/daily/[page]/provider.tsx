@@ -3,12 +3,14 @@
 import { useAuth } from "@/app/auth/provider";
 import { getCorrectAnswer, getCorrectAnswerForGuest, getDailyQuizzes, getQuizAnswer, getQuizAnswerForGuest } from "@/utils/backend-api";
 import { useParams } from "next/navigation";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 type GameState = 'success' | 'failed' | 'playing'
 
 interface DailyQuizInterface {
+    quizzes: QuizInterface[];
     quiz?: QuizInterface;
+    loadAnswers: Function;
     answers: QuizAnswerInterface[];
     gameState: GameState;
     correctAnswer?: string;
@@ -23,6 +25,7 @@ interface QuizAnswerInterface {
 interface QuizInterface {
     quiz_id: number;
     screenshots: string[];
+    feature: string;
 }
 
 const DailyQuizContext = createContext<DailyQuizInterface | null>(null)
@@ -44,17 +47,25 @@ export function DailyQuizProvider({ children }: {
     const { isLogined } = useAuth();
 
     const [quiz, setQuiz] = useState<QuizInterface>();
+    const [quizzes, setQuizzes] = useState<QuizInterface[]>([]);
     const [answers, setAnswers] = useState<QuizAnswerInterface[]>([])
     const [correctAnswer, setCorrectAnswer] = useState<string>()
 
 	useEffect(() => {
-		getDailyQuizzes().then((quizzes) => {
-            const q = quizzes[quizPage - 1];
+		getDailyQuizzes().then((_quizzes) => {
+            _quizzes.forEach((_quiz: { feature: string; }) => {
+                const features = _quiz.feature.split(" ")
+                features[1] = '#' + features[1]
+                _quiz.feature = features.join(' ')
+            })
+
+            const q = _quizzes[quizPage - 1];
             setQuiz(q)
+            setQuizzes(_quizzes)
         });
 	}, [quizPage]);
 
-    useEffect(() => {
+    const loadAnswers = useCallback(() => {
         if (quiz) {
             if (isLogined) {
                 getQuizAnswer(quiz.quiz_id).then(setAnswers);
@@ -62,7 +73,11 @@ export function DailyQuizProvider({ children }: {
                 getQuizAnswerForGuest(quiz.quiz_id).then(setAnswers)
             }
         }
-    }, [isLogined, quiz]);
+    }, [isLogined, quiz])
+
+    useEffect(() => {
+        loadAnswers()
+    }, [loadAnswers]);
 
     const gameState = useMemo<GameState>(() => {
 		for (let answer of answers) {
@@ -85,7 +100,7 @@ export function DailyQuizProvider({ children }: {
     }, [gameState, isLogined, quiz])
 
 
-    const value = {quiz, answers, gameState, correctAnswer};
+    const value = {quizzes, quiz, loadAnswers, answers, gameState, correctAnswer};
 
     return <DailyQuizContext.Provider value={value}>{children}</DailyQuizContext.Provider>
 };

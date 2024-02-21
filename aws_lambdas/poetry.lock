@@ -283,6 +283,27 @@ test = ["pretend", "pytest (>=6.2.0)", "pytest-benchmark", "pytest-cov", "pytest
 test-randomorder = ["pytest-randomly"]
 
 [[package]]
+name = "elasticsearch"
+version = "7.13.0"
+description = "Python client for Elasticsearch"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4"
+files = [
+    {file = "elasticsearch-7.13.0-py2.py3-none-any.whl", hash = "sha256:8213d6b7d3f984a23e2f8b6ff63366224b3de9129839ed0cb8195d9e8339dc85"},
+    {file = "elasticsearch-7.13.0.tar.gz", hash = "sha256:da3de0451c61e9357cec2f8bf32d8aea65974e5717b5deef53718392cf4c2985"},
+]
+
+[package.dependencies]
+certifi = "*"
+urllib3 = ">=1.21.1,<2"
+
+[package.extras]
+async = ["aiohttp (>=3,<4)"]
+develop = ["black", "coverage", "jinja2", "mock", "pytest", "pytest-cov", "pyyaml", "requests (>=2.0.0,<3.0.0)", "sphinx (<1.7)", "sphinx-rtd-theme"]
+docs = ["sphinx (<1.7)", "sphinx-rtd-theme"]
+requests = ["requests (>=2.4.0,<3.0.0)"]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.2.0"
 description = "Backport of PEP 654 (exception groups)"
@@ -883,4 +904,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "a15e57a70f1a9e7ade71eac27e18e4ca675f99f433f446904af5409703783c78"
+content-hash = "bffe4b53d03c919d8e4fb8bce0b1c03cedfd55c77ca52a91d491755fb26225e3"

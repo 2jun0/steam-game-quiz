@@ -6,23 +6,22 @@ import {Button} from '@nextui-org/button';
 
 import React, { useState } from "react";
 import {Image} from "@nextui-org/react";
-import {autoCompleteGameName, submitAnswer, submitAnswerForGuest} from "@/utils/backend-api"
+import { submitAnswer, submitAnswerForGuest } from "@/utils/backend-api"
 import { useRouter, useParams } from "next/navigation";
 import { useDailyQuiz } from "./provider";
 import { useAuth } from "@/app/auth/provider";
+import AutoCompleteGameName from "./autocomplete";
 
 
 export default function DailyQuiz() {
 	const router = useRouter();
     const { page } = useParams();
     const quizPage = page ? Number(page) : 1
-
-	const { quiz, answers, gameState, correctAnswer } = useDailyQuiz();
+	const { isLogined } = useAuth();
+	const { quizzes, quiz, loadAnswers, answers, gameState, correctAnswer } = useDailyQuiz();
 
 	const [screenshotPage, setScreenshotPage] = useState(1);
-	const [autoCompleteNames, setAutoCompleteNames] = useState([]);
 	const [guessName, setGuessName] = useState('');
-	const { isLogined } = useAuth();
 
 	function onChangeQuizPage(event: any) {
         const newPage = event.target.value
@@ -32,18 +31,14 @@ export default function DailyQuiz() {
 		}
 	}
 
-	function onChangeGuessName(query: string) {
-		if (query != guessName) {
-			autoCompleteGameName(query).then(setAutoCompleteNames)
-		}
-	}
-
-	const onSubmitQuizAnswer = async () => {
+	async function onSubmitQuizAnswer() {
 		if (quiz) {
 			if (isLogined) {
-				await submitAnswer(quiz.quiz_id, guessName)
+				await submitAnswer(quiz.quiz_id, guessName.trim())
+				loadAnswers()
 			} else {
-				await submitAnswerForGuest(quiz.quiz_id, guessName)
+				await submitAnswerForGuest(quiz.quiz_id, guessName.trim())
+				loadAnswers()
 			}
 		}
 	}
@@ -58,29 +53,24 @@ export default function DailyQuiz() {
 
 			<div className="relative group rounded-lg overflow-hidden py-5 gap-10 items-center space-y-4">
 				<div className="flex max-w-2xl justify-center items-center">
-					<Select
-						size="sm"
-						className="max-w-xs"
-						selectedKeys={[quizPage.toString()]}
-						onChange={onChangeQuizPage}
-						aria-label="daily quiz select"
-					>
-						<SelectItem key={1} value={1}>
-							Daily Quiz #1
-						</SelectItem>
-						<SelectItem key={2} value={2}>
-							Daily Quiz #2
-						</SelectItem>
-						<SelectItem key={3} value={3}>
-							Daily Quiz #3
-						</SelectItem>
-						<SelectItem key={4} value={4}>
-							Daily Quiz #4
-						</SelectItem>
-						<SelectItem key={5} value={5}>
-							Daily Quiz #5
-						</SelectItem>
-					</Select>
+					{quizzes.length > 0?
+						<Select
+							size="sm"
+							className="max-w-xs"
+							selectedKeys={[quizPage.toString()]}
+							onChange={onChangeQuizPage}
+							aria-label="daily quiz select"
+						>
+							{
+								quizzes.map((_quiz, index) => (
+									<SelectItem key={index+1} textValue={`Daily Quiz ${index+1} #${_quiz.feature}`}>
+										Daily Quiz {index+1} #{_quiz.feature}
+									</SelectItem>
+								))
+							}
+						</Select>
+						:<></>
+					}
 				</div>
 				<div className="flex max-w-2xl justify-center items-center">
 					<button className="absolute left-0 z-30 p-4 bg-gray-200/50 dark:bg-gray-700/50 rounded-r-lg" 
@@ -171,27 +161,12 @@ export default function DailyQuiz() {
 
 			{
 				gameState == 'playing' ? (
-					<form className="flex flex-col max-w-2xl gap-6 w-full">
-						<Autocomplete 
-							variant="bordered"
-							label="Enter your guess here" 
-							className="w-full"
-							isDisabled={answers.length >= 3}
-							onKeyDown={(e: any) => e.continuePropagation()}
-							defaultItems={autoCompleteNames}
-							onSelectionChange={(key) => {
-								if(key) setGuessName(key.toString())
-							}}
-							defaultInputValue={guessName}
-							allowsCustomValue={true}
-							onInputChange={onChangeGuessName}
-						>
-							{(name) => <AutocompleteItem key={name['name']}>{name['name']}</AutocompleteItem>}
-						</Autocomplete>
-						<Button className="w-full" type="submit" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3}>
+					<div className="flex flex-col max-w-2xl gap-6 w-full">
+						<AutoCompleteGameName key={answers.length} onChangeGuessName={setGuessName}/>
+						<Button className="w-full" type="button" variant="shadow" color="primary" onClick={onSubmitQuizAnswer} isDisabled={answers.length >= 3 || guessName.trim().length == 0}>
 							Guess
 						</Button>
-					</form>
+					</div>
 				) : <></>
 			}
 		</section>

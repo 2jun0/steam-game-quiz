@@ -1,29 +1,28 @@
 import random
-from collections.abc import Iterable
 from datetime import date, timedelta
 
 from ..aws_lambda.model import Game, SaveDailyQuiz, SaveQuiz
 from ..config import setting
 from ..protocols import LambdaAPI, SteamAPI
-from .game_picker import pick_games
+from .game_picker import FEATURE, pick_games
 from .genre_picker import pick_genres
 from .screenshot_scraper import scrap_screenshots
 from .utils import utc_today
 
 
-def create_quizzes(steam_api: SteamAPI, games: Iterable[Game]) -> list[SaveQuiz]:
-    quizzes = []
-    for game in games:
+def create_quizzes(steam_api: SteamAPI, games: dict[FEATURE, Game]) -> dict[FEATURE, SaveQuiz]:
+    quizzes: dict[FEATURE, SaveQuiz] = {}
+    for feature, game in games.items():
         # 스크린샷 크롤링
         screenshots = scrap_screenshots(steam_api, game)
         quiz_screenshots = random.sample(screenshots, k=setting.QUIZ_SCREENSHOT_CNT)
-        quizzes.append(SaveQuiz(screenshots=quiz_screenshots))
+        quizzes[feature] = SaveQuiz(screenshots=quiz_screenshots)
 
     return quizzes
 
 
-def create_daily_quizzes(target_date: date, quizzes: Iterable[SaveQuiz]) -> list[SaveDailyQuiz]:
-    return [SaveDailyQuiz(quiz=quiz, target_date=target_date) for quiz in quizzes]
+def create_daily_quizzes(target_date: date, quizzes: dict[FEATURE, SaveQuiz]) -> list[SaveDailyQuiz]:
+    return [SaveDailyQuiz(quiz=quiz, target_date=target_date, feature=feature) for feature, quiz in quizzes.items()]
 
 
 def new_daily_quizzes(lambda_api: LambdaAPI, steam_api: SteamAPI):
