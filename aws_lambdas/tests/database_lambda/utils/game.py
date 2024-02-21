@@ -1,9 +1,11 @@
 from datetime import datetime
 from random import randint
-from typing import Optional
+from typing import Any, Optional
 
+from elasticsearch import Elasticsearch
 from sqlalchemy.orm import Session
 
+from database_lambda.es import GAME_INDEX
 from database_lambda.game.model import Game
 from database_lambda.genre.model import Genre
 
@@ -40,3 +42,7 @@ def create_random_game(
     session.refresh(game)
 
     return game
+
+
+def search_game_docs(es_client: Elasticsearch, *, max_size: int = 100) -> list[dict[str, Any]]:
+    return es_client.search(index=GAME_INDEX, size=max_size)["hits"]["hits"]
