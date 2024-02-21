@@ -35,6 +35,7 @@ export default function DailyQuiz() {
 	function onChangeGuessName(query: string) {
 		if (query != guessName) {
 			autoCompleteGameName(query).then(setAutoCompleteNames)
+			setGuessName(query)
 		}
 	}
 
