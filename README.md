@@ -35,7 +35,7 @@
 
 ## 시연 영상
 
-
+https://github.com/2jun0/steam-game-quiz/assets/7973448/c8e153db-3603-4796-8ae1-7fd058b9c103
 
 ## 프로젝트 아키텍쳐
 
