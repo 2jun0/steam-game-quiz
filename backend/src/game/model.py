@@ -5,6 +5,8 @@ from sqlmodel import Field, Relationship, SQLModel
 
 from ..model import CreatedAtMixin, UpdatedAtMixin
 
+# Genre
+
 
 class GameGenreLink(SQLModel, table=True):
     __tablename__: str = "game_genre_link"
@@ -23,6 +25,9 @@ class Genre(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     name: str = Field(max_length=64, unique=True)
 
 
+# Game
+
+
 class Game(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     __tablename__: str = "game"
 
@@ -32,6 +37,22 @@ class Game(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     released_at: datetime = Field()
     kr_name: str | None = Field(max_length=64)
     genres: list[Genre] = Relationship(link_model=GameGenreLink)
+    aliases: list["GameAlias"] = Relationship()
+
+
+# Game Alias
+
+
+class GameAlias(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+    __tablename__: str = "game_alias"
+
+    id: int | None = Field(default=None, primary_key=True)
+    name: str = Field(max_length=64, unique=True)
+
+    game_id: int = Field(foreign_key="game.id")
+
+
+# Screenshot
 
 
 class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
