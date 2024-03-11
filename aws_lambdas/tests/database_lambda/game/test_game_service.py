@@ -85,14 +85,14 @@ def test_save_games은_이미_저장한_게임을_중복저장하지_않는다(s
                 "name": "game1",
                 "released_at": random_datetime().timestamp(),
                 "genres": ["Adventure"],
-                "aliases": ["게임1", "game 1"],
+                "aliases": ["게임", "게임1", "game 1"],
             },
             {
                 "steam_id": 1,
                 "name": "game2",
                 "released_at": random_datetime().timestamp(),
                 "genres": ["RPG", "Adventure"],
-                "aliases": ["게임2", "game 2"],
+                "aliases": ["게임", "게임2", "game 2"],
             },
         ),
         (
@@ -101,14 +101,14 @@ def test_save_games은_이미_저장한_게임을_중복저장하지_않는다(s
                 "name": "game2",
                 "released_at": random_datetime().timestamp(),
                 "genres": ["Adventure", "RPG"],
-                "aliases": ["게임2", "game 2"],
+                "aliases": ["게임", "게임2", "game 2"],
             },
             {
                 "steam_id": 1,
                 "name": "game1",
                 "released_at": random_datetime().timestamp(),
                 "genres": ["Adventure"],
-                "aliases": ["게임1", "game 1"],
+                "aliases": ["게임", "게임1", "game 1"],
             },
         ),
     ),
@@ -129,3 +129,21 @@ def test_save_games은_이미_저장한_게임은_업데이트_한다(
     docs = search_game_docs(es_client)
     assert len(docs) == 1
     assert docs[0]["_source"]["name"] == after_game["name"]
+
+
+def test_save_games은_별칭을_저장한다(session: Session, es_client: Elasticsearch):
+    game: SaveGame = {
+        "steam_id": 1,
+        "name": "game1",
+        "released_at": random_datetime().timestamp(),
+        "genres": ["Adventure"],
+        "aliases": ["게임1", "game 1"],
+    }
+
+    save_games([game], session=session, es_client=es_client)
+
+    # check es
+    docs = search_game_docs(es_client)
+    game_doc = docs[0]["_source"]
+
+    assert set(game["aliases"]) == set(game_doc["aliases"])
