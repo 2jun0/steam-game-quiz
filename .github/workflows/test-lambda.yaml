@@ -47,3 +47,6 @@ jobs:
       - name: test app
         run: poetry run python -m pytest tests -c pytest.ini
         working-directory: ${{env.working-directory}}
+        env:
+          IGDB_CLIENT_ID: ${{ secrets.IGDB_CLIENT_ID }}
+          IGDB_CLIENT_SECRET: ${{ secrets.IGDB_CLIENT_SECRET }}
