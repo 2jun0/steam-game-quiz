@@ -32,7 +32,7 @@ def batch(size: int):
 @cache
 def _get_token():
     res = requests.post(
-        "https://id.twitch.tv/oauth2/token",
+        "https://id.twitch.tv/oauth2/token"
         f"?client_id={setting.IGDB_CLIENT_ID}&client_secret={setting.IGDB_CLIENT_SECRET}&grant_type=client_credentials",
     )
     token = res.json()["access_token"]

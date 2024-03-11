@@ -6,7 +6,7 @@ from ..igdb import igdb_api
 
 
 def _scrap_igdb_game_ids(steam_ids: Sequence[int]) -> dict[int, int]:
-    steam_games = igdb_api.get_games_batch(steam_ids)
+    steam_games = igdb_api.get_steam_games_batch(steam_ids)
     return {int(g["uid"]): g["game"] for g in steam_games if "game" in g}
 
 
