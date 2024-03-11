@@ -36,7 +36,7 @@ class Game(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     name: str = Field(max_length=64)
     released_at: datetime = Field()
     genres: list[Genre] = Relationship(link_model=GameGenreLink)
-    aliases: list["GameAlias"] = Relationship()
+    aliases: list["GameAlias"] = Relationship(sa_relationship_kwargs={"cascade": "all,delete"})
 
 
 # Game Alias
@@ -44,9 +44,10 @@ class Game(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
 
 class GameAlias(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     __tablename__: str = "game_alias"
+    __table_args__ = (UniqueConstraint("game_id", "name"),)
 
     id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(max_length=64, unique=True)
+    name: str = Field(max_length=64)
 
     game_id: int = Field(foreign_key="game.id")
 
