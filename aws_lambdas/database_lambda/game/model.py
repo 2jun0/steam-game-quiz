@@ -26,7 +26,7 @@ class Game(CreatedAtMixin, UpdatedAtMixin, Base):
     name: Mapped[str] = mapped_column(String(64))
     released_at: Mapped[datetime] = mapped_column()
     genres: Mapped[list[Genre]] = relationship(secondary=game_genre_link)
-    aliases: Mapped[list[GameAlias]] = relationship()
+    aliases: Mapped[list[GameAlias]] = relationship(cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"Game(id={self.id}, steam_id={self.steam_id}, name={self.name}, released_at={self.released_at})"
