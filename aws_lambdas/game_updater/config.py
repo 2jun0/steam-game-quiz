@@ -10,7 +10,7 @@ class Config(BaseSettings):
     IGDB_CLIENT_ID: str
     IGDB_CLIENT_SECRET: str
 
-    model_config = SettingsConfigDict(env_file=".scraper.env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=".game_updater.env", env_file_encoding="utf-8")
 
 
 setting = Config()  # type: ignore
