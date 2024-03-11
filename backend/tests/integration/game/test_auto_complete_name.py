@@ -18,8 +18,8 @@ def client() -> Generator[TestClient, Any, None]:
         yield client
 
 
-def create_indexed_game(session: Session, es_client: Elasticsearch, name: str) -> Game:
-    game = create_random_game(session, name=name, kr_name="")
+def create_indexed_game(session: Session, es_client: Elasticsearch, name: str, aliases: list[str] = []) -> Game:
+    game = create_random_game(session, name=name, aliases=aliases)
     index_game(es_client, game)
     return game
 
@@ -46,7 +46,27 @@ def test_auto_complete_game_name(
     assert res.status_code == status.HTTP_200_OK
 
     res_json = res.json()
-    assert res_json["games"] == [{"name": saved_game.name, "locale_name": None}]
+    assert res_json["games"] == [{"name": saved_game.name, "match": saved_game.name}]
+
+
+@pytest.mark.parametrize(
+    ("game_name", "alias", "query"),
+    (
+        ("NieR:Automata", "니어오토마타", "니어"),
+        ("NieR:Automata", "니어오토마타", "니어오토마타"),
+        ("NieR:Automata", "오토마타", "오토"),
+    ),
+)
+def test_auto_complete_game_name_by_alias(
+    client: TestClient, session: Session, es_client: Elasticsearch, game_name: str, alias: str, query: str
+):
+    saved_game = create_indexed_game(session, es_client, game_name, [alias])
+
+    res = client.get(f"/game/auto_complete_name?query={query}")
+    assert res.status_code == status.HTTP_200_OK
+
+    res_json = res.json()
+    assert res_json["games"] == [{"name": saved_game.name, "match": alias}]
 
 
 def test_auto_complete_for_multiple_games(client: TestClient, session: Session, es_client: Elasticsearch):
