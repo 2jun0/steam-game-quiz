@@ -18,6 +18,6 @@ class Game(BaseModel):
 class SaveGame(BaseModel):
     steam_id: int
     name: str
-    kr_name: Optional[str]
     released_at: float
     genres: Sequence[str]
+    aliases: Sequence[str]

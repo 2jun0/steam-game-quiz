@@ -31,7 +31,7 @@ def _scrap_alternative_names(alternative_name_ids: Sequence[int]) -> dict[int, l
     return game2alter_names
 
 
-def scrap_alternative_names(steam_ids: Sequence[int]) -> dict[int, list[str]]:
+def scrap_aliases(steam_ids: Sequence[int]) -> dict[int, list[str]]:
     igdb_game_ids = _scrap_igdb_game_ids(steam_ids)
     alter_name_ids = _scrap_alternative_name_ids(list(igdb_game_ids.values()))
     alter_names = _scrap_alternative_names(alter_name_ids)
