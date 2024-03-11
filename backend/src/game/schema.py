@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class AutoCompleteName(BaseModel):
     name: str
-    locale_name: str | None
+    match: str
 
 
 class AutoCompleteNameResponse(BaseModel):
