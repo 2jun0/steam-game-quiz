@@ -13,7 +13,6 @@ def _create_model(session: Session, game: SaveGame) -> Game:
     return Game(
         steam_id=game["steam_id"],
         name=game["name"],
-        kr_name=game["kr_name"],
         released_at=datetime.fromtimestamp(game["released_at"]),
         genres=to_genre_models(session, game["genres"]),
     )
@@ -33,7 +32,6 @@ def _attach_models(session: Session, models: dict[STEAM_ID, Game]):
     for game in saved:
         query = models[game.steam_id]
         game.name = query.name
-        game.kr_name = query.kr_name
         game.genres = query.genres
         models[game.steam_id] = game
 
