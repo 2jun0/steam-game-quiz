@@ -16,6 +16,7 @@ def _bulk_game_data(games: Iterable[Game]) -> Generator[dict[str, Any], Any, Non
             "id": game.id,
             "name": game.name,
             "q_name": q_name,
+            "aliases": [alias.name for alias in game.aliases],
         }
 
 
