@@ -35,7 +35,6 @@ class Game(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     steam_id: int = Field(unique=True)
     name: str = Field(max_length=64)
     released_at: datetime = Field()
-    kr_name: str | None = Field(max_length=64)
     genres: list[Genre] = Relationship(link_model=GameGenreLink)
     aliases: list["GameAlias"] = Relationship()
 
