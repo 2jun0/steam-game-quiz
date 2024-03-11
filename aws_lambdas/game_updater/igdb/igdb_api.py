@@ -1,6 +1,7 @@
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
 from functools import cache, wraps
-from typing import Any
+
+from .model import IGDBAlternativeName, IGDBExternalGames, IGDBGame
 from ..config import setting
 
 import requests
@@ -10,7 +11,7 @@ MAX_LIMIT = 500
 
 
 def batch(size: int):
-    def batch_decorator(func: Callable[[Sequence[int]], list]):
+    def batch_decorator(func):
 
         @wraps(func)
         def wrapper(_input: Sequence[int], **kwargs):
@@ -38,7 +39,7 @@ def _get_token():
     return token
 
 
-def get_external_games(steam_ids: Iterable, category: int, limit: int = MAX_LIMIT) -> list[Any]:
+def get_external_games(steam_ids: Iterable, category: int, limit: int = MAX_LIMIT) -> list[IGDBExternalGames]:
     # category,checksum,countries,created_at,game,media,name,platform,uid,updated_at,url,year;
 
     uids = ",".join([f'"{id}"' for id in steam_ids])
@@ -56,11 +57,11 @@ def get_external_games(steam_ids: Iterable, category: int, limit: int = MAX_LIMI
     return response.json()
 
 
-def get_steam_games(steam_ids: Iterable, limit: int = MAX_LIMIT) -> list[Any]:
+def get_steam_games(steam_ids: Iterable, limit: int = MAX_LIMIT) -> list[IGDBExternalGames]:
     return get_external_games(steam_ids, STEAM_CATEGORY, limit)
 
 
-def get_games(ids: Iterable[int], limit: int = MAX_LIMIT) -> list[Any]:
+def get_games(ids: Iterable[int], limit: int = MAX_LIMIT) -> list[IGDBGame]:
     # checksum,cover,created_at,game,name,region,updated_at;
 
     ids_ = ",".join(map(str, ids))
@@ -78,7 +79,7 @@ def get_games(ids: Iterable[int], limit: int = MAX_LIMIT) -> list[Any]:
     return response.json()
 
 
-def get_alternative_names(ids: Iterable[int], limit: int = MAX_LIMIT) -> list[Any]:
+def get_alternative_names(ids: Iterable[int], limit: int = MAX_LIMIT) -> list[IGDBAlternativeName]:
     # checksum,cover,created_at,game,name,region,updated_at;
 
     ids_ = ",".join(map(str, ids))
@@ -97,7 +98,7 @@ def get_alternative_names(ids: Iterable[int], limit: int = MAX_LIMIT) -> list[An
 
 
 @batch(MAX_LIMIT)
-def get_steam_games_batch(steam_ids: Sequence[int]) -> list[Any]:
+def get_steam_games_batch(steam_ids: Sequence[int]) -> list[IGDBExternalGames]:
     if len(steam_ids) == 0:
         return []
 
@@ -105,7 +106,7 @@ def get_steam_games_batch(steam_ids: Sequence[int]) -> list[Any]:
 
 
 @batch(MAX_LIMIT)
-def get_games_batch(game_ids: Sequence[int]) -> list[Any]:
+def get_games_batch(game_ids: Sequence[int]) -> list[IGDBGame]:
     if len(game_ids) == 0:
         return []
 
@@ -113,7 +114,7 @@ def get_games_batch(game_ids: Sequence[int]) -> list[Any]:
 
 
 @batch(MAX_LIMIT)
-def get_alternative_names_batch(alternative_name_ids: Sequence[int]) -> list[Any]:
+def get_alternative_names_batch(alternative_name_ids: Sequence[int]) -> list[IGDBAlternativeName]:
     if len(alternative_name_ids) == 0:
         return []
 
