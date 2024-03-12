@@ -4,8 +4,8 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from ..alias.model import GameAlias
-
 from ..genre.model_factory import to_models as to_genre_models
+from ..utils import is_aldecimal
 from . import repository
 from .model import Game
 from .schema import STEAM_ID, SaveGame
@@ -61,7 +61,7 @@ def to_models(session: Session, games: Iterable[SaveGame]) -> list[Game]:
 
     for game in games:
         model = models[game["steam_id"]]
-        aliases = set(alias_name.lower() for alias_name in game["aliases"])
+        aliases = set(alias_name.lower() for alias_name in game["aliases"] if is_aldecimal(alias_name))
         _update_aliases(session, model, aliases)
 
     return list(models.values())
