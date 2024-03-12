@@ -61,6 +61,7 @@ def to_models(session: Session, games: Iterable[SaveGame]) -> list[Game]:
 
     for game in games:
         model = models[game["steam_id"]]
-        _update_aliases(session, model, set(game["aliases"]))
+        aliases = set(alias_name.lower() for alias_name in game["aliases"])
+        _update_aliases(session, model, aliases)
 
     return list(models.values())
