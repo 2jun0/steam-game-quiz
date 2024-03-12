@@ -36,7 +36,6 @@ def _attach_models(session: Session, models: dict[STEAM_ID, Game]):
         query = models[game.steam_id]
         game.name = query.name
         game.genres = query.genres
-        game.aliases = query.aliases
         models[game.steam_id] = game
 
 
