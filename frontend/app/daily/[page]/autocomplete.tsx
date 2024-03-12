@@ -37,7 +37,7 @@ export default function AutoCompleteGameName({onChangeGuessName}: {onChangeGuess
             };
         });
 
-        onChangeGuessName(key?.toString());
+        onChangeGuessName(key ? key.toString() : "");
     };
 
     // Specify how each of the Autocomplete values should change when the input
