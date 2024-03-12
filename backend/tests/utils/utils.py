@@ -11,10 +11,6 @@ def random_name() -> str:
     return faker.name()
 
 
-def random_kr_string() -> str:
-    return faker["ko-KR"].name()  # type: ignore
-
-
 def random_image_url() -> str:
     return faker.image_url()
 
