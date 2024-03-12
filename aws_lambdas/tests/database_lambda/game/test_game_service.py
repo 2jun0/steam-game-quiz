@@ -22,16 +22,16 @@ def test_save_games은_입력한_게임을_저장해야_한다(session: Session,
         {
             "steam_id": 1,
             "name": "game1",
-            "kr_name": "게임1",
             "released_at": random_datetime().timestamp(),
             "genres": ["Adventure"],
+            "aliases": ["게임1", "game 1"],
         },
         {
             "steam_id": 2,
             "name": "game2",
-            "kr_name": "게임2",
             "released_at": random_datetime().timestamp(),
             "genres": ["Adventure", "RPG"],
+            "aliases": ["게임2", "game 2"],
         },
     ]
     save_games(games, session=session, es_client=es_client)
@@ -51,16 +51,16 @@ def test_save_games은_이미_저장한_게임을_중복저장하지_않는다(s
         {
             "steam_id": 1,
             "name": "game1",
-            "kr_name": "게임1",
             "released_at": random_datetime().timestamp(),
             "genres": ["Adventure"],
+            "aliases": ["게임1", "game 1"],
         },
         {
             "steam_id": 2,
             "name": "game2",
-            "kr_name": "게임2",
             "released_at": random_datetime().timestamp(),
             "genres": ["Adventure", "RPG"],
+            "aliases": ["게임2", "game 2"],
         },
     ]
 
@@ -83,32 +83,32 @@ def test_save_games은_이미_저장한_게임을_중복저장하지_않는다(s
             {
                 "steam_id": 1,
                 "name": "game1",
-                "kr_name": "게임1",
                 "released_at": random_datetime().timestamp(),
                 "genres": ["Adventure"],
+                "aliases": ["게임", "게임1", "game 1"],
             },
             {
                 "steam_id": 1,
                 "name": "game2",
-                "kr_name": "게임2",
                 "released_at": random_datetime().timestamp(),
                 "genres": ["RPG", "Adventure"],
+                "aliases": ["게임", "게임2", "game 2"],
             },
         ),
         (
             {
                 "steam_id": 1,
                 "name": "game2",
-                "kr_name": "게임2",
                 "released_at": random_datetime().timestamp(),
                 "genres": ["Adventure", "RPG"],
+                "aliases": ["게임", "게임2", "game 2"],
             },
             {
                 "steam_id": 1,
                 "name": "game1",
-                "kr_name": "게임1",
                 "released_at": random_datetime().timestamp(),
                 "genres": ["Adventure"],
+                "aliases": ["게임", "게임1", "game 1"],
             },
         ),
     ),
@@ -122,10 +122,28 @@ def test_save_games은_이미_저장한_게임은_업데이트_한다(
     # check rdb
     saved = session.scalars(select(Game)).one().to_dto()
     assert saved.name == after_game["name"]
-    assert saved.kr_name == after_game["kr_name"]
+    assert set(saved.aliases) == set(after_game["aliases"])
     assert set(saved.genres) == set(after_game["genres"])
 
     # check es
     docs = search_game_docs(es_client)
     assert len(docs) == 1
     assert docs[0]["_source"]["name"] == after_game["name"]
+
+
+def test_save_games은_별칭을_저장한다(session: Session, es_client: Elasticsearch):
+    game: SaveGame = {
+        "steam_id": 1,
+        "name": "game1",
+        "released_at": random_datetime().timestamp(),
+        "genres": ["Adventure"],
+        "aliases": ["게임1", "game 1"],
+    }
+
+    save_games([game], session=session, es_client=es_client)
+
+    # check es
+    docs = search_game_docs(es_client)
+    game_doc = docs[0]["_source"]
+
+    assert set(game["aliases"]) == set(game_doc["aliases"])
