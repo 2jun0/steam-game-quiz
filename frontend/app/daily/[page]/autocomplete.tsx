@@ -4,6 +4,7 @@ import { autoCompleteGameName } from "@/utils/backend-api";
 
 type CompleteName = {
     name: string
+    match: string
 }
 
 type FieldState = {
@@ -36,7 +37,7 @@ export default function AutoCompleteGameName({onChangeGuessName}: {onChangeGuess
             };
         });
 
-        onChangeGuessName(key.toString());
+        onChangeGuessName(key?.toString());
     };
 
     // Specify how each of the Autocomplete values should change when the input
@@ -86,7 +87,7 @@ export default function AutoCompleteGameName({onChangeGuessName}: {onChangeGuess
         onSelectionChange={onSelectionChange}
         onKeyDown={(e: any) => e.continuePropagation()}
     >
-        {(item) => <AutocompleteItem key={item.name}>{item.name}</AutocompleteItem>}
+        {(item) => <AutocompleteItem key={item.name}>{item.name}<p className="text-xs text-gray-400">{item.match}</p></AutocompleteItem>}
     </Autocomplete>
   );
 }
