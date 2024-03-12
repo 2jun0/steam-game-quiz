@@ -40,7 +40,7 @@ def _attach_models(session: Session, models: dict[STEAM_ID, Game]):
         models[game.steam_id] = game
 
 
-def _update_aliases(session: Session, game: Game, aliases: Iterable[str]):
+def _update_aliases(session: Session, game: Game, aliases: set[str]):
     # remove aliases
     existed_aliases: list[str] = []
     for game_alias in game.aliases:
@@ -61,6 +61,6 @@ def to_models(session: Session, games: Iterable[SaveGame]) -> list[Game]:
 
     for game in games:
         model = models[game["steam_id"]]
-        _update_aliases(session, model, game["aliases"])
+        _update_aliases(session, model, set(game["aliases"]))
 
     return list(models.values())
