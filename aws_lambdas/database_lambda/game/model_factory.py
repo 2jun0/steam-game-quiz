@@ -54,13 +54,17 @@ def _update_aliases(session: Session, game: Game, aliases: set[str]):
             game.aliases.append(GameAlias(name=alias_name))
 
 
+def _allow_alias_name(alias_name: str):
+    return all(c == " " or is_aldecimal(c) for c in alias_name)
+
+
 def to_models(session: Session, games: Iterable[SaveGame]) -> list[Game]:
     models = _create_models(session, games)
     _attach_models(session, models)
 
     for game in games:
         model = models[game["steam_id"]]
-        aliases = set(alias_name.lower() for alias_name in game["aliases"] if is_aldecimal(alias_name))
+        aliases = set(alias_name.lower() for alias_name in game["aliases"] if _allow_alias_name(alias_name))
         _update_aliases(session, model, aliases)
 
     return list(models.values())
