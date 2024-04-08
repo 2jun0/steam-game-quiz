@@ -23,5 +23,5 @@ class QuizService:
         return quiz.game.name
 
     async def _get_quiz(self, *, quiz_id: int) -> Quiz:
-        quiz = await self._quiz_repo.get_with_game(id=quiz_id)
+        quiz = await self._quiz_repo.get(id=quiz_id)
         return self._quiz_validator.validate_quiz_existed(quiz=quiz)
