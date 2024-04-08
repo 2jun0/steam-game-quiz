@@ -6,7 +6,7 @@ class QuizNotFoundError(NotFoundError):
 
 
 class QuizAlreadyCompletedError(BadRequestError):
-    DETAIL = "Quiz Alreay Completed"
+    DETAIL = "Quiz Already Completed"
 
 
 class QuizNotCompletedError(BadRequestError):
