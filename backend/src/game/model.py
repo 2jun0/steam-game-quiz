@@ -1,5 +1,7 @@
 from datetime import datetime
+from typing import Awaitable
 
+from async_sqlmodel import AsyncSQLModel, AwaitableField
 from sqlalchemy import BigInteger, Column, UniqueConstraint
 from sqlmodel import Field, Relationship, SQLModel
 
@@ -55,7 +57,7 @@ class GameAlias(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
 # Screenshot
 
 
-class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, AsyncSQLModel, table=True):
     __tablename__: str = "game_screenshot"
 
     id: int | None = Field(default=None, primary_key=True)
@@ -64,3 +66,5 @@ class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
 
     game_id: int = Field(foreign_key="game.id")
     game: Game = Relationship()
+    awt_game: Awaitable[Game] = AwaitableField(field="game")
+
