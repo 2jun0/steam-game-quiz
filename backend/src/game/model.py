@@ -68,3 +68,15 @@ class GameScreenshot(CreatedAtMixin, UpdatedAtMixin, AsyncSQLModel, table=True):
     game: Game = Relationship()
     awt_game: Awaitable[Game] = AwaitableField(field="game")
 
+
+# Solved
+
+
+class SolvedGame(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+    __tablename__: str = "solved_game"
+    __table_args__ = (UniqueConstraint("user_id", "game_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+
+    game_id: int = Field(foreign_key="game.id")
+    user_id: int = Field(foreign_key="user.id")

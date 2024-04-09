@@ -38,6 +38,7 @@ class QuizCBV:
         correct = await self.quiz_answer_service.submit_answer(
             quiz_id=quiz_submit_req.quiz_id, user_id=current_user.id, answer=quiz_submit_req.answer
         )
+
         return SubmitAnswerResponse(correct=correct)
 
     @router.get("/quiz/answer")

@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from ..dependency import SessionDep
+from ..game.dependency import GameServiceDep
 from .daily_quiz_loader import DailyQuizLoader
 from .quiz_answer_service import QuizAnswerService
 from .quiz_service import QuizService
@@ -48,9 +49,13 @@ async def get_quiz_answer_service(
     quiz_repository: QuizRepositoryDep,
     quiz_answer_repository: QuizAnswerRepositoryDep,
     quiz_validator: QuizValidatorDep,
+    game_service: GameServiceDep,
 ) -> QuizAnswerService:
     return QuizAnswerService(
-        quiz_repository=quiz_repository, quiz_answer_repository=quiz_answer_repository, quiz_validator=quiz_validator
+        quiz_repository=quiz_repository,
+        quiz_answer_repository=quiz_answer_repository,
+        quiz_validator=quiz_validator,
+        game_service=game_service,
     )
 
 
