@@ -2,10 +2,11 @@ from asyncio import Lock
 from datetime import datetime
 
 from elasticsearch import AsyncElasticsearch
+from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.es import GAME_INDEX
-from src.game.model import Game, GameAlias
+from src.game.model import Game, GameAlias, SolvedGame
 
 from .utils import random_datetime, random_name
 
@@ -36,6 +37,12 @@ async def create_random_game(
     await session.commit()
 
     return game
+
+
+async def get_solved_game(session: AsyncSession, *, user_id: int, game_id: int) -> SolvedGame | None:
+    stmt = select(SolvedGame).where(SolvedGame.user_id == user_id, SolvedGame.game_id == game_id)
+    rs = await session.exec(stmt)
+    return rs.one_or_none()
 
 
 async def index_game(es_client: AsyncElasticsearch, game: Game):
