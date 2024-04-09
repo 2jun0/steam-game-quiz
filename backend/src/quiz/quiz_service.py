@@ -20,7 +20,7 @@ class QuizService:
         quiz_answers = await self._quiz_answer_repo.get_by_quiz_id_and_user_id(quiz_id=quiz_id, user_id=user_id)
         self._quiz_validator.validate_quiz_completed(answers=quiz_answers)
 
-        return quiz.game.name
+        return (await quiz.get_game()).name
 
     async def _get_quiz(self, *, quiz_id: int) -> Quiz:
         quiz = await self._quiz_repo.get(id=quiz_id)
