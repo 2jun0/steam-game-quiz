@@ -1,12 +1,12 @@
-from sqlmodel import Session
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.auth.model import User
 
 from .utils import random_email
 
 
-def create_random_user(
-    session: Session,
+async def create_random_user(
+    session: AsyncSession,
     *,
     email: str | None = None,
     is_active: bool = True,
@@ -25,7 +25,6 @@ def create_random_user(
     )
 
     session.add(user)
-    session.commit()
-    session.refresh(user)
+    await session.commit()
 
     return user

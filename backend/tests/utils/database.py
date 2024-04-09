@@ -1,11 +1,12 @@
+from sqlalchemy.util.concurrency import greenlet_spawn
 from sqlmodel import SQLModel
 
 from tests.database import engine
 
 
-def drop_tables():
-    SQLModel.metadata.drop_all(engine)
+async def drop_tables():
+    await greenlet_spawn(SQLModel.metadata.drop_all, engine.sync_engine)
 
 
-def create_all_table():
-    SQLModel.metadata.create_all(engine)
+async def create_all_table():
+    await greenlet_spawn(SQLModel.metadata.create_all, engine.sync_engine)

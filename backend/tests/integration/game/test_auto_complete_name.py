@@ -1,11 +1,10 @@
-from collections.abc import Generator
-from typing import Any
+from typing import AsyncGenerator
 
 import pytest
-from elasticsearch import Elasticsearch
+from elasticsearch import AsyncElasticsearch
 from fastapi import status
-from fastapi.testclient import TestClient
-from sqlmodel import Session
+from httpx import AsyncClient
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.game.model import Game
 from src.main import app
@@ -13,14 +12,16 @@ from tests.utils.game import create_random_game, index_game
 
 
 @pytest.fixture(scope="module")
-def client() -> Generator[TestClient, Any, None]:
-    with TestClient(app) as client:
+async def client() -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(app=app) as client:
         yield client
 
 
-def create_indexed_game(session: Session, es_client: Elasticsearch, name: str, aliases: list[str] = []) -> Game:
-    game = create_random_game(session, name=name, aliases=aliases)
-    index_game(es_client, game)
+async def create_indexed_game(
+    session: AsyncSession, es_client: AsyncElasticsearch, name: str, aliases: list[str] = []
+) -> Game:
+    game = await create_random_game(session, name=name, aliases=aliases)
+    await index_game(es_client, game)
     return game
 
 
@@ -37,12 +38,12 @@ def create_indexed_game(session: Session, es_client: Elasticsearch, name: str, a
         ("Nier:Automata", "nier:auto"),
     ),
 )
-def test_auto_complete_game_name(
-    client: TestClient, session: Session, es_client: Elasticsearch, game_name: str, query: str
+async def test_auto_complete_game_name(
+    client: AsyncClient, session: AsyncSession, es_client: AsyncElasticsearch, game_name: str, query: str
 ):
-    saved_game = create_indexed_game(session, es_client, game_name)
+    saved_game = await create_indexed_game(session, es_client, game_name)
 
-    res = client.get(f"/game/auto_complete_name?query={query}")
+    res = await client.get(f"/game/auto_complete_name?query={query}")
     assert res.status_code == status.HTTP_200_OK
 
     res_json = res.json()
@@ -57,26 +58,28 @@ def test_auto_complete_game_name(
         ("NieR:Automata", "오토마타", "오토"),
     ),
 )
-def test_auto_complete_game_name_by_alias(
-    client: TestClient, session: Session, es_client: Elasticsearch, game_name: str, alias: str, query: str
+async def test_auto_complete_game_name_by_alias(
+    client: AsyncClient, session: AsyncSession, es_client: AsyncElasticsearch, game_name: str, alias: str, query: str
 ):
-    saved_game = create_indexed_game(session, es_client, game_name, [alias])
+    saved_game = await create_indexed_game(session, es_client, game_name, [alias])
 
-    res = client.get(f"/game/auto_complete_name?query={query}")
+    res = await client.get(f"/game/auto_complete_name?query={query}")
     assert res.status_code == status.HTTP_200_OK
 
     res_json = res.json()
     assert res_json["games"] == [{"name": saved_game.name, "match": alias}]
 
 
-def test_auto_complete_for_multiple_games(client: TestClient, session: Session, es_client: Elasticsearch):
-    create_indexed_game(session, es_client, name="game1")
-    create_indexed_game(session, es_client, name="game2")
-    create_indexed_game(session, es_client, name="game3")
-    create_indexed_game(session, es_client, name="game4")
+async def test_auto_complete_for_multiple_games(
+    client: AsyncClient, session: AsyncSession, es_client: AsyncElasticsearch
+):
+    await create_indexed_game(session, es_client, name="game1")
+    await create_indexed_game(session, es_client, name="game2")
+    await create_indexed_game(session, es_client, name="game3")
+    await create_indexed_game(session, es_client, name="game4")
     query = "game"
 
-    res = client.get(f"/game/auto_complete_name?query={query}")
+    res = await client.get(f"/game/auto_complete_name?query={query}")
     assert res.status_code == status.HTTP_200_OK
 
     res_json = res.json()
