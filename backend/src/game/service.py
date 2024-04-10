@@ -1,7 +1,6 @@
 from elasticsearch import AsyncElasticsearch
 
 from ..es import GAME_INDEX
-from .exception import GameAlreadySolvedError
 from .model import SolvedGame
 from .repository import SolvedGameRepository
 from .schema import AutoCompleteName
