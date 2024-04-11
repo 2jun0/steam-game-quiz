@@ -51,14 +51,15 @@ class QuizAnswerService:
         has_solved_game = False
         success = self._quiz_manager.is_quiz_success(answers=answers)
 
-        if success:
-            game = await quiz.get_game()
-            assert game.id is not None
-            assert user.id is not None
-            await self._game_manager.solve_game(user_id=user.id, game_id=game.id)
-            has_solved_game = True
+        game = await quiz.get_game()
+        assert game.id is not None
+        assert user.id is not None
+        has_solved_game = await self._game_manager.has_solved_game(game_id=game.id, user_id=user.id)
 
         self._rank_score_manager.update_score(user=user, has_solved_game=has_solved_game, is_quiz_success=success)
+
+        if success:
+            await self._game_manager.solve_game(user_id=user.id, game_id=game.id)
 
     async def get_quiz_answer(self, *, quiz_id: int, user_id: int) -> Sequence[QuizAnswer]:
         await self._validate_quiz(quiz_id=quiz_id)
