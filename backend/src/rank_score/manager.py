@@ -1,4 +1,5 @@
 from ..auth.model import User
+from ..config import settings
 
 
 class RankScoreManager:
@@ -14,16 +15,16 @@ class RankScoreManager:
 
     def _on_correct_first(self, *, user: User):
         """처음 게임을 맞출때 (해당 게임을 맞춘 적 있는 경우 X)"""
-        user.rank_score += 10
+        user.rank_score = max(0, user.rank_score + settings.SCORE_DIFF_ON_CORRECT_FIRST)
 
     def _on_correct_repeat(self, *, user: User):
         """반복해서 게임을 맞출때 (해당 게임을 맞춘 적 있는 경우 O)"""
-        user.rank_score += 2
+        user.rank_score = max(0, user.rank_score + settings.SCORE_DIFF_ON_CORRECT_REPEAT)
 
     def _on_failed(self, *, user: User):
         """대한 퀴즈 오답시 (해당 게임을 맞춘 적 있는 경우 X)"""
-        user.rank_score -= 2
+        user.rank_score = max(0, user.rank_score + settings.SCORE_DIFF_ON_FAILED)
 
     def _on_failed_after_previous_solved(self, *, user: User):
         """이미 맞춘 게임에 대한 퀴즈 오답시 (해당 게임을 맞춘 적 있는 경우 O)"""
-        user.rank_score -= 5
+        user.rank_score = max(0, user.rank_score + settings.SCORE_DIFF_ON_FAILED_AFTER_PREV_SOLVED)

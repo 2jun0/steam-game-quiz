@@ -23,6 +23,12 @@ class Config(BaseSettings):
     FACEBOOK_OAUTH2_CLIENT_SECRET: str
     FACEBOOK_OAUTH2_REDIRECT_URL: str | None = None
 
+    # score
+    SCORE_DIFF_ON_CORRECT_FIRST: int = 10
+    SCORE_DIFF_ON_CORRECT_REPEAT: int = 2
+    SCORE_DIFF_ON_FAILED: int = -2
+    SCORE_DIFF_ON_FAILED_AFTER_PREV_SOLVED: int = -5
+
     ENVIRONMENT: Envrionment = Envrionment.PRODUCTION
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
