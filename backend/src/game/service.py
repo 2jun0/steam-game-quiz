@@ -1,7 +1,6 @@
 from elasticsearch import AsyncElasticsearch
 
 from ..es import GAME_INDEX
-from .model import SolvedGame
 from .repository import SolvedGameRepository
 from .schema import AutoCompleteName
 
@@ -9,7 +8,6 @@ from .schema import AutoCompleteName
 class GameService:
     def __init__(self, *, es_client: AsyncElasticsearch, solved_game_repository: SolvedGameRepository) -> None:
         self._es_client = es_client
-        self._solved_game_repo = solved_game_repository
 
     async def auto_complete_name(self, query: str) -> list[AutoCompleteName]:
         auto_complete_names: list[AutoCompleteName] = []
@@ -45,9 +43,3 @@ class GameService:
             auto_complete_names.append(AutoCompleteName(name=name, match=match))
 
         return auto_complete_names
-
-    async def solve_game(self, *, game_id: int, user_id: int):
-        exists = await self._solved_game_repo.exists_by_user_and_game(user_id=user_id, game_id=game_id)
-        if not exists:
-            solved_game = SolvedGame(user_id=user_id, game_id=game_id)
-            await self._solved_game_repo.create(model=solved_game)

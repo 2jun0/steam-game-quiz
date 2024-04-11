@@ -25,6 +25,7 @@ class CRUDMixin:
         return rs.one()
 
     async def create(self: IRepository[ModelTypeS], *, model: ModelTypeS) -> ModelTypeS:
+        # TODO: try except가 필요한지 확인
         try:
             self._session.add(model)
             await self._session.commit()
