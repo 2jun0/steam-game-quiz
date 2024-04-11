@@ -46,16 +46,8 @@ class GameService:
 
         return auto_complete_names
 
-    async def on_correct_answer(self, *, game_id: int, user_id: int):
+    async def solve_game(self, *, game_id: int, user_id: int):
         exists = await self._solved_game_repo.exists_by_user_and_game(user_id=user_id, game_id=game_id)
         if not exists:
-            await self._solve_game(user_id=user_id, game_id=game_id)
-
-    async def _solve_game(self, *, user_id: int, game_id: int):
-        solved_game = SolvedGame(user_id=user_id, game_id=game_id)
-        await self._solved_game_repo.create(model=solved_game)
-
-    # async def _validate_not_solved(self, *, user_id: int, game_id: int):
-    #     solved = await self._solved_game_repo.exists_by_user_and_game(user_id=user_id, game_id=game_id)
-    #     if solved:
-    #         raise GameAlreadySolvedError
+            solved_game = SolvedGame(user_id=user_id, game_id=game_id)
+            await self._solved_game_repo.create(model=solved_game)

@@ -44,7 +44,7 @@ class QuizAnswerService:
     async def _on_correct_answer(self, *, quiz: Quiz, user_id: int):
         game = await quiz.get_game()
         assert game.id is not None
-        await self._game_service.on_correct_answer(user_id=user_id, game_id=game.id)
+        await self._game_service.solve_game(user_id=user_id, game_id=game.id)
 
     async def _validate_quiz(self, *, quiz_id: int) -> Quiz:
         quiz = await self._quiz_repo.get(id=quiz_id)
