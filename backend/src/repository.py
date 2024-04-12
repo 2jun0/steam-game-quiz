@@ -1,6 +1,5 @@
 from typing import Generic, Protocol, Type, TypeVar
 
-from sqlalchemy import exc
 from sqlmodel import SQLModel, exists, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -25,13 +24,5 @@ class CRUDMixin:
         return rs.one()
 
     async def create(self: IRepository[ModelTypeS], *, model: ModelTypeS) -> ModelTypeS:
-        # TODO: try except가 필요한지 확인
-        try:
-            self._session.add(model)
-            await self._session.commit()
-        except exc.IntegrityError:
-            await self._session.rollback()
-            raise
-
-        await self._session.refresh(model)
+        self._session.add(model)
         return model

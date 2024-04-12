@@ -12,6 +12,7 @@ from .es import es_client as es_client_
 async def get_session() -> AsyncGenerator[AsyncSession, Any]:
     async with AsyncSession(engine, expire_on_commit=False) as session:
         yield session
+        await session.commit()
 
 
 async def es_client() -> AsyncGenerator[AsyncElasticsearch, Any]:
