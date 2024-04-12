@@ -9,6 +9,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.auth.dependency import current_active_user
 from src.auth.model import User
 from src.config import settings
+from src.dependency import es_client as es_client_
 from src.main import app
 from tests.database import engine
 from tests.utils.auth import create_random_user
@@ -55,8 +56,13 @@ async def current_user(session: AsyncSession) -> AsyncGenerator[User, None]:
 async def es_client() -> AsyncGenerator[AsyncElasticsearch, None]:
     es_client = AsyncElasticsearch(settings.ELASTIC_SEARCH_URL)
 
+    def override_es_client() -> AsyncElasticsearch:
+        return es_client
+
     await delete_all_indexes(es_client)
     await create_all_indexes(es_client)
+
+    app.dependency_overrides[es_client_] = override_es_client
     yield es_client
     await delete_all_indexes(es_client)
     await es_client.close()

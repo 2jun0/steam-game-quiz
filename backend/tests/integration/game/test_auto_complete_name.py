@@ -1,5 +1,3 @@
-from typing import AsyncGenerator
-
 import pytest
 from elasticsearch import AsyncElasticsearch
 from fastapi import status
@@ -7,14 +5,7 @@ from httpx import AsyncClient
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.game.model import Game
-from src.main import app
 from tests.utils.game import create_random_game, index_game
-
-
-@pytest.fixture(scope="module")
-async def client() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app) as client:
-        yield client
 
 
 async def create_indexed_game(
