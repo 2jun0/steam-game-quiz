@@ -3,17 +3,19 @@ import json
 from uuid import uuid4
 
 from fastapi import status
-from fastapi.testclient import TestClient
-from sqlmodel import Session
+from httpx import AsyncClient
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.config import settings
 from tests.utils.quiz import create_random_quiz
 
 
-def test_post_guest_submit_true_answer(client: TestClient, session: Session):
-    quiz = create_random_quiz(session)
+async def test_post_guest_submit_true_answer(client: AsyncClient, session: AsyncSession):
+    quiz = await create_random_quiz(session)
 
-    res = client.post("/quiz/guest/submit_answer", json={"quiz_id": quiz.id, "answer": quiz.game.name})
+    res = await client.post(
+        "/quiz/guest/submit_answer", json={"quiz_id": quiz.id, "answer": (await quiz.get_game()).name}
+    )
     assert res.status_code == status.HTTP_200_OK
 
     res_json = res.json()
@@ -22,12 +24,12 @@ def test_post_guest_submit_true_answer(client: TestClient, session: Session):
     guest = json.loads(base64.b64decode(res.cookies["guest"]))
 
     quiz_answer = guest["quiz_answers"][str(quiz.id)][0]
-    assert quiz_answer["answer"] == quiz.game.name
+    assert quiz_answer["answer"] == (await quiz.get_game()).name
     assert quiz_answer["correct"] is True
 
 
-def test_post_guest_submit_false_answer(client: TestClient, session: Session):
-    quiz = create_random_quiz(session)
+async def test_post_guest_submit_false_answer(client: AsyncClient, session: AsyncSession):
+    quiz = await create_random_quiz(session)
     wrong_answers = ["빙빙바리바리구1", "빙빙바리바리구2", "빙빙바리바리구3"]
 
     guest = {
@@ -36,7 +38,7 @@ def test_post_guest_submit_false_answer(client: TestClient, session: Session):
     }
 
     for wrong_answer in wrong_answers:
-        res = client.post(
+        res = await client.post(
             "/quiz/guest/submit_answer",
             json={"quiz_id": quiz.id, "answer": wrong_answer},
             cookies={"guest": base64.b64encode(json.dumps(guest).encode()).decode()},
@@ -53,13 +55,13 @@ def test_post_guest_submit_false_answer(client: TestClient, session: Session):
         assert quiz_answer["correct"] is False
 
 
-def test_post_guest_submit_answer_with_not_existed_quiz_id(client: TestClient):
-    res = client.post("/quiz/guest/submit_answer", json={"quiz_id": -1, "answer": "아무거나 빙빙바리바리구"})
+async def test_post_guest_submit_answer_with_not_existed_quiz_id(client: AsyncClient):
+    res = await client.post("/quiz/guest/submit_answer", json={"quiz_id": -1, "answer": "아무거나 빙빙바리바리구"})
     assert res.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_post_guest_submit_answer_with_exceed_submission_limit(client: TestClient, session: Session):
-    quiz = create_random_quiz(session)
+async def test_post_guest_submit_answer_with_exceed_submission_limit(client: AsyncClient, session: AsyncSession):
+    quiz = await create_random_quiz(session)
     wrong_answer = "빙빙바리바리구"
 
     guest = {
@@ -72,7 +74,7 @@ def test_post_guest_submit_answer_with_exceed_submission_limit(client: TestClien
         },
     }
 
-    res = client.post(
+    res = await client.post(
         "/quiz/guest/submit_answer",
         json={"quiz_id": quiz.id, "answer": "아무거나 방방빙방"},
         cookies={"guest": base64.b64encode(json.dumps(guest).encode()).decode()},
@@ -80,17 +82,19 @@ def test_post_guest_submit_answer_with_exceed_submission_limit(client: TestClien
     assert res.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_post_guest_submit_answer_with_prior_correct_answer(client: TestClient, session: Session):
-    quiz = create_random_quiz(session)
+async def test_post_guest_submit_answer_with_prior_correct_answer(client: AsyncClient, session: AsyncSession):
+    quiz = await create_random_quiz(session)
 
     guest = {
         "id": str(uuid4()),
         "quiz_answers": {
-            str(quiz.id): [{"answer": quiz.game.name, "correct": True, "created_at": "2024-02-20T16:02:01.816Z"}]
+            str(quiz.id): [
+                {"answer": (await quiz.get_game()).name, "correct": True, "created_at": "2024-02-20T16:02:01.816Z"}
+            ]
         },
     }
 
-    res = client.post(
+    res = await client.post(
         "/quiz/guest/submit_answer",
         json={"quiz_id": quiz.id, "answer": "아무거나 방방빙방"},
         cookies={"guest": base64.b64encode(json.dumps(guest).encode()).decode()},

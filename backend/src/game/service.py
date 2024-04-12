@@ -1,11 +1,12 @@
 from elasticsearch import AsyncElasticsearch
 
 from ..es import GAME_INDEX
+from .repository import SolvedGameRepository
 from .schema import AutoCompleteName
 
 
 class GameService:
-    def __init__(self, es_client: AsyncElasticsearch) -> None:
+    def __init__(self, *, es_client: AsyncElasticsearch, solved_game_repository: SolvedGameRepository) -> None:
         self._es_client = es_client
 
     async def auto_complete_name(self, query: str) -> list[AutoCompleteName]:

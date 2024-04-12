@@ -1,18 +1,18 @@
 from fastapi import status
-from fastapi.testclient import TestClient
-from sqlmodel import Session
+from httpx import AsyncClient
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.auth.model import User
 from tests.utils.quiz import create_random_quiz, create_random_quiz_answer
 from tests.utils.utils import jsontime2datetime
 
 
-def test_get_answer(session: Session, client: TestClient, current_user: User):
-    quiz = create_random_quiz(session)
-    quiz_answer1 = create_random_quiz_answer(session, quiz_id=quiz.id, user_id=current_user.id)
-    quiz_answer2 = create_random_quiz_answer(session, quiz_id=quiz.id, user_id=current_user.id)
+async def test_get_answer(session: AsyncSession, client: AsyncClient, current_user: User):
+    quiz = await create_random_quiz(session)
+    quiz_answer1 = await create_random_quiz_answer(session, quiz_id=quiz.id, user_id=current_user.id)
+    quiz_answer2 = await create_random_quiz_answer(session, quiz_id=quiz.id, user_id=current_user.id)
 
-    res = client.get(f"/quiz/answer?quiz_id={quiz.id}")
+    res = await client.get(f"/quiz/answer?quiz_id={quiz.id}")
     assert res.status_code == status.HTTP_200_OK
     res_json = res.json()
 
@@ -23,15 +23,15 @@ def test_get_answer(session: Session, client: TestClient, current_user: User):
         assert jsontime2datetime(quiz_ans_res["created_at"]) == quiz_ans.created_at
 
 
-def test_get_answer_with_not_existed_quiz_id(client: TestClient, current_user: User):
+async def test_get_answer_with_not_existed_quiz_id(client: AsyncClient, current_user: User):
     quiz_id = 1
 
-    res = client.get(f"/quiz/answer?quiz_id={quiz_id}")
+    res = await client.get(f"/quiz/answer?quiz_id={quiz_id}")
     assert res.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_get_answer_with_unauthorized_request(client: TestClient):
+async def test_get_answer_with_unauthorized_request(client: AsyncClient):
     quiz_id = 1
 
-    res = client.get(f"/quiz/answer?quiz_id={quiz_id}")
+    res = await client.get(f"/quiz/answer?quiz_id={quiz_id}")
     assert res.status_code == status.HTTP_401_UNAUTHORIZED
