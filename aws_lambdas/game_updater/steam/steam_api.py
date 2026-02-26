@@ -27,8 +27,8 @@ class SteamAPI(protocols.SteamAPI):
             name=details["name"], genres=details["genres"], released_at=details["releaseDate"] / 1000
         )
 
-    def get_all_games_from_gamalytic(self, worker_cnt: int) -> list[GamalyticSteamGameResponse]:
-        games = gamalytic_api.get_all_steam_games(worker_cnt)
+    def get_all_games_from_gamalytic(self, worker_cnt: int, filter_tag: Optional[str] = None) -> list[GamalyticSteamGameResponse]:
+        games = gamalytic_api.get_all_steam_games(worker_cnt, filter_tag)
 
         return [
             GamalyticSteamGameResponse(
