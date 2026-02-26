@@ -49,7 +49,7 @@ def get_external_games(steam_ids: Iterable, category: int, limit: int = MAX_LIMI
         "https://api.igdb.com/v4/external_games",
         **{
             "headers": {"Client-ID": setting.IGDB_CLIENT_ID, "Authorization": f"Bearer {token}"},
-            "data": f"fields game,uid; where uid=({uids}) & category={STEAM_CATEGORY}; limit {limit};",
+            "data": f"fields game,uid; where uid=({uids}) & external_game_source={category}; limit {limit};",
         },
     )
     response.raise_for_status()
