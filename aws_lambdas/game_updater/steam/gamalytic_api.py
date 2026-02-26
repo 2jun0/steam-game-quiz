@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from typing import TypedDict
+from typing import Optional, TypedDict
 
 import requests
 from typing_extensions import NotRequired
@@ -60,8 +60,11 @@ def get_game_details(steam_id: int) -> GameDetails:
     return res.json()
 
 
-def get_all_steam_games(worker_cnt: int) -> list[Game]:
-    res = requests.get("https://api.gamalytic.com/steam-games/list")
+def get_all_steam_games(worker_cnt: int, filter_tag: Optional[str] = None) -> list[Game]:
+    if filter_tag:
+        res = requests.get(f"https://api.gamalytic.com/steam-games/list&tags={filter_tag}")
+    else:
+        res = requests.get("https://api.gamalytic.com/steam-games/list")
     res.raise_for_status()
     pages = res.json()["pages"]
 
