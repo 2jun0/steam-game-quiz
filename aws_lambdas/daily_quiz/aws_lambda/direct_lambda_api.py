@@ -10,7 +10,7 @@ from .model import SaveDailyQuiz, SaveGameScreenshot, SaveQuiz
 
 class DirectLambdaAPI(protocols.LambdaAPI):
     def invoke_lambda(self, event: Event) -> Any:
-        from ...database_lambda.lambda_func import lambda_handler as database_lambda_handler
+        from database_lambda.lambda_func import lambda_handler as database_lambda_handler
 
         return database_lambda_handler(event, None)
 
