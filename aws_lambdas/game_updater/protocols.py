@@ -23,7 +23,7 @@ class SteamAPI(Protocol):
     def get_game_details_from_gamalytic(self, app_id: int) -> GamalyticSteamGameDetailResponse:
         ...
 
-    def get_all_games_from_gamalytic(self, worker_cnt: int) -> list[GamalyticSteamGameResponse]:
+    def get_all_games_from_gamalytic(self, worker_cnt: int, filter_tag: Optional[str] = None) -> list[GamalyticSteamGameResponse]:
         ...
 
 
