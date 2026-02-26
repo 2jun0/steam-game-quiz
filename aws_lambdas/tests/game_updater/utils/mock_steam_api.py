@@ -65,7 +65,7 @@ class MockSteamAPI(SteamAPI):
             name=game["name"], genres=game["genres"], released_at=game["released_at"]
         )
 
-    def get_all_games_from_gamalytic(self, worker_cnt: int) -> list[GamalyticSteamGameResponse]:
+    def get_all_games_from_gamalytic(self, worker_cnt: int, filter_tag: Optional[str] = None) -> list[GamalyticSteamGameResponse]:
         return [
             GamalyticSteamGameResponse(
                 app_id=g["steam_id"],
@@ -75,7 +75,7 @@ class MockSteamAPI(SteamAPI):
                 tags=g["tags"],
                 released_at=g["released_at"],
             )
-            for g in self.games.values()
+            for g in self.games.values() if filter_tag is None or filter_tag in g["tags"]
         ]
 
     def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:

@@ -28,7 +28,7 @@ class Game(TypedDict):
 
 
 def get_steam_games(page: int) -> list[Game]:
-    url = f"https://api.gamalytic.com/steam-games/list?limit=100&page={page}"
+    url = f"https://api.gamalytic.com/steam-games/list?limit=100&page={page}&tags=NSFW"
     res = requests.get(url)
     res.raise_for_status()
     res_json = res.json()
@@ -37,7 +37,7 @@ def get_steam_games(page: int) -> list[Game]:
 
 
 def scrap_games(worker_cnt: int):
-    res = requests.get("https://api.gamalytic.com/steam-games/list")
+    res = requests.get("https://api.gamalytic.com/steam-games/list?tags=NSFW")
     res.raise_for_status()
     pages = res.json()["pages"]
 
@@ -52,7 +52,7 @@ def scrap_games(worker_cnt: int):
 if __name__ == "__main__":
     games = scrap_games(10)
 
-    with open("games.csv", "w") as f:
+    with open("sex_games.csv", "w") as f:
         csv_f = csv.DictWriter(f, Game.__annotations__.keys(), extrasaction="ignore")
 
         csv_f.writerows(games)
