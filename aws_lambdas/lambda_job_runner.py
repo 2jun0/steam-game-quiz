@@ -1,9 +1,9 @@
 import os
-from typing import Literal
+from typing import Literal, Callable, Any
 
 HandlerType = Literal["game_updater", "daily_quiz"]
 
-def _get_handler(target: HandlerType) -> function:
+def _get_handler(target: HandlerType) -> Callable[[Any, Any], None]:
     normalized = target.strip().lower()
 
     if normalized == "game_updater":
