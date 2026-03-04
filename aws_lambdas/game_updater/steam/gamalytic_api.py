@@ -32,7 +32,7 @@ def get_steam_games(page: int) -> list[Game]:
 
 def get_all_steam_games(worker_cnt: int, filter_tag: Optional[str] = None) -> list[Game]:
     if filter_tag:
-        res = requests.get(f"https://api.gamalytic.com/steam-games/list&tags={filter_tag}")
+        res = requests.get(f"https://api.gamalytic.com/steam-games/list?tags={filter_tag}")
     else:
         res = requests.get("https://api.gamalytic.com/steam-games/list")
     res.raise_for_status()
