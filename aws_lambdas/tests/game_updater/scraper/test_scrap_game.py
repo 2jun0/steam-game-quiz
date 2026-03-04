@@ -19,8 +19,8 @@ def test_scrap_games는_게임을_구한다(mock_steam_api: MockSteamAPI):
 
 
 def test_scrap_games는_수익이_높은_게임만_구한다(mock_steam_api: MockSteamAPI):
-    popular_game = create_random_game(revenue=setting.MIN_REVENUE, tags=[])
-    unpopular_game = create_random_game(revenue=setting.MIN_REVENUE - 1, tags=[])
+    popular_game = create_random_game(copies_sold=setting.MIN_COPIES_SOLD, tags=[])
+    unpopular_game = create_random_game(copies_sold=setting.MIN_COPIES_SOLD - 1, tags=[])
     mock_steam_api.add_mock_game(popular_game)
     mock_steam_api.add_mock_game(unpopular_game)
 

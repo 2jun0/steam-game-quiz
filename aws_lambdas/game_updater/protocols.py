@@ -2,7 +2,6 @@ from typing import Optional, Protocol, Sequence
 
 from .aws_lambda.model import SaveGame
 from .steam.model import (
-    GamalyticSteamGameDetailResponse,
     GamalyticSteamGameResponse,
     SteamFeatureGameResponse,
     SteamGameDetailResponse,
@@ -18,9 +17,6 @@ class SteamAPI(Protocol):
         ...
 
     def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:
-        ...
-
-    def get_game_details_from_gamalytic(self, app_id: int) -> GamalyticSteamGameDetailResponse:
         ...
 
     def get_all_games_from_gamalytic(self, worker_cnt: int, filter_tag: Optional[str] = None) -> list[GamalyticSteamGameResponse]:

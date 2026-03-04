@@ -5,7 +5,7 @@ class Config(BaseSettings):
     DATABASE_LAMBDA_NAME: str = "database"
 
     WORKER_CNT: int = 10
-    MIN_REVENUE: int = 10000000  # 10M
+    MIN_COPIES_SOLD: int = 1000000  # 1000K
 
     IGDB_CLIENT_ID: str
     IGDB_CLIENT_SECRET: str

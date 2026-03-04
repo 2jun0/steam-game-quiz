@@ -2,7 +2,7 @@ import ast
 import csv
 import pathlib
 import sys
-from typing import Sequence, TypedDict
+from typing import NotRequired, Sequence, TypedDict
 
 from sqlalchemy.orm import Session
 
@@ -17,18 +17,15 @@ class Game(TypedDict):
     steamId: int
     reviews: int
     reviewScore: float
-    avgPlaytime: float
     price: float
     copiesSold: int
-    revenue: float
     earlyAccess: bool
     developers: list[str]
     publishers: list[str]
     genres: list[str]
-    tags: list[str]
-    features: list[str]
-    EAReleaseDate: int
+    EAReleaseDate: NotRequired[int]
     releaseDate: int
+    firstReleaseDate: int
     publisherClass: str
     id: int
 

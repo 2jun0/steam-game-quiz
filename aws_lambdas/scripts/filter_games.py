@@ -1,6 +1,6 @@
 import ast
 import csv
-from typing import Sequence, TypedDict
+from typing import NotRequired, Sequence, TypedDict
 
 
 class Game(TypedDict):
@@ -8,27 +8,24 @@ class Game(TypedDict):
     steamId: int
     reviews: int
     reviewScore: float
-    avgPlaytime: float
     price: float
     copiesSold: int
-    revenue: float
     earlyAccess: bool
     developers: list[str]
     publishers: list[str]
     genres: list[str]
-    tags: list[str]
-    features: list[str]
-    EAReleaseDate: int
+    EAReleaseDate: NotRequired[int]
     releaseDate: int
+    firstReleaseDate: int
     publisherClass: str
     id: int
 
 
-MIN_REVENUE = 10000000  # 10M
+MIN_SOLD_COPIES = 1000000  # 1000K
 
 
 def is_popular(game: Game) -> bool:
-    return game["revenue"] >= MIN_REVENUE
+    return game["copiesSold"] >= MIN_SOLD_COPIES
 
 
 def is_not_sexual(game: Game, sex_games: Sequence[Game]) -> bool:

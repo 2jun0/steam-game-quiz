@@ -1,6 +1,6 @@
 import csv
 from concurrent.futures import ThreadPoolExecutor
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 import requests
 from tqdm import tqdm
@@ -11,18 +11,15 @@ class Game(TypedDict):
     steamId: int
     reviews: int
     reviewScore: float
-    avgPlaytime: float
     price: float
     copiesSold: int
-    revenue: float
     earlyAccess: bool
     developers: list[str]
     publishers: list[str]
     genres: list[str]
-    tags: list[str]
-    features: list[str]
-    EAReleaseDate: int
+    EAReleaseDate: NotRequired[int]
     releaseDate: int
+    firstReleaseDate: int
     publisherClass: str
     id: int
 

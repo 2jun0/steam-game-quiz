@@ -15,15 +15,14 @@ def _scrap_all_steam_games(steam_api: SteamAPI, worker_cnt: int, filter_tag: Opt
             name=game.name,
             released_at=game.released_at,
             genres=game.genres,
-            tags=game.tags,
-            revenue=game.revenue,
+            copies_sold=game.copies_sold,
         )
         for game in games
     ]
 
 
 def _is_popular(game: Game) -> bool:
-    return game.revenue >= setting.MIN_REVENUE
+    return game.copies_sold >= setting.MIN_COPIES_SOLD
 
 
 def _is_not_sexual(game: Game, sex_games: Sequence[Game]) -> bool:
