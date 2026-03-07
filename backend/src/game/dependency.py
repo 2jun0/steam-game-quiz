@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from ..dependency import ElasticSearchClientDep, SessionDep
+from ..dependency import MeilisearchClientDep, SessionDep
 from .manager import GameManager
 from .repository import SolvedGameRepository
 from .service import GameService
@@ -17,9 +17,9 @@ async def get_game_manager(solved_game_repository: "SolvedGameRepositoryDep") ->
 
 
 async def get_game_service(
-    es_client: ElasticSearchClientDep, solved_game_repository: "SolvedGameRepositoryDep"
+    ms_client: MeilisearchClientDep, solved_game_repository: "SolvedGameRepositoryDep"
 ) -> GameService:
-    return GameService(es_client=es_client, solved_game_repository=solved_game_repository)
+    return GameService(ms_client=ms_client, solved_game_repository=solved_game_repository)
 
 
 SolvedGameRepositoryDep = Annotated[SolvedGameRepository, Depends(get_solved_game_repository)]

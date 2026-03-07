@@ -1,4 +1,4 @@
-from elasticsearch import AsyncElasticsearch
+from meilisearch_python_sdk import AsyncClient
 
 from .config import settings
 
@@ -6,4 +6,4 @@ GAME_INDEX = "game_index"
 
 INDEXES = [GAME_INDEX]
 
-es_client = AsyncElasticsearch(settings.ELASTIC_SEARCH_URL)
+ms_client = AsyncClient(settings.MEILISEARCH_URL)

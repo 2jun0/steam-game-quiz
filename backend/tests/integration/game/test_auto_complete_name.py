@@ -1,7 +1,7 @@
 import pytest
-from elasticsearch import AsyncElasticsearch
+from meilisearch_python_sdk import AsyncClient
 from fastapi import status
-from httpx import AsyncClient
+from httpx import AsyncClient as HttpxClient
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.game.model import Game
@@ -9,10 +9,10 @@ from tests.utils.game import create_random_game, index_game
 
 
 async def create_indexed_game(
-    session: AsyncSession, es_client: AsyncElasticsearch, name: str, aliases: list[str] = []
+    session: AsyncSession, ms_client: AsyncClient, name: str, aliases: list[str] = []
 ) -> Game:
     game = await create_random_game(session, name=name, aliases=aliases)
-    await index_game(es_client, game)
+    await index_game(ms_client, game)
     return game
 
 
@@ -30,9 +30,9 @@ async def create_indexed_game(
     ),
 )
 async def test_auto_complete_game_name(
-    client: AsyncClient, session: AsyncSession, es_client: AsyncElasticsearch, game_name: str, query: str
+    client: HttpxClient, session: AsyncSession, ms_client: AsyncClient, game_name: str, query: str
 ):
-    saved_game = await create_indexed_game(session, es_client, game_name)
+    saved_game = await create_indexed_game(session, ms_client, game_name)
 
     res = await client.get(f"/game/auto_complete_name?query={query}")
     assert res.status_code == status.HTTP_200_OK
@@ -50,9 +50,9 @@ async def test_auto_complete_game_name(
     ),
 )
 async def test_auto_complete_game_name_by_alias(
-    client: AsyncClient, session: AsyncSession, es_client: AsyncElasticsearch, game_name: str, alias: str, query: str
+    client: HttpxClient, session: AsyncSession, ms_client: AsyncClient, game_name: str, alias: str, query: str
 ):
-    saved_game = await create_indexed_game(session, es_client, game_name, [alias])
+    saved_game = await create_indexed_game(session, ms_client, game_name, [alias])
 
     res = await client.get(f"/game/auto_complete_name?query={query}")
     assert res.status_code == status.HTTP_200_OK
@@ -62,12 +62,12 @@ async def test_auto_complete_game_name_by_alias(
 
 
 async def test_auto_complete_for_multiple_games(
-    client: AsyncClient, session: AsyncSession, es_client: AsyncElasticsearch
+    client: HttpxClient, session: AsyncSession, ms_client: AsyncClient
 ):
-    await create_indexed_game(session, es_client, name="game1")
-    await create_indexed_game(session, es_client, name="game2")
-    await create_indexed_game(session, es_client, name="game3")
-    await create_indexed_game(session, es_client, name="game4")
+    await create_indexed_game(session, ms_client, name="game1")
+    await create_indexed_game(session, ms_client, name="game2")
+    await create_indexed_game(session, ms_client, name="game3")
+    await create_indexed_game(session, ms_client, name="game4")
     query = "game"
 
     res = await client.get(f"/game/auto_complete_name?query={query}")

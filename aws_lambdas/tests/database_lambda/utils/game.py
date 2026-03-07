@@ -2,7 +2,7 @@ from datetime import datetime
 from random import randint
 from typing import Any, Optional
 
-from elasticsearch import Elasticsearch
+import meilisearch
 from sqlalchemy.orm import Session
 
 from database_lambda.es import GAME_INDEX
@@ -51,5 +51,5 @@ def create_random_game(
     return game
 
 
-def search_game_docs(es_client: Elasticsearch, *, max_size: int = 100) -> list[dict[str, Any]]:
-    return es_client.search(index=GAME_INDEX, size=max_size)["hits"]["hits"]
+def search_game_docs(ms_client: meilisearch.Client, *, max_size: int = 100) -> list[dict[str, Any]]:
+    return ms_client.index(GAME_INDEX).search("", {"limit": max_size})["hits"]

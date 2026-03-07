@@ -1,22 +1,23 @@
-from elasticsearch import Elasticsearch
+import meilisearch
 
 from database_lambda.config import setting
 from database_lambda.es import INDEXES
 
-es_client = Elasticsearch(setting.ELASTIC_SEARCH_URL)
+ms_client = meilisearch.Client(setting.MEILISEARCH_URL)
 
 
-def delete_all_indexes(es_client: Elasticsearch):
+def delete_all_indexes(client: meilisearch.Client):
     for index in INDEXES:
         try:
-            es_client.indices.delete(index=index)
+            task = client.delete_index(index)
+            client.wait_for_task(task.task_uid)
         except Exception:
             pass
 
 
-def create_all_indexes(es_client: Elasticsearch):
-    for index in INDEXES:
+def create_all_indexes(client: meilisearch.Client):
+    for index_name in INDEXES:
         try:
-            es_client.indices.create(index=index)
+            client.create_index(index_name, {"primaryKey": "id"})
         except Exception:
             pass

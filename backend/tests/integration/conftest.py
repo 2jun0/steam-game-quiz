@@ -2,14 +2,14 @@ import asyncio
 from typing import AsyncGenerator
 
 import pytest
-from elasticsearch import AsyncElasticsearch
-from httpx import AsyncClient
+from meilisearch_python_sdk import AsyncClient
+from httpx import AsyncClient as HttpxClient
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.auth.dependency import current_active_user
 from src.auth.model import User
 from src.config import settings
-from src.dependency import es_client as es_client_
+from src.dependency import ms_client as ms_client_
 from src.main import app
 from tests.database import engine
 from tests.utils.auth import create_random_user
@@ -29,8 +29,8 @@ async def database():
 
 
 @pytest.fixture()
-async def client() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://testserver") as client:
+async def client() -> AsyncGenerator[HttpxClient, None]:
+    async with HttpxClient(app=app, base_url="http://testserver") as client:
         yield client
 
 
@@ -53,16 +53,16 @@ async def current_user(session: AsyncSession) -> AsyncGenerator[User, None]:
 
 
 @pytest.fixture()
-async def es_client() -> AsyncGenerator[AsyncElasticsearch, None]:
-    es_client = AsyncElasticsearch(settings.ELASTIC_SEARCH_URL)
+async def ms_client() -> AsyncGenerator[AsyncClient, None]:
+    client = AsyncClient(settings.MEILISEARCH_URL)
 
-    def override_es_client() -> AsyncElasticsearch:
-        return es_client
+    def override_ms_client() -> AsyncClient:
+        return client
 
-    await delete_all_indexes(es_client)
-    await create_all_indexes(es_client)
+    await delete_all_indexes(client)
+    await create_all_indexes(client)
 
-    app.dependency_overrides[es_client_] = override_es_client
-    yield es_client
-    await delete_all_indexes(es_client)
-    await es_client.close()
+    app.dependency_overrides[ms_client_] = override_ms_client
+    yield client
+    await delete_all_indexes(client)
+    await client.aclose()

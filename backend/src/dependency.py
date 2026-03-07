@@ -1,12 +1,12 @@
 from collections.abc import AsyncGenerator
 from typing import Annotated, Any
 
-from elasticsearch import AsyncElasticsearch
+from meilisearch_python_sdk import AsyncClient
 from fastapi import Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from .database import engine
-from .es import es_client as es_client_
+from .es import ms_client as ms_client_
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, Any]:
@@ -15,9 +15,9 @@ async def get_session() -> AsyncGenerator[AsyncSession, Any]:
         await session.commit()
 
 
-async def es_client() -> AsyncGenerator[AsyncElasticsearch, Any]:
-    yield es_client_
+async def ms_client() -> AsyncGenerator[AsyncClient, Any]:
+    yield ms_client_
 
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
-ElasticSearchClientDep = Annotated[AsyncElasticsearch, Depends(es_client)]
+MeilisearchClientDep = Annotated[AsyncClient, Depends(ms_client)]

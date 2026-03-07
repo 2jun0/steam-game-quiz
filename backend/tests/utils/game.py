@@ -1,7 +1,7 @@
 from asyncio import Lock
 from datetime import datetime
 
-from elasticsearch import AsyncElasticsearch
+from meilisearch_python_sdk import AsyncClient
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -45,10 +45,13 @@ async def get_solved_game(session: AsyncSession, *, user_id: int, game_id: int) 
     return rs.one_or_none()
 
 
-async def index_game(es_client: AsyncElasticsearch, game: Game):
+async def index_game(ms_client: AsyncClient, game: Game):
     q_name = "".join([c if c.isalnum() else " " for c in game.name])
-    await es_client.index(
-        index=GAME_INDEX,
-        body={"q_name": q_name, "name": game.name, "aliases": [alias.name for alias in game.aliases], "id": game.id},
-        refresh=True,
-    )
+    index = ms_client.index(GAME_INDEX)
+    task = await index.add_documents([{
+        "id": game.id,
+        "name": game.name,
+        "q_name": q_name,
+        "aliases": [alias.name for alias in game.aliases],
+    }])
+    await ms_client.wait_for_task(task.task_uid)

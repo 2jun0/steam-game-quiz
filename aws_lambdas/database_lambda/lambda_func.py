@@ -3,11 +3,11 @@ from typing import Any, Protocol, Union, cast
 
 def lambda_handler(event: Any, context: Any):
 
-    from elasticsearch import Elasticsearch
+    import meilisearch
     from sqlalchemy.orm import Session
 
     from database_lambda.database import engine
-    from database_lambda.es import es_client
+    from database_lambda.es import ms_client
     from database_lambda.event import Event, EventName
     from database_lambda.game.service import get_all_games, save_games
     from database_lambda.logger import logger
@@ -15,10 +15,10 @@ def lambda_handler(event: Any, context: Any):
     from database_lambda.screenshot.service import save_screenshots
 
     class NoPayloadEventHandler(Protocol):
-        def __call__(self, *, session: Session, es_client: Elasticsearch, **kwargs) -> Any: ...
+        def __call__(self, *, session: Session, ms_client: meilisearch.Client, **kwargs) -> Any: ...
 
     class PayloadEventHandler(Protocol):
-        def __call__(self, __payload, *, session: Session, es_client: Elasticsearch, **kwargs) -> Any: ...
+        def __call__(self, __payload, *, session: Session, ms_client: meilisearch.Client, **kwargs) -> Any: ...
 
     funcs: dict[EventName, Union[NoPayloadEventHandler, PayloadEventHandler]] = {
         "save_games": save_games,
@@ -33,10 +33,10 @@ def lambda_handler(event: Any, context: Any):
 
         if "payload" in event and event["payload"]:
             func = cast(PayloadEventHandler, func)
-            result = func(event["payload"], session=session, es_client=es_client)
+            result = func(event["payload"], session=session, ms_client=ms_client)
         else:
             func = cast(NoPayloadEventHandler, func)
-            result = func(session=session, es_client=es_client)
+            result = func(session=session, ms_client=ms_client)
 
         session.commit()
         return result
