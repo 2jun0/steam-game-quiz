@@ -7,8 +7,11 @@ from .constants import Envrionment
 
 
 class Config(BaseSettings):
+    # database
     DATABASE_URL: MySQLDsn | str
     MEILISEARCH_URL: str
+    MEILISEARCH_MASTER_KEY: str
+
     CORS_ORIGINS: list[str] = []
 
     QUIZ_ANSWER_SUBMISSION_LIMIT: int = 3

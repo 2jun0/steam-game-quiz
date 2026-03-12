@@ -6,4 +6,4 @@ GAME_INDEX = "game_index"
 
 INDEXES = [GAME_INDEX]
 
-ms_client = meilisearch.Client(setting.MEILISEARCH_URL)
+ms_client = meilisearch.Client(setting.MEILISEARCH_URL, setting.MEILISEARCH_MASTER_KEY)
