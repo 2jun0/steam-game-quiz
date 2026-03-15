@@ -25,5 +25,6 @@ services:
     container_name: meilisearch
     environment:
       - MEILI_NO_ANALYTICS=true
+      - MEILI_MASTER_KEY=masterKey
     ports:
       - 7700:7700
