@@ -10,7 +10,7 @@ class Config(BaseSettings):
     # database
     DATABASE_URL: MySQLDsn | str
     MEILISEARCH_URL: str
-    MEILISEARCH_MASTER_KEY: str
+    MEILISEARCH_MASTER_KEY: str | None = None
 
     CORS_ORIGINS: list[str] = []
 
