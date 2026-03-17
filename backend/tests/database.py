@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine
 
-from .config import test_settings
+from src.config import settings
 
-engine = create_engine(test_settings.TEST_DATABASE_URL, echo=True)  # type: ignore
+engine = create_async_engine(settings.DATABASE_URL, echo=True)  # type: ignore

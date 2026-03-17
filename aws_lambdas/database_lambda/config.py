@@ -1,9 +1,12 @@
+from typing import Optional
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Config(BaseSettings):
     DATABASE_URL: str
-    ELASTIC_SEARCH_URL: str
+    MEILISEARCH_URL: str
+    MEILISEARCH_MASTER_KEY: Optional[str] = None
 
     model_config = SettingsConfigDict(env_file=".database.env", env_file_encoding="utf-8")
 

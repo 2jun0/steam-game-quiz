@@ -10,6 +10,7 @@ class User(CreatedAtMixin, UpdatedAtMixin, SQLModelBaseUserDB, table=True):
     oauth_accounts: list["OAuthAccount"] = Relationship(
         back_populates="user", sa_relationship_kwargs={"lazy": "joined", "cascade": "all, delete"}
     )
+    rank_score: int = Field(default=0, nullable=False)
 
 
 class OAuthAccount(CreatedAtMixin, UpdatedAtMixin, SQLModelBaseOAuthAccount, table=True):

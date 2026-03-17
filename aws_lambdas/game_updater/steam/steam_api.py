@@ -3,7 +3,6 @@ from typing import Optional
 from .. import protocols
 from . import gamalytic_api, steampowered_api
 from .model import (
-    GamalyticSteamGameDetailResponse,
     GamalyticSteamGameResponse,
     SteamFeatureGameResponse,
     SteamGameDetailResponse,
@@ -20,15 +19,8 @@ class SteamAPI(protocols.SteamAPI):
         details = steampowered_api.get_app_details(app_id, language)
         return SteamGameDetailResponse(name=details["name"])
 
-    def get_game_details_from_gamalytic(self, app_id: int) -> GamalyticSteamGameDetailResponse:
-        details = gamalytic_api.get_game_details(app_id)
-
-        return GamalyticSteamGameDetailResponse(
-            name=details["name"], genres=details["genres"], released_at=details["releaseDate"] / 1000
-        )
-
-    def get_all_games_from_gamalytic(self, worker_cnt: int) -> list[GamalyticSteamGameResponse]:
-        games = gamalytic_api.get_all_steam_games(worker_cnt)
+    def get_all_games_from_gamalytic(self, worker_cnt: int, filter_tag: Optional[str] = None) -> list[GamalyticSteamGameResponse]:
+        games = gamalytic_api.get_all_steam_games(worker_cnt, filter_tag)
 
         return [
             GamalyticSteamGameResponse(
@@ -36,8 +28,7 @@ class SteamAPI(protocols.SteamAPI):
                 name=game["name"],
                 genres=game["genres"],
                 released_at=game["releaseDate"] / 1000,
-                revenue=game["revenue"],
-                tags=game["tags"],
+                copies_sold=game["copiesSold"],
             )
             for game in games
         ]

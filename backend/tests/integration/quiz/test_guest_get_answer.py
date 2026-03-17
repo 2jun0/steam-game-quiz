@@ -3,15 +3,15 @@ import json
 from uuid import uuid4
 
 from fastapi import status
-from fastapi.testclient import TestClient
-from sqlmodel import Session
+from httpx import AsyncClient
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from tests.utils.quiz import create_random_quiz
 from tests.utils.utils import jsontime2datetime
 
 
-def test_get_guest_answer(session: Session, client: TestClient):
-    quiz = create_random_quiz(session)
+async def test_get_guest_answer(session: AsyncSession, client: AsyncClient):
+    quiz = await create_random_quiz(session)
     wrong_answers = ["빙빙바리바리구1", "빙빙바리바리구2", "빙빙바리바리구3"]
 
     guest = {
@@ -24,7 +24,7 @@ def test_get_guest_answer(session: Session, client: TestClient):
         },
     }
 
-    res = client.get(
+    res = await client.get(
         f"/quiz/guest/answer?quiz_id={quiz.id}",
         cookies={"guest": base64.b64encode(json.dumps(guest).encode()).decode()},
     )
@@ -38,8 +38,8 @@ def test_get_guest_answer(session: Session, client: TestClient):
         assert jsontime2datetime(quiz_ans_res["created_at"]) == jsontime2datetime(quiz_ans["created_at"])
 
 
-def test_get_guest_answer_with_not_existed_quiz_id(client: TestClient):
+async def test_get_guest_answer_with_not_existed_quiz_id(client: AsyncClient):
     quiz_id = 1
 
-    res = client.get(f"/quiz/guest/answer?quiz_id={quiz_id}")
+    res = await client.get(f"/quiz/guest/answer?quiz_id={quiz_id}")
     assert res.status_code == status.HTTP_404_NOT_FOUND

@@ -1,43 +1,33 @@
-from elasticsearch import AsyncElasticsearch
+from meilisearch_python_sdk import AsyncClient
 
 from ..es import GAME_INDEX
+from .repository import SolvedGameRepository
 from .schema import AutoCompleteName
 
 
 class GameService:
-    def __init__(self, es_client: AsyncElasticsearch) -> None:
-        self._es_client = es_client
+    def __init__(self, *, ms_client: AsyncClient, solved_game_repository: SolvedGameRepository) -> None:
+        self._ms_client = ms_client
 
     async def auto_complete_name(self, query: str) -> list[AutoCompleteName]:
         auto_complete_names: list[AutoCompleteName] = []
-        res = await self._es_client.search(
-            index=GAME_INDEX,
-            body={
-                "query": {
-                    "bool": {
-                        "should": [
-                            {"match_phrase_prefix": {"q_name": {"query": query.lower()}}},
-                            {"match_phrase_prefix": {"name": {"query": query.lower()}}},
-                            {"match_phrase_prefix": {"aliases": {"query": query.lower()}}},
-                        ]
-                    }
-                },
-                "highlight": {
-                    "pre_tags": [""],
-                    "post_tags": [""],
-                    "fields": {"q_name": {}, "name": {}, "aliases": {}},
-                },
-            },
+        result = await self._ms_client.index(GAME_INDEX).search(
+            query,
+            attributes_to_search_on=["q_name", "name", "aliases"],
+            show_matches_position=True,
         )
 
-        for hit in res["hits"]["hits"]:
-            name: str = hit["_source"]["name"]
+        for hit in result.hits:
+            name: str = hit["name"]
+            matches: dict = hit.get("_matchesPosition", {})
 
-            highlight = hit["highlight"]
-            if "q_name" in highlight or "name" in highlight:
+            if "q_name" in matches or "name" in matches:
                 match = name
-            elif "aliases" in highlight:
-                match = highlight["aliases"][0]
+            elif "aliases" in matches:
+                alias_idx = matches["aliases"][0].get("attributeIndex", 0)
+                match = hit["aliases"][alias_idx]
+            else:
+                match = name
 
             auto_complete_names.append(AutoCompleteName(name=name, match=match))
 

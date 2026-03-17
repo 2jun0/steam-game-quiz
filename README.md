@@ -2,7 +2,7 @@
   <img width="300" src="./docs/imgs/logo.svg">
   
   <h2>Guess The Steam Game</h2></hr>
-  <h3><a href="https://app.steamgamequiz.com">🎮app.steamgamequiz.com🎮</a></h3>
+  <h3><a href="https://steamgamequiz.2jun0.com">🎮steamgamequiz.2jun0.com🎮</a></h3>
 
 
   <p align="center">
@@ -47,5 +47,5 @@ https://github.com/2jun0/steam-game-quiz/assets/7973448/c8e153db-3603-4796-8ae1-
 ## Further Reading
 
 - [시연 영상 <img width="13rem" src="https://www.youtube.com/favicon.ico">](https://youtu.be/WlqPoyApUhE)
-- [웹 사이트 <img width="13rem" src="https://app.steamgamequiz.com/favicon.ico">](https://app.steamgamequiz.com)
+- [웹 사이트 <img width="13rem" src="https://steamgamequiz.2jun0.com/favicon.ico">](https://steamgamequiz.2jun0.com)
 - [개발자의 개발 일기 <img width="13rem" src="https://t1.daumcdn.net/tistory_admin/favicon/tistory_favicon_32x32.ico">](https://2jun0.tistory.com/category/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D/%EC%8A%A4%ED%8C%80%20%EA%B2%8C%EC%9E%84%20%ED%80%B4%EC%A6%88)

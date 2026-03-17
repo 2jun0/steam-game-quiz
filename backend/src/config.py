@@ -7,8 +7,11 @@ from .constants import Envrionment
 
 
 class Config(BaseSettings):
+    # database
     DATABASE_URL: MySQLDsn | str
-    ELASTIC_SEARCH_URL: str
+    MEILISEARCH_URL: str
+    MEILISEARCH_MASTER_KEY: str | None = None
+
     CORS_ORIGINS: list[str] = []
 
     QUIZ_ANSWER_SUBMISSION_LIMIT: int = 3
@@ -22,6 +25,12 @@ class Config(BaseSettings):
     FACEBOOK_OAUTH2_CLIENT_ID: str
     FACEBOOK_OAUTH2_CLIENT_SECRET: str
     FACEBOOK_OAUTH2_REDIRECT_URL: str | None = None
+
+    # score
+    SCORE_DIFF_ON_CORRECT_FIRST: int = 10
+    SCORE_DIFF_ON_CORRECT_REPEAT: int = 2
+    SCORE_DIFF_ON_FAILED: int = -2
+    SCORE_DIFF_ON_FAILED_AFTER_PREV_SOLVED: int = -5
 
     ENVIRONMENT: Envrionment = Envrionment.PRODUCTION
 

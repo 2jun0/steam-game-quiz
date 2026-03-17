@@ -1,10 +1,23 @@
 # AWS Lambdas
 
 본 서비스의 배치 작업을 위한 serverless 애플리케이션입니다  
-아래 세개의 에플리케이션으로 구성되어 있습니다. 
+~~아래 세개의 에플리케이션으로 구성되어 있습니다.~~
 - **daily_quiz**, **database_lambda**, **game_updater**
 
-## 설정 🛠️
+## 설정 🛠️ (아카이빙 전용)
+
+> 아카이빙 전용에선 해당 작업들을 단일 컨테이너로 처리합니다.  
+> **daily_quiz**, **game_updater** 배치 작업은 **LAMBDA_HANDLER** 환경변수로 선택합니다.
+
+1. 이미지 빌드
+    ```
+    docker build . -t ghcr.io/2jun0/archive_steam-game-quiz_lambda:1.0 --platform linux/amd64,linux/arm64 --push
+    ```
+2. 환경변수
+    `.env.sample`을 참조하세요.
+
+
+## ~~설정 🛠️~~ (AWS 전용)
 
 1. AWS에서 Lambda 함수를 생성합니다.  
     - 런타임 설정

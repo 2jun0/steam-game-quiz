@@ -1,5 +1,7 @@
 from datetime import date
+from typing import Awaitable
 
+from async_sqlmodel import AsyncSQLModel, AwaitableField
 from sqlmodel import Field, Relationship, SQLModel
 
 from ..game.model import Game, GameScreenshot
@@ -15,16 +17,16 @@ class QuizScreenshotLink(SQLModel, table=True):
     screenshot_id: int = Field(foreign_key="game_screenshot.id")
 
 
-class Quiz(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+class Quiz(CreatedAtMixin, UpdatedAtMixin, AsyncSQLModel, table=True):
     __tablename__: str = "quiz"
 
     id: int | None = Field(default=None, primary_key=True)
 
     screenshots: list[GameScreenshot] = Relationship(link_model=QuizScreenshotLink)
+    awt_screenshots: Awaitable[list[GameScreenshot]] = AwaitableField(field="screenshots")
 
-    @property
-    def game(self) -> Game:
-        return self.screenshots[0].game
+    async def get_game(self) -> Game:
+        return await (await self.awt_screenshots)[0].awt_game
 
 
 class QuizAnswer(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
@@ -40,7 +42,7 @@ class QuizAnswer(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     quiz: Quiz = Relationship()
 
 
-class DailyQuiz(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
+class DailyQuiz(CreatedAtMixin, UpdatedAtMixin, AsyncSQLModel, table=True):
     __tablename__: str = "daily_quiz"
 
     id: int | None = Field(default=None, primary_key=True)
@@ -50,3 +52,4 @@ class DailyQuiz(CreatedAtMixin, UpdatedAtMixin, SQLModel, table=True):
     quiz_id: int = Field(foreign_key="quiz.id")
     feature: str = Field(max_length=64)
     quiz: Quiz = Relationship()
+    awt_quiz: Awaitable[Quiz] = AwaitableField(field="quiz")

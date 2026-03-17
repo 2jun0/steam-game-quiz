@@ -1,12 +1,12 @@
 from typing import Any, Generator
 
+import meilisearch
 import pytest
-from elasticsearch import Elasticsearch
 from sqlalchemy.orm import Session
 
 from tests.database_lambda.database import create_tables, drop_tables, engine, init_database
 from tests.database_lambda.es import create_all_indexes, delete_all_indexes
-from tests.database_lambda.es import es_client as _es_client
+from tests.database_lambda.es import ms_client as _ms_client
 
 
 @pytest.fixture(autouse=True)
@@ -25,8 +25,8 @@ def session() -> Generator[Session, Any, None]:
 
 
 @pytest.fixture
-def es_client() -> Generator[Elasticsearch, Any, None]:
-    delete_all_indexes(_es_client)
-    create_all_indexes(_es_client)
-    yield _es_client
-    delete_all_indexes(_es_client)
+def ms_client() -> Generator[meilisearch.Client, Any, None]:
+    delete_all_indexes(_ms_client)
+    create_all_indexes(_ms_client)
+    yield _ms_client
+    delete_all_indexes(_ms_client)

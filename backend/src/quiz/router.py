@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
 
-from ..auth.dependency import CURRENT_USER_DEP
+from ..auth.dependency import CURRENT_READ_USER_DEP, CURRENT_USER_DEP
 from .daily_quiz_loader import DailyQuizLoader
 from .dependency import get_daily_quiz_loader, get_quiz_answer_service, get_quiz_service
 from .guest.router import router as guest_router
@@ -36,12 +36,13 @@ class QuizCBV:
         self, quiz_submit_req: SubmitAnswerRequest, current_user: CURRENT_USER_DEP
     ) -> SubmitAnswerResponse:
         correct = await self.quiz_answer_service.submit_answer(
-            quiz_id=quiz_submit_req.quiz_id, user_id=current_user.id, answer=quiz_submit_req.answer
+            quiz_id=quiz_submit_req.quiz_id, user=current_user, answer=quiz_submit_req.answer
         )
+
         return SubmitAnswerResponse(correct=correct)
 
     @router.get("/quiz/answer")
-    async def get_quiz_answer(self, quiz_id: int, current_user: CURRENT_USER_DEP) -> QuizAnswerResponse:
+    async def get_quiz_answer(self, quiz_id: int, current_user: CURRENT_READ_USER_DEP) -> QuizAnswerResponse:
         quiz_answers = await self.quiz_answer_service.get_quiz_answer(quiz_id=quiz_id, user_id=current_user.id)
 
         return QuizAnswerResponse(
@@ -51,7 +52,7 @@ class QuizCBV:
         )
 
     @router.get("/quiz/correct_answer")
-    async def get_correct_answer(self, quiz_id: int, current_user: CURRENT_USER_DEP):
+    async def get_correct_answer(self, quiz_id: int, current_user: CURRENT_READ_USER_DEP):
         correct_answer = await self.quiz_service.get_correct_answer(quiz_id=quiz_id, user_id=current_user.id)
 
         return CorrectAnswerResponse(correct_answer=correct_answer)

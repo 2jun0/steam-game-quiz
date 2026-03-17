@@ -1,25 +1,27 @@
-from collections.abc import Generator, Iterable
+from collections.abc import Iterable
 from typing import Any
 
-from elasticsearch import Elasticsearch, helpers
+import meilisearch
 
 from ..es import GAME_INDEX
 from ..utils import is_aldecimal
 from .model import Game
 
 
-def _bulk_game_data(games: Iterable[Game]) -> Generator[dict[str, Any], Any, None]:
+def _game_docs(games: Iterable[Game]) -> list[dict[str, Any]]:
+    docs = []
     for game in games:
         q_name = "".join([c if is_aldecimal(c) else " " for c in game.name])
-        yield {
-            "_index": GAME_INDEX,
-            "_id": game.id,
+        docs.append({
             "id": game.id,
             "name": game.name,
             "q_name": q_name,
             "aliases": [alias.name for alias in game.aliases],
-        }
+        })
+    return docs
 
 
-def save_docs(es_client: Elasticsearch, *, games: Iterable[Game]):
-    helpers.bulk(es_client, _bulk_game_data(games), refresh=True)
+def save_docs(ms_client: meilisearch.Client, *, games: Iterable[Game]):
+    docs = _game_docs(games)
+    task = ms_client.index(GAME_INDEX).add_documents(docs, primary_key="id")
+    ms_client.wait_for_task(task.task_uid)

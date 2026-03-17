@@ -1,19 +1,20 @@
-from elasticsearch import Elasticsearch
+from meilisearch_python_sdk import AsyncClient
 
 from src.es import INDEXES
 
 
-def delete_all_indexes(es_client: Elasticsearch):
+async def delete_all_indexes(ms_client: AsyncClient):
     for index in INDEXES:
         try:
-            es_client.indices.delete(index=index)
+            task = await ms_client.delete_index(index)
+            await ms_client.wait_for_task(task.task_uid)
         except Exception:
             pass
 
 
-def create_all_indexes(es_client: Elasticsearch):
-    for index in INDEXES:
+async def create_all_indexes(ms_client: AsyncClient):
+    for index_name in INDEXES:
         try:
-            es_client.indices.create(index=index)
+            await ms_client.create_index(index_name, primary_key="id")
         except Exception:
             pass

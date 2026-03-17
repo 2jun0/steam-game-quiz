@@ -6,6 +6,7 @@ from src.auth.router import router as auth_router
 from src.config import app_configs, settings
 from src.game.router import router as game_router
 from src.quiz.router import router as quiz_router
+from src.health.router import router as health_router
 
 
 @asynccontextmanager
@@ -17,6 +18,7 @@ app = FastAPI(**app_configs, lifespan=lifespan)
 app.include_router(quiz_router)
 app.include_router(game_router)
 app.include_router(auth_router)
+app.include_router(health_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,

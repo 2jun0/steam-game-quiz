@@ -8,5 +8,4 @@ class Game(BaseModel):
     name: str
     released_at: float
     genres: Sequence[str]
-    tags: Sequence[str]
-    revenue: float
+    copies_sold: int

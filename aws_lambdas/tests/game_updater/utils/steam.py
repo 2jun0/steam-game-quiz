@@ -9,7 +9,7 @@ genre_id_counter = 1
 
 
 def create_random_game(
-    *, genres: Optional[list[str]] = None, tags: Optional[list[str]] = None, revenue: Optional[int] = None
+    *, genres: Optional[list[str]] = None, tags: Optional[list[str]] = None, copies_sold: Optional[int] = None
 ):
     global game_steam_id_counter
     game_steam_id_counter += 1
@@ -18,8 +18,8 @@ def create_random_game(
         genres = [create_random_genre() for _ in range(randint(0, 5))]
     if tags is None:
         tags = choices(["Sexual Content", "NSFW", "#tag"], k=randint(0, 3))
-    if revenue is None:
-        revenue = randrange(0, 1000000000, 100000)
+    if copies_sold is None:
+        copies_sold = randrange(0, 1000000000, 1000)
 
     return {
         "name": f"Game #{game_steam_id_counter}",
@@ -27,7 +27,7 @@ def create_random_game(
         "genres": genres,
         "released_at": random_timestamp(),
         "tags": tags,
-        "revenue": revenue,
+        "copies_sold": copies_sold,
     }
 
 

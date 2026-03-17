@@ -4,7 +4,6 @@ from typing import Optional
 from game_updater.protocols import SteamAPI
 from game_updater.steam.exception import SteamAPINoContentsException
 from game_updater.steam.model import (
-    GamalyticSteamGameDetailResponse,
     GamalyticSteamGameResponse,
     SteamFeatureGameResponse,
     SteamGameDetailResponse,
@@ -59,23 +58,16 @@ class MockSteamAPI(SteamAPI):
         game = self._get_game(app_id=app_id)
         return SteamGameDetailResponse(name=game["name"])
 
-    def get_game_details_from_gamalytic(self, app_id: int) -> GamalyticSteamGameDetailResponse:
-        game = self._get_game(app_id=app_id)
-        return GamalyticSteamGameDetailResponse(
-            name=game["name"], genres=game["genres"], released_at=game["released_at"]
-        )
-
-    def get_all_games_from_gamalytic(self, worker_cnt: int) -> list[GamalyticSteamGameResponse]:
+    def get_all_games_from_gamalytic(self, worker_cnt: int, filter_tag: Optional[str] = None) -> list[GamalyticSteamGameResponse]:
         return [
             GamalyticSteamGameResponse(
                 app_id=g["steam_id"],
                 name=g["name"],
                 genres=g["genres"],
-                revenue=g["revenue"],
-                tags=g["tags"],
                 released_at=g["released_at"],
+                copies_sold=g["copies_sold"],
             )
-            for g in self.games.values()
+            for g in self.games.values() if filter_tag is None or filter_tag in g["tags"]
         ]
 
     def get_game_screenshots(self, app_id: int, page: int = 1) -> list[SteamGameScreenshotResponse]:
