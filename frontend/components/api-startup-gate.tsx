@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, PropsWithChildren } from "react";
 
-const API_HOST = process.env.NEXT_PUBLIC_API_HOST;
+const API_HOST = process.env.NEXT_PUBLIC_BACKEND_HOST;
 
 export default function ApiStartupGate({ children }: PropsWithChildren) {
     const [status, setStatus] = useState<"checking" | "ready" | "failed">(
